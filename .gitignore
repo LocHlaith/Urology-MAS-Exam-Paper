@@ -3,7 +3,3 @@
 
 # Local virtual environment
 doctor/
-
-# Large local figure exports
-*.tif
-*.tiff
