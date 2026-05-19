@@ -28,6 +28,7 @@ This repository is easy to misread because it contains source data, generated ba
 - Do not infer sample sizes, panel labels, statistical models, noninferiority margins, colors, or fonts from filenames.
 - Do not treat placeholders such as `XXX` as real data.
 - Do not treat example commands, docstrings, or old absolute paths as analysis requirements.
+- Raw dataset metadata may contain historical `source_file` absolute paths from an earlier workstation; use repository-relative paths from `scripts/project_paths.py` instead.
 - Do not mix `bank_*.json` and `new_bank_*.json` without explicitly stating whether the comparison is old/manual vs MAS-generated.
 - Do not use `outputs/statistics/*.txt` as a substitute for recomputation when a figure needs exact derived values.
 
