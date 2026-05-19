@@ -1,0 +1,8 @@
+python-docx>=1.1.2
+pywin32>=306; platform_system=="Windows"
+python-dotenv>=1.0.1
+requests>=2.32.0
+numpy>=1.26.0
+faiss-cpu>=1.8.0
+sentence-transformers>=3.0.0
+torch>=2.2.0
