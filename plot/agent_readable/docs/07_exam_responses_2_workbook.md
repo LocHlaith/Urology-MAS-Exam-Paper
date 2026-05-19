@@ -1,30 +1,34 @@
-# Converted source: `plot/试卷作答情况 - 2.xlsx`
+# 转换来源： `plot/试卷作答情况 - 2.xlsx`
 
-## Conversion metadata
+## 转换元数据
 
-- Source path: `plot/试卷作答情况 - 2.xlsx`
-- Source SHA256: `fb0f08ee2e9f632bc35bb665bf37928a2892f2f325ebb9126cb0e5681b35e902`
-- Generated at: `2026-05-19T21:04:45`
-- Conversion method: direct XLSX Office XML extraction; cell cached/raw values exported as CSV
-- Agent rule: use the CSV files as raw worksheet exports and the sheet summaries as conversion metadata/previews. Do not infer variable meanings beyond explicit source text.
+- 来源路径： `plot/试卷作答情况 - 2.xlsx`
+- 来源 SHA256： `fb0f08ee2e9f632bc35bb665bf37928a2892f2f325ebb9126cb0e5681b35e902`
+- 生成时间： `2026-05-19T21:04:45`
+- 转换方法： 直接提取 XLSX Office XML；单元格缓存/原始值导出为 CSV
+- Agent 规则：CSV 文件只是工作表的原始/缓存单元格导出，sheet 摘要只是转换元数据和预览。不要超出明确来源文本去推断变量含义。
+
+## Agent 特别警示
+
+本文件和对应 CSV 只是 `plot/试卷作答情况 - 2.xlsx` 的机械导出。已确认：M卷 = MAS，P卷 = 人类。不要把该映射反写；其他最终分析变量仍需从 workbook、sheet、单元格和锁定分析数据追溯确认。
 
 
-## Worksheet export summary
+## 工作表导出摘要
 
-The CSV files preserve worksheet cell values as raw/cached text in cell order. Formulas are not evaluated and spreadsheet display formatting is not applied here; if formula cells exist, their addresses are listed below.
+CSV 文件按单元格顺序保留工作表中的原始/缓存文本值。这里不会重新计算公式，也不会应用电子表格的显示格式；如果存在公式单元格，其地址列在下方。
 
-## Sheet 1: M卷 A1 汇总
+## 工作表 1: M卷 A1 汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet1.xml`
-- Original dimension ref: `A1:L60`
-- Exported size: `60 rows x 12 columns`
-- Non-empty cells: `570`
-- CSV: `plot/agent_readable/data/exam_responses_2/01_m_a1.csv`
-- Merged ranges: `D1:K1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet1.xml`
+- 原始维度引用： `A1:L60`
+- 导出大小： `60 行 x 12 列`
+- 非空单元格数： `570`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/01_m_a1.csv`
+- 合并区域： `D1:K1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -36,18 +40,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | A | 1 | 4 | D | C | B | A | A | C | D |  |
 | A | A | 1 | 5 | B | A | D | A | A | A | C |  |
 
-## Sheet 2: M卷 A2 汇总
+## 工作表 2: M卷 A2 汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet2.xml`
-- Original dimension ref: `A1:W60`
-- Exported size: `60 rows x 23 columns`
-- Non-empty cells: `1142`
-- CSV: `plot/agent_readable/data/exam_responses_2/02_m_a2.csv`
-- Merged ranges: `D1:V1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet2.xml`
+- 原始维度引用： `A1:W60`
+- 导出大小： `60 行 x 23 列`
+- 非空单元格数： `1142`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/02_m_a2.csv`
+- 合并区域： `D1:V1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -59,18 +63,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | A | 1 | 4 | C | A | B | C | B | C | D | A |
 | A | A | 1 | 5 | C | B | B | C | E | C | B | C |
 
-## Sheet 3: M卷 A3-4 汇总 
+## 工作表 3: M卷 A3-4 汇总 
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet3.xml`
-- Original dimension ref: `A1:S60`
-- Exported size: `60 rows x 19 columns`
-- Non-empty cells: `934`
-- CSV: `plot/agent_readable/data/exam_responses_2/03_m_a3_4.csv`
-- Merged ranges: `D1:R1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet3.xml`
+- 原始维度引用： `A1:S60`
+- 导出大小： `60 行 x 19 列`
+- 非空单元格数： `934`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/03_m_a3_4.csv`
+- 合并区域： `D1:R1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -82,18 +86,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | A | 1 | 4 | A | A | C | D | E | A | D | C |
 | A | A | 1 | 5 | B | E | D | A | E | B | D | C |
 
-## Sheet 4: M卷 B汇总
+## 工作表 4: M卷 B汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet4.xml`
-- Original dimension ref: `A1:H60`
-- Exported size: `60 rows x 8 columns`
-- Non-empty cells: `362`
-- CSV: `plot/agent_readable/data/exam_responses_2/04_m_b.csv`
-- Merged ranges: `D1:G1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet4.xml`
+- 原始维度引用： `A1:H60`
+- 导出大小： `60 行 x 8 列`
+- 非空单元格数： `362`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/04_m_b.csv`
+- 合并区域： `D1:G1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -105,18 +109,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | A | 1 | 4 | C | E | B |  |
 | A | A | 1 | 5 | A | A | D |  |
 
-## Sheet 5: M卷 X汇总
+## 工作表 5: M卷 X汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet5.xml`
-- Original dimension ref: `A1:L60`
-- Exported size: `60 rows x 12 columns`
-- Non-empty cells: `622`
-- CSV: `plot/agent_readable/data/exam_responses_2/05_m_x.csv`
-- Merged ranges: `D1:L1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet5.xml`
+- 原始维度引用： `A1:L60`
+- 导出大小： `60 行 x 12 列`
+- 非空单元格数： `622`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/05_m_x.csv`
+- 合并区域： `D1:L1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -128,18 +132,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | A | 1 | 4 | ABCDE | ABCDE | ABCDE | ABCDE | ABCDE | ABCDE | ABCDE | ABCDE |
 | A | A | 1 | 5 | ABC | BCD | ABCDE | ABCDE | ABCDE | ABC | ABCD | AB |
 
-## Sheet 6: M卷分析A1汇总
+## 工作表 6: M卷分析A1汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet6.xml`
-- Original dimension ref: `A1:K60`
-- Exported size: `60 rows x 11 columns`
-- Non-empty cells: `577`
-- CSV: `plot/agent_readable/data/exam_responses_2/06_m_a1.csv`
-- Merged ranges: `D1:K1`
-- Formula cells: `E54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet6.xml`
+- 原始维度引用： `A1:K60`
+- 导出大小： `60 行 x 11 列`
+- 非空单元格数： `577`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/06_m_a1.csv`
+- 合并区域： `D1:K1`
+- 公式单元格： `E54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -151,18 +155,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 2 | 0 | 2 | 2 | 0 | 0 |
 | A | 1 | A | 5 | 0 | 0 | 2 | 2 | 2 | 0 | 2 |
 
-## Sheet 7: M卷分析A2汇总
+## 工作表 7: M卷分析A2汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet7.xml`
-- Original dimension ref: `A1:V60`
-- Exported size: `60 rows x 22 columns`
-- Non-empty cells: `1160`
-- CSV: `plot/agent_readable/data/exam_responses_2/07_m_a2.csv`
-- Merged ranges: `D1:K1`
-- Formula cells: `E54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet7.xml`
+- 原始维度引用： `A1:V60`
+- 导出大小： `60 行 x 22 列`
+- 非空单元格数： `1160`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/07_m_a2.csv`
+- 合并区域： `D1:K1`
+- 公式单元格： `E54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -174,18 +178,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 0 | 2 | 2 | 0 | 2 | 0 | 0 |
 | A | 1 | A | 5 | 2 | 0 | 2 | 2 | 0 | 2 | 2 | 2 |
 
-## Sheet 8: M卷分析A3-4汇总
+## 工作表 8: M卷分析A3-4汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet8.xml`
-- Original dimension ref: `A1:R60`
-- Exported size: `60 rows x 18 columns`
-- Non-empty cells: `948`
-- CSV: `plot/agent_readable/data/exam_responses_2/08_m_a3_4.csv`
-- Merged ranges: `D1:K1`
-- Formula cells: `E54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet8.xml`
+- 原始维度引用： `A1:R60`
+- 导出大小： `60 行 x 18 列`
+- 非空单元格数： `948`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/08_m_a3_4.csv`
+- 合并区域： `D1:K1`
+- 公式单元格： `E54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -197,18 +201,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 0 | 2 | 0 | 0 | 0 | 2 | 2 |
 | A | 1 | A | 5 | 0 | 2 | 0 | 2 | 0 | 2 | 2 | 2 |
 
-## Sheet 9: M卷分析B汇总
+## 工作表 9: M卷分析B汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet9.xml`
-- Original dimension ref: `A1:G60`
-- Exported size: `60 rows x 7 columns`
-- Non-empty cells: `365`
-- CSV: `plot/agent_readable/data/exam_responses_2/09_m_b.csv`
-- Merged ranges: `D1:G1`
-- Formula cells: `E54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet9.xml`
+- 原始维度引用： `A1:G60`
+- 导出大小： `60 行 x 7 列`
+- 非空单元格数： `365`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/09_m_b.csv`
+- 合并区域： `D1:G1`
+- 公式单元格： `E54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | M卷 |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -220,18 +224,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 2 | 0 |
 | A | 1 | A | 5 | 0 | 0 | 2 |
 
-## Sheet 10: M卷分析X汇总 
+## 工作表 10: M卷分析X汇总 
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet10.xml`
-- Original dimension ref: `A1:M60`
-- Exported size: `60 rows x 13 columns`
-- Non-empty cells: `682`
-- CSV: `plot/agent_readable/data/exam_responses_2/10_m_x.csv`
-- Merged ranges: `E1:M1`
-- Formula cells: `E54, H54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet10.xml`
+- 原始维度引用： `A1:M60`
+- 导出大小： `60 行 x 13 列`
+- 非空单元格数： `682`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/10_m_x.csv`
+- 合并区域： `E1:M1`
+- 公式单元格： `E54, H54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  |  | M卷 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -243,18 +247,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | A | A | 1 | 4 | 0 | 0 | 2 | 0 | 0 | 0 | 0 |
 | A | A | A | 1 | 5 | 0 | 0 | 2 | 0 | 0 | 2 | 2 |
 
-## Sheet 11: P卷 A1汇总
+## 工作表 11: P卷 A1汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet11.xml`
-- Original dimension ref: `A1:L53`
-- Exported size: `53 rows x 12 columns`
-- Non-empty cells: `580`
-- CSV: `plot/agent_readable/data/exam_responses_2/11_p_a1.csv`
-- Merged ranges: `D1:K1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet11.xml`
+- 原始维度引用： `A1:L53`
+- 导出大小： `53 行 x 12 列`
+- 非空单元格数： `580`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/11_p_a1.csv`
+- 合并区域： `D1:K1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -266,18 +270,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | A | B | E | E | D | B | D |  |
 | A | 1 | A | 5 | A | B | B | E | A | D | D |  |
 
-## Sheet 12: P卷 A2汇总
+## 工作表 12: P卷 A2汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet12.xml`
-- Original dimension ref: `A1:V53`
-- Exported size: `53 rows x 22 columns`
-- Non-empty cells: `1142`
-- CSV: `plot/agent_readable/data/exam_responses_2/12_p_a2.csv`
-- Merged ranges: `D1:V1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet12.xml`
+- 原始维度引用： `A1:V53`
+- 导出大小： `53 行 x 22 列`
+- 非空单元格数： `1142`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/12_p_a2.csv`
+- 合并区域： `D1:V1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -289,18 +293,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | E | C | D | C | C | D | B | E |
 | A | 1 | A | 5 | E | D | D | C | D | A | D | E |
 
-## Sheet 13: P卷 A3-4汇总
+## 工作表 13: P卷 A3-4汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet13.xml`
-- Original dimension ref: `A1:R53`
-- Exported size: `53 rows x 18 columns`
-- Non-empty cells: `934`
-- CSV: `plot/agent_readable/data/exam_responses_2/13_p_a3_4.csv`
-- Merged ranges: `D1:R1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet13.xml`
+- 原始维度引用： `A1:R53`
+- 导出大小： `53 行 x 18 列`
+- 非空单元格数： `934`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/13_p_a3_4.csv`
+- 合并区域： `D1:R1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -312,18 +316,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | A | C | E | E | B | A | A | A |
 | A | 1 | A | 5 | A | E | B | C | A | B | A | A |
 
-## Sheet 14: P卷 B汇总 
+## 工作表 14: P卷 B汇总 
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet14.xml`
-- Original dimension ref: `A1:G53`
-- Exported size: `53 rows x 7 columns`
-- Non-empty cells: `362`
-- CSV: `plot/agent_readable/data/exam_responses_2/14_p_b.csv`
-- Merged ranges: `D1:G1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet14.xml`
+- 原始维度引用： `A1:G53`
+- 导出大小： `53 行 x 7 列`
+- 非空单元格数： `362`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/14_p_b.csv`
+- 合并区域： `D1:G1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -335,18 +339,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | A | C | A |
 | A | 1 | A | 5 | A | E | D |
 
-## Sheet 15: P卷 X汇总
+## 工作表 15: P卷 X汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet15.xml`
-- Original dimension ref: `A1:L53`
-- Exported size: `53 rows x 12 columns`
-- Non-empty cells: `622`
-- CSV: `plot/agent_readable/data/exam_responses_2/15_p_x.csv`
-- Merged ranges: `D1:L1`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet15.xml`
+- 原始维度引用： `A1:L53`
+- 导出大小： `53 行 x 12 列`
+- 非空单元格数： `622`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/15_p_x.csv`
+- 合并区域： `D1:L1`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -358,18 +362,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | ABCE | ABDE | BCDE | ABCE | ABCDE | C | BCD | ABCDE |
 | A | 1 | A | 5 | ABCE | ACDE | BCE | ABCDE | BDE | B | BD | ABCDE |
 
-## Sheet 16: P卷分析 A1汇总
+## 工作表 16: P卷分析 A1汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet16.xml`
-- Original dimension ref: `A1:K54`
-- Exported size: `54 rows x 11 columns`
-- Non-empty cells: `577`
-- CSV: `plot/agent_readable/data/exam_responses_2/16_p_a1.csv`
-- Merged ranges: `D1:K1`
-- Formula cells: `E54, F54, G54, H54, I54, J54, K54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet16.xml`
+- 原始维度引用： `A1:K54`
+- 导出大小： `54 行 x 11 列`
+- 非空单元格数： `577`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/16_p_a1.csv`
+- 合并区域： `D1:K1`
+- 公式单元格： `E54, F54, G54, H54, I54, J54, K54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -381,18 +385,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
 | A | 1 | A | 5 | 2 | 0 | 2 | 2 | 2 | 0 | 0 |
 
-## Sheet 17: P卷分析 A2汇总
+## 工作表 17: P卷分析 A2汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet17.xml`
-- Original dimension ref: `A1:V54`
-- Exported size: `54 rows x 22 columns`
-- Non-empty cells: `1160`
-- CSV: `plot/agent_readable/data/exam_responses_2/17_p_a2.csv`
-- Merged ranges: `D1:V1`
-- Formula cells: `E54, F54, G54, H54, I54, J54, K54, L54, M54, N54, O54, P54, Q54, R54, S54, T54, U54, V54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet17.xml`
+- 原始维度引用： `A1:V54`
+- 导出大小： `54 行 x 22 列`
+- 非空单元格数： `1160`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/17_p_a2.csv`
+- 合并区域： `D1:V1`
+- 公式单元格： `E54, F54, G54, H54, I54, J54, K54, L54, M54, N54, O54, P54, Q54, R54, S54, T54, U54, V54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -404,18 +408,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 2 |
 | A | 1 | A | 5 | 0 | 2 | 2 | 2 | 2 | 0 | 2 | 2 |
 
-## Sheet 18: P卷分析 A3-4汇总 
+## 工作表 18: P卷分析 A3-4汇总 
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet18.xml`
-- Original dimension ref: `A1:R54`
-- Exported size: `54 rows x 18 columns`
-- Non-empty cells: `948`
-- CSV: `plot/agent_readable/data/exam_responses_2/18_p_a3_4.csv`
-- Merged ranges: `D1:R1`
-- Formula cells: `E54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet18.xml`
+- 原始维度引用： `A1:R54`
+- 导出大小： `54 行 x 18 列`
+- 非空单元格数： `948`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/18_p_a3_4.csv`
+- 合并区域： `D1:R1`
+- 公式单元格： `E54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -427,18 +431,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 0 | 2 | 0 | 0 | 0 | 2 | 2 |
 | A | 1 | A | 5 | 2 | 0 | 0 | 2 | 0 | 2 | 2 | 2 |
 
-## Sheet 19: P卷分析 B汇总
+## 工作表 19: P卷分析 B汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet19.xml`
-- Original dimension ref: `A1:G54`
-- Exported size: `54 rows x 7 columns`
-- Non-empty cells: `365`
-- CSV: `plot/agent_readable/data/exam_responses_2/19_p_b.csv`
-- Merged ranges: `D1:G1`
-- Formula cells: `E54, F54, G54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet19.xml`
+- 原始维度引用： `A1:G54`
+- 导出大小： `54 行 x 7 列`
+- 非空单元格数： `365`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/19_p_b.csv`
+- 合并区域： `D1:G1`
+- 公式单元格： `E54, F54, G54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -450,18 +454,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 0 | 0 |
 | A | 1 | A | 5 | 2 | 2 | 2 |
 
-## Sheet 20: P卷分析 X汇总
+## 工作表 20: P卷分析 X汇总
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet20.xml`
-- Original dimension ref: `A1:L54`
-- Exported size: `54 rows x 12 columns`
-- Non-empty cells: `630`
-- CSV: `plot/agent_readable/data/exam_responses_2/20_p_x.csv`
-- Merged ranges: `D1:L1`
-- Formula cells: `E54`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet20.xml`
+- 原始维度引用： `A1:L54`
+- 导出大小： `54 行 x 12 列`
+- 非空单元格数： `630`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/20_p_x.csv`
+- 合并区域： `D1:L1`
+- 公式单元格： `E54`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  | P卷 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -473,18 +477,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 | A | 1 | A | 4 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
 | A | 1 | A | 5 | 2 | 0 | 0 | 0 | 2 | 2 | 2 | 0 |
 
-## Sheet 21: 前30%和后30%的受试者名单
+## 工作表 21: 前30%和后30%的受试者名单
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet21.xml`
-- Original dimension ref: `A1:I60`
-- Exported size: `60 rows x 9 columns`
-- Non-empty cells: `311`
-- CSV: `plot/agent_readable/data/exam_responses_2/21_30_30.csv`
-- Merged ranges: `A4:A17, A40:A53`
-- Formula cells: `none`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet21.xml`
+- 原始维度引用： `A1:I60`
+- 导出大小： `60 行 x 9 列`
+- 非空单元格数： `311`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/21_30_30.csv`
+- 合并区域： `A4:A17, A40:A53`
+- 公式单元格： `none`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  | M卷 |  |  | P卷 |  |  | M+P卷 |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -496,18 +500,18 @@ The CSV files preserve worksheet cell values as raw/cached text in cell order. F
 |  | 4 | 46 |  | 4 | 42 |  | 22 | 86 |
 |  | 32 | 46 |  | 22 | 44 |  | 3 | 88 |
 
-## Sheet 22: 疲劳性探索与总时长
+## 工作表 22: 疲劳性探索与总时长
 
-- State: `visible`
-- Worksheet XML part: `xl/worksheets/sheet22.xml`
-- Original dimension ref: `A1:Q111`
-- Exported size: `111 rows x 17 columns`
-- Non-empty cells: `1654`
-- CSV: `plot/agent_readable/data/exam_responses_2/22_source.csv`
-- Merged ranges: `none`
-- Formula cells: `G3, P3, G4, P22, Q22, P24, G28, H28, G31, P44, Q44, P46, P55, G56, H56, P57, Q57, G59, G80, P85, G91, H91, G93, P110, Q110, G111, H111`
+- 状态：`visible`
+- 工作表 XML 部件： `xl/worksheets/sheet22.xml`
+- 原始维度引用： `A1:Q111`
+- 导出大小： `111 行 x 17 列`
+- 非空单元格数： `1654`
+- CSV 路径： `plot/agent_readable/data/exam_responses_2/22_source.csv`
+- 合并区域： `none`
+- 公式单元格： `G3, P3, G4, P22, Q22, P24, G28, H28, G31, P44, Q44, P46, P55, G56, H56, P57, Q57, G59, G80, P85, G91, H91, G93, P110, Q110, G111, H111`
 
-### Preview only: first 8 rows x first 12 columns
+### 仅预览：前 8 行 x 前 12 列
 
 |  |  |  |  |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

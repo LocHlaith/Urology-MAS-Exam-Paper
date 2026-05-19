@@ -1,14 +1,18 @@
-# Converted source: `plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
+# 转换来源：`plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
 
-## Conversion metadata
+## 转换元数据
 
-- Source path: `plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
-- Source SHA256: `b4b2f3ce3b3f8c2f64dc82ec01fa99fcc624b364e74bc474d70b38fffe9f93f3`
-- Generated at: `2026-05-19T21:04:44`
-- Conversion method: pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent rule: treat the section named `Original Extract` as source material. Do not infer missing statistics, panel labels, sample sizes, or figure styles from this file.
+- 来源路径：`plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
+- 来源 SHA256：`b4b2f3ce3b3f8c2f64dc82ec01fa99fcc624b364e74bc474d70b38fffe9f93f3`
+- 生成时间：`2026-05-19T21:04:44`
+- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
+- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
 
-## Original Extract
+## Agent 特别警示
+
+原文中的 `*.csv` 名称用于说明理想统计粒度和连接关系，不代表当前仓库已有这些文件。若本地没有对应锁定分析表，必须标记为 `UNKNOWN_OR_CONFLICTING`，不能按表名自行编造数据。
+
+## 原始摘录
 
 **Figure/Table 统计视角、数据来源与设计目的说明书**
 

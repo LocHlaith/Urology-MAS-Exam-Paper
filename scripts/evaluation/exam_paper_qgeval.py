@@ -1,4 +1,4 @@
-﻿# temp_qgeval.py
+# exam_paper_qgeval.py
 # -*- coding: utf-8 -*-
 
 import os
@@ -59,7 +59,7 @@ os.makedirs(LOG_DIR, exist_ok=True)
 
 MAIN_LOG_PATH = os.path.join(
     LOG_DIR,
-    f"temp_qgeval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    f"exam_paper_qgeval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 )
 
 def _write_line(path: str, msg: str) -> None:
@@ -83,7 +83,7 @@ def log_block(path: str, title: str, content: str) -> None:
 
 def make_batch_log_path(batch_index: int) -> str:
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return os.path.join(LOG_DIR, f"temp_qgeval_batch_{batch_index:04d}_{ts}.log")
+    return os.path.join(LOG_DIR, f"exam_paper_qgeval_batch_{batch_index:04d}_{ts}.log")
 
 
 # ----------------------------
@@ -473,7 +473,7 @@ def eval_target_bank(
 # ----------------------------
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Add QGEval scores into outputs/report_drafts/B.json using DeepSeek.")
+    p = argparse.ArgumentParser(description="Add QGEval scores into the exam paper JSON at outputs/report_drafts/B.json using DeepSeek.")
     p.add_argument(
         "--start_batch",
         type=int,

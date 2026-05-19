@@ -1,27 +1,27 @@
-# temp_verify_by_textstat.py
+# exam_paper_verify_by_textstat.py
 # -*- coding: utf-8 -*-
 """
-temp_verify_by_textstat.py
+exam_paper_verify_by_textstat.py
 
 需求实现：
 1) 使用 textstat 计算可读性（Flesch Reading Ease）
-2) 在 outputs/report_drafts/B.json 中为每道题写入可读性分数
+2) 在 outputs/report_drafts/B.json 中为第一作者组卷后的试卷题目写入可读性分数
 3) 不覆盖已存在字段（默认跳过）；可用 --overwrite 强制覆盖
 
 写入字段：
 - textstat_flesch_reading_ease: float（通常范围约 0~100，textstat 可能返回负数或 >100，属正常现象）
 
 运行：
-python scripts/reporting/temp_verify_by_textstat.py
+python scripts/evaluation/exam_paper_verify_by_textstat.py
 
 不覆盖已存在 textstat_flesch_reading_ease（默认跳过）：
-python scripts/reporting/temp_verify_by_textstat.py
+python scripts/evaluation/exam_paper_verify_by_textstat.py
 
 允许覆盖：
-python scripts/reporting/temp_verify_by_textstat.py --overwrite
+python scripts/evaluation/exam_paper_verify_by_textstat.py --overwrite
 
 仅计算不写回：
-python scripts/reporting/temp_verify_by_textstat.py --dry-run
+python scripts/evaluation/exam_paper_verify_by_textstat.py --dry-run
 
 依赖：
 pip install textstat

@@ -1,14 +1,18 @@
-# Converted source: `plot/Figure 统一参数.docx`
+# 转换来源：`plot/Figure 统一参数.docx`
 
-## Conversion metadata
+## 转换元数据
 
-- Source path: `plot/Figure 统一参数.docx`
-- Source SHA256: `af00e49483f91fc8f7a4c34d7fe8552955ac5c99140002997a342c774a92c315`
-- Generated at: `2026-05-19T21:04:44`
-- Conversion method: pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent rule: treat the section named `Original Extract` as source material. Do not infer missing statistics, panel labels, sample sizes, or figure styles from this file.
+- 来源路径：`plot/Figure 统一参数.docx`
+- 来源 SHA256：`af00e49483f91fc8f7a4c34d7fe8552955ac5c99140002997a342c774a92c315`
+- 生成时间：`2026-05-19T21:04:44`
+- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
+- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
 
-## Original Extract
+## Agent 特别警示
+
+原文列出 PNG / PDF / SVG，是统一参数文档中的可选输出格式。结合项目要求，正式论文图片交付应以可编辑 PDF 为准；PNG 只能作为预览或中间检查。
+
+## 原始摘录
 
 \#\# Figure 统一参数
 

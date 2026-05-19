@@ -1,9 +1,9 @@
-# Outputs
+# 输出目录
 
-- `bank_docx/`: Word exports of generated bank JSON files.
-- `statistics/`: derived statistics for review and plotting.
-- `report_drafts/`: first-author/collaborator-facing report drafts and manually assembled intermediate files.
-- `figures/`: generated figures; created by plotting scripts when needed.
-- `logs/`: runtime logs; ignored by git because they may contain request payloads.
+- `bank_docx/`：生成题库 JSON 的 Word 导出。
+- `statistics/`：供快速核对使用的派生统计摘要。
+- `report_drafts/`：面向第一作者或合作者的报告草稿、手工整理材料和中间文件。
+- `figures/`：后续正式绘图脚本需要时生成的图片；论文交付应为可编辑 PDF。
+- `logs/`：运行日志；已被 git 忽略，因为可能包含请求内容或本机运行细节。
 
-Only `statistics/` should be used as a quick reference. For manuscript figures, recompute from `data/banks/` and cite the exact script/data source.
+`statistics/` 只能作为快速核对来源。正式论文图应从 `data/banks/` 或锁定分析数据重新计算，并在脚本或图形元数据中记录确切输入来源。

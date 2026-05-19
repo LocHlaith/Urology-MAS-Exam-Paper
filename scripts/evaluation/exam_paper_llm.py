@@ -1,4 +1,4 @@
-﻿# temp_llm.py
+# exam_paper_llm.py
 # -*- coding: utf-8 -*-
 
 import os
@@ -31,7 +31,7 @@ from project_paths import (
 
 ROOT = str(PROJECT_ROOT)
 
-# 只处理报告草稿里的 B.json
+# 只处理第一作者从 new_bank 抽题组卷后的试卷 JSON
 BANK_FILE = str(REPORT_DRAFTS_DIR / "B.json")
 
 PROMPT_LLM_PATH = str(EVALUATION_PROMPT_DIR / "prompt_for_llm.txt")
@@ -42,7 +42,7 @@ BATCH_SIZE = 100
 LLM_SCORE_COUNT = 16
 LLM_TOTAL_COLS = 1 + LLM_SCORE_COUNT  # id + 16 scores
 
-# 新题库中不要上传 deepseek 的字段
+# 试卷题目中不要上传 deepseek 的评价字段
 # 说明：
 # - 你明确列出的 8 个新增字段：不上传
 # - "可能多了 QGEval"：这里也不上传，避免把 QGEval 带给 LLM 评分造成泄漏/偏置
@@ -70,7 +70,7 @@ os.makedirs(LOG_DIR, exist_ok=True)
 
 MAIN_LOG_PATH = os.path.join(
     LOG_DIR,
-    f"temp_llm_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    f"exam_paper_llm_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 )
 
 def _write_line(path: str, msg: str) -> None:
@@ -94,7 +94,7 @@ def log_block(path: str, title: str, content: str) -> None:
 
 def make_batch_log_path(batch_index: int) -> str:
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return os.path.join(LOG_DIR, f"temp_llm_batch_{batch_index:04d}_{ts}.log")
+    return os.path.join(LOG_DIR, f"exam_paper_llm_batch_{batch_index:04d}_{ts}.log")
 
 
 # ----------------------------
@@ -345,7 +345,7 @@ def set_llm_with_order(item: Dict[str, Any], llm_text: str) -> Dict[str, Any]:
 # Core: Evaluate outputs/report_drafts/B.json
 # ----------------------------
 
-def eval_temp_bank(
+def eval_exam_paper(
     client: DeepSeekClient,
     system_prompt: str,
     start_batch: int = 1,
@@ -548,7 +548,7 @@ def main() -> None:
     write_user_prompt = not args.no_log_user_prompt
 
     try:
-        eval_temp_bank(
+        eval_exam_paper(
             client=client,
             system_prompt=system_prompt,
             start_batch=args.start_batch,
@@ -557,7 +557,7 @@ def main() -> None:
         )
     except Exception:
         log_line(f"[ERROR] outputs/report_drafts/B.json 评分发生未捕获异常，程序将正常结束。")
-        log_block(MAIN_LOG_PATH, f"UNCAUGHT EXCEPTION in eval_temp_bank", traceback.format_exc())
+        log_block(MAIN_LOG_PATH, f"UNCAUGHT EXCEPTION in eval_exam_paper", traceback.format_exc())
 
     log_line("全部流程结束（失败 batch 已跳过；已评分题会自动跳过；文件已在开始时备份）。")
 

@@ -1,14 +1,18 @@
-# Converted source: `plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
+# 转换来源：`plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
 
-## Conversion metadata
+## 转换元数据
 
-- Source path: `plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
-- Source SHA256: `c2123c878cd32d373d3241d7c8a56fd8ccc6c85852ee076d414ef0f9604e4901`
-- Generated at: `2026-05-19T21:04:44`
-- Conversion method: pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent rule: treat the section named `Original Extract` as source material. Do not infer missing statistics, panel labels, sample sizes, or figure styles from this file.
+- 来源路径：`plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
+- 来源 SHA256：`c2123c878cd32d373d3241d7c8a56fd8ccc6c85852ee076d414ef0f9604e4901`
+- 生成时间：`2026-05-19T21:04:44`
+- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
+- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
 
-## Original Extract
+## Agent 特别警示
+
+原文中的 `source_key.csv`、`item_master.csv`、`expert_ratings.csv`、`responses.csv` 等名称是统计 protocol 设想的数据表名，不代表当前仓库已经存在这些锁定分析表，也不是图片交付格式。正式图片交付仍为可编辑 PDF。
+
+## 原始摘录
 
 **分析与统计 Protocol**
 

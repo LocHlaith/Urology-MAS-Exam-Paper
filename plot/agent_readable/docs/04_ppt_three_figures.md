@@ -1,18 +1,22 @@
-# Converted source: `plot/PPT作图——3张.pptx`
+# 转换来源： `plot/PPT作图——3张.pptx`
 
-## Conversion metadata
+## 转换元数据
 
-- Source path: `plot/PPT作图——3张.pptx`
-- Source SHA256: `3bdcf30bf4975eb7d01cb6a1db429ebc1a2fe205924159d3ade8aadf8ba0504d`
-- Generated at: `2026-05-19T21:04:44`
-- Conversion method: direct PPTX Office XML extraction; media copied without interpretation
-- Agent rule: treat the section named `Original Extract` as source material. Do not infer missing statistics, panel labels, sample sizes, or figure styles from this file.
+- 来源路径： `plot/PPT作图——3张.pptx`
+- 来源 SHA256： `3bdcf30bf4975eb7d01cb6a1db429ebc1a2fe205924159d3ade8aadf8ba0504d`
+- 生成时间： `2026-05-19T21:04:44`
+- 转换方法： 直接提取 PPTX Office XML；媒体文件只复制，不解释内容
+- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
 
-## Original Extract
+## Agent 特别警示
 
-## Package media inventory
+本 PPT 是视觉和结构参考，不是本研究数据来源。UroIPND、EMR、154,633、116,336、94,228、94、228、600 等文本或数字不得写入本项目结果，除非另有本项目来源文件明确确认。
 
-| Package part | Extracted asset |
+## 原始摘录
+
+## 包内媒体清单
+
+| 包内路径 | 提取后的资源 |
 | --- | --- |
 | `ppt/media/image1.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image1.png` |
 | `ppt/media/image10.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image10.png` |
@@ -56,14 +60,14 @@
 | `ppt/media/image8.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image8.png` |
 | `ppt/media/image9.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image9.png` |
 
-## Slide 1
+## 幻灯片 1
 
-- Slide XML part: `ppt/slides/slide1.xml`
+- 幻灯片 XML 部件： `ppt/slides/slide1.xml`
 
 
-### Referenced media
+### 引用媒体
 
-| rId | Package part | Extracted asset |
+| rId | 包内路径 | 提取后的资源 |
 | --- | --- | --- |
 | `rId1` | `ppt/media/image1.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image1.png` |
 | `rId2` | `ppt/media/image2.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image2.png` |
@@ -81,50 +85,50 @@
 | `rId11` | `ppt/media/image11.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image11.png` |
 
 
-### Text boxes, paragraph-level extraction
+### 文本框：段落级提取
 
 
-#### Text box 1
+#### 文本框 1
 
-- Shape id: `6`
-- Shape name: `文本框 5`
+- 形状 id： `6`
+- 形状名称： `文本框 5`
 
 ```text
 Fig.1a   UroIPND Evaluation Framework and Hierarchial Curation Pipeline
 ```
 
-#### Text box 2
+#### 文本框 2
 
-- Shape id: `9`
-- Shape name: `文本框 8`
+- 形状 id： `9`
+- 形状名称： `文本框 8`
 
 ```text
 L1  DATASET ORIGIN
 (2018-2024)
 ```
 
-#### Text box 3
+#### 文本框 3
 
-- Shape id: `15`
-- Shape name: `文本框 14`
+- 形状 id： `15`
+- 形状名称： `文本框 14`
 
 ```text
 L2  HIERARCHIAL QUALITY CONTROL CURATION PIPELINE
 ```
 
-#### Text box 4
+#### 文本框 4
 
-- Shape id: `19`
-- Shape name: `文本框 18`
+- 形状 id： `19`
+- 形状名称： `文本框 18`
 
 ```text
 L3  EVALUATION TESTBED ＆SCENARIO MAPPING
 ```
 
-#### Text box 5
+#### 文本框 5
 
-- Shape id: `55`
-- Shape name: `文本框 54`
+- 形状 id： `55`
+- 形状名称： `文本框 54`
 
 ```text
 Junior Urological Teams
@@ -134,10 +138,10 @@ deconfounder annotation
 de-identification
 ```
 
-#### Text box 6
+#### 文本框 6
 
-- Shape id: `58`
-- Shape name: `文本框 57`
+- 形状 id： `58`
+- 形状名称： `文本框 57`
 
 ```text
 Teaching/Literature Cases 
@@ -147,10 +151,10 @@ reasoning-rich cases by
 SRRSH specialized teams
 ```
 
-#### Text box 7
+#### 文本框 7
 
-- Shape id: `66`
-- Shape name: `文本框 65`
+- 形状 id： `66`
+- 形状名称： `文本框 65`
 
 ```text
 Case 
@@ -158,10 +162,10 @@ Extraction Structuring ＆
 De-identification 
 ```
 
-#### Text box 8
+#### 文本框 8
 
-- Shape id: `67`
-- Shape name: `文本框 66`
+- 形状 id： `67`
+- 形状名称： `文本框 66`
 
 ```text
 UroIPND-702
@@ -170,10 +174,10 @@ n=600
 broad clinical heterogeneity
 ```
 
-#### Text box 9
+#### 文本框 9
 
-- Shape id: `70`
-- Shape name: `文本框 69`
+- 形状 id： `70`
+- 形状名称： `文本框 69`
 
 ```text
 UroIPND-102
@@ -183,30 +187,30 @@ high-complexity reasoning cases
 reasoning testbed
 ```
 
-#### Text box 10
+#### 文本框 10
 
-- Shape id: `75`
-- Shape name: `文本框 74`
+- 形状 id： `75`
+- 形状名称： `文本框 74`
 
 ```text
 UroIPND-20
 (n=20 Core Stress Subset)
 ```
 
-#### Text box 11
+#### 文本框 11
 
-- Shape id: `76`
-- Shape name: `文本框 75`
+- 形状 id： `76`
+- 形状名称： `文本框 75`
 
 ```text
 derived ror interaction-level
  stress-test
 ```
 
-#### Text box 12
+#### 文本框 12
 
-- Shape id: `78`
-- Shape name: `文本框 77`
+- 形状 id： `78`
+- 形状名称： `文本框 77`
 
 ```text
 n=20 high-pressure
@@ -215,10 +219,10 @@ interactive
 Benchmarking
 ```
 
-#### Text box 13
+#### 文本框 13
 
-- Shape id: `80`
-- Shape name: `文本框 79`
+- 形状 id： `80`
+- 形状名称： `文本框 79`
 
 ```text
 Real-World EMR
@@ -227,10 +231,10 @@ retrospective data,
 Registry Grounded source
 ```
 
-#### Text box 14
+#### 文本框 14
 
-- Shape id: `83`
-- Shape name: `文本框 82`
+- 形状 id： `83`
+- 形状名称： `文本框 82`
 
 ```text
 3 Senior Consultants
@@ -242,37 +246,37 @@ double-blind review
 EAU Guidelines alignment
 ```
 
-#### Text box 15
+#### 文本框 15
 
-- Shape id: `85`
-- Shape name: `文本框 84`
+- 形状 id： `85`
+- 形状名称： `文本框 84`
 
 ```text
 All n=702 cases went through all steps, Consolidation is accurate ＆ technical meaning.
 ```
 
-#### Text box 16
+#### 文本框 16
 
-- Shape id: `87`
-- Shape name: `文本框 86`
+- 形状 id： `87`
+- 形状名称： `文本框 86`
 
 ```text
 Tiered Quality Control and Adjudication Flow 
 ```
 
-#### Text box 17
+#### 文本框 17
 
-- Shape id: `91`
-- Shape name: `文本框 90`
+- 形状 id： `91`
+- 形状名称： `文本框 90`
 
 ```text
 Consensus
 ```
 
-#### Text box 18
+#### 文本框 18
 
-- Shape id: `97`
-- Shape name: `文本框 96`
+- 形状 id： `97`
+- 形状名称： `文本框 96`
 
 ```text
 Final Dataset
@@ -280,7 +284,7 @@ Generation ＆
 Deployment
 ```
 
-### Raw `a:t` text-run sequence
+### 原始 `a:t` 文本片段序列
 
 ```json
 [
@@ -353,14 +357,14 @@ Deployment
   "Deployment"
 ]
 ```
-## Slide 2
+## 幻灯片 2
 
-- Slide XML part: `ppt/slides/slide2.xml`
+- 幻灯片 XML 部件： `ppt/slides/slide2.xml`
 
 
-### Referenced media
+### 引用媒体
 
-| rId | Package part | Extracted asset |
+| rId | 包内路径 | 提取后的资源 |
 | --- | --- | --- |
 | `rId1` | `ppt/media/image12.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image12.png` |
 | `rId2` | `ppt/media/image13.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image13.png` |
@@ -369,43 +373,43 @@ Deployment
 | `rId4` | `ppt/media/image15.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image15.png` |
 
 
-### Text boxes, paragraph-level extraction
+### 文本框：段落级提取
 
 
-#### Text box 1
+#### 文本框 1
 
-- Shape id: `80`
-- Shape name: `文本框 79`
+- 形状 id： `80`
+- 形状名称： `文本框 79`
 
 ```text
 Assessment for eligibility
   (n=154,633 examinations)
 ```
 
-#### Text box 2
+#### 文本框 2
 
-- Shape id: `8`
-- Shape name: `文本框 7`
+- 形状 id： `8`
+- 形状名称： `文本框 7`
 
 ```text
 Included after physician criteria               
   (n=116,336 examinations)
 ```
 
-#### Text box 3
+#### 文本框 3
 
-- Shape id: `12`
-- Shape name: `文本框 11`
+- 形状 id： `12`
+- 形状名称： `文本框 11`
 
 ```text
 Final analysis cohort
  (n=94,228 examinations)
 ```
 
-#### Text box 4
+#### 文本框 4
 
-- Shape id: `21`
-- Shape name: `文本框 20`
+- 形状 id： `21`
+- 形状名称： `文本框 20`
 
 ```text
 Excluded with reasons
@@ -415,10 +419,10 @@ Multiple cases per person(only 1 counted)
 (n=38 excluded)
 ```
 
-#### Text box 5
+#### 文本框 5
 
-- Shape id: `22`
-- Shape name: `文本框 21`
+- 形状 id： `22`
+- 形状名称： `文本框 21`
 
 ```text
 Excluded based on case criteria
@@ -427,7 +431,7 @@ Less than 3 physicians completed case review
 (n=22 excluded)
 ```
 
-### Raw `a:t` text-run sequence
+### 原始 `a:t` 文本片段序列
 
 ```json
 [
@@ -452,14 +456,14 @@ Less than 3 physicians completed case review
   "n=22 excluded)"
 ]
 ```
-## Slide 3
+## 幻灯片 3
 
-- Slide XML part: `ppt/slides/slide3.xml`
+- 幻灯片 XML 部件： `ppt/slides/slide3.xml`
 
 
-### Referenced media
+### 引用媒体
 
-| rId | Package part | Extracted asset |
+| rId | 包内路径 | 提取后的资源 |
 | --- | --- | --- |
 | `rId1` | `ppt/media/image16.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image16.png` |
 | `rId3` | `ppt/media/image18.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image18.png` |
@@ -482,351 +486,351 @@ Less than 3 physicians completed case review
 | `rId26` | `ppt/media/image41.png` | `plot/agent_readable/assets/ppt_media/ppt_three_figures/image41.png` |
 
 
-### Text boxes, paragraph-level extraction
+### 文本框：段落级提取
 
 
-#### Text box 1
+#### 文本框 1
 
-- Shape id: `49`
-- Shape name: `矩形: 圆角 48`
+- 形状 id： `49`
+- 形状名称： `矩形: 圆角 48`
 
 ```text
 Symptoms&
 Medical History
 ```
 
-#### Text box 2
+#### 文本框 2
 
-- Shape id: `59`
-- Shape name: `矩形: 圆角 58`
+- 形状 id： `59`
+- 形状名称： `矩形: 圆角 58`
 
 ```text
 Interactive Feedback & Data Revision Cycle
 ```
 
-#### Text box 3
+#### 文本框 3
 
-- Shape id: `78`
-- Shape name: `文本框 77`
+- 形状 id： `78`
+- 形状名称： `文本框 77`
 
 ```text
 Patient Interaction Layer
 ```
 
-#### Text box 4
+#### 文本框 4
 
-- Shape id: `200`
-- Shape name: `文本框 199`
+- 形状 id： `200`
+- 形状名称： `文本框 199`
 
 ```text
 Multi-Agent Coordination Core
 ```
 
-#### Text box 5
+#### 文本框 5
 
-- Shape id: `60`
-- Shape name: `矩形: 圆角 59`
+- 形状 id： `60`
+- 形状名称： `矩形: 圆角 59`
 
 ```text
 Diagnosis & Treatment Recommendations
 ```
 
-#### Text box 6
+#### 文本框 6
 
-- Shape id: `2`
-- Shape name: `矩形: 圆角 1`
+- 形状 id： `2`
+- 形状名称： `矩形: 圆角 1`
 
 ```text
 Patient Interaction Module Clinical User Interface
 ```
 
-#### Text box 7
+#### 文本框 7
 
-- Shape id: `6`
-- Shape name: `矩形: 圆角 5`
+- 形状 id： `6`
+- 形状名称： `矩形: 圆角 5`
 
 ```text
 Nexus
 ```
 
-#### Text box 8
+#### 文本框 8
 
-- Shape id: `321`
-- Shape name: `矩形: 圆角 320`
+- 形状 id： `321`
+- 形状名称： `矩形: 圆角 320`
 
 ```text
 Dialogue Information Capture & Initial Prograssing
 ```
 
-#### Text box 9
+#### 文本框 9
 
-- Shape id: `45`
-- Shape name: `矩形: 圆角 44`
+- 形状 id： `45`
+- 形状名称： `矩形: 圆角 44`
 
 ```text
 Chief Complaint
 ```
 
-#### Text box 10
+#### 文本框 10
 
-- Shape id: `57`
-- Shape name: `矩形: 圆角 56`
+- 形状 id： `57`
+- 形状名称： `矩形: 圆角 56`
 
 ```text
 Electronic Health Record 
 ```
 
-#### Text box 11
+#### 文本框 11
 
-- Shape id: `35`
-- Shape name: `矩形: 圆角 34`
+- 形状 id： `35`
+- 形状名称： `矩形: 圆角 34`
 
 ```text
 Knowledge Retrieval 
 & Evidence
 ```
 
-#### Text box 12
+#### 文本框 12
 
-- Shape id: `36`
-- Shape name: `矩形: 圆角 35`
+- 形状 id： `36`
+- 形状名称： `矩形: 圆角 35`
 
 ```text
 Mixed Search Component
 ```
 
-#### Text box 13
+#### 文本框 13
 
-- Shape id: `213`
-- Shape name: `矩形: 圆角 212`
+- 形状 id： `213`
+- 形状名称： `矩形: 圆角 212`
 
 ```text
 Semantic
 ```
 
-#### Text box 14
+#### 文本框 14
 
-- Shape id: `214`
-- Shape name: `矩形: 圆角 213`
+- 形状 id： `214`
+- 形状名称： `矩形: 圆角 213`
 
 ```text
 Keyword
 ```
 
-#### Text box 15
+#### 文本框 15
 
-- Shape id: `215`
-- Shape name: `矩形: 圆角 214`
+- 形状 id： `215`
+- 形状名称： `矩形: 圆角 214`
 
 ```text
 Vector Search
 ```
 
-#### Text box 16
+#### 文本框 16
 
-- Shape id: `92`
-- Shape name: `矩形: 圆角 91`
+- 形状 id： `92`
+- 形状名称： `矩形: 圆角 91`
 
 ```text
 Initial Search Results
 ```
 
-#### Text box 17
+#### 文本框 17
 
-- Shape id: `37`
-- Shape name: `矩形: 圆角 36`
+- 形状 id： `37`
+- 形状名称： `矩形: 圆角 36`
 
 ```text
 Re-ranking Engine
 ```
 
-#### Text box 18
+#### 文本框 18
 
-- Shape id: `426`
-- Shape name: `矩形: 圆角 425`
+- 形状 id： `426`
+- 形状名称： `矩形: 圆角 425`
 
 ```text
 Evidence Refinement-Relevance 
 Scoring & Ranking
 ```
 
-#### Text box 19
+#### 文本框 19
 
-- Shape id: `99`
-- Shape name: `矩形: 圆角 98`
+- 形状 id： `99`
+- 形状名称： `矩形: 圆角 98`
 
 ```text
 Cortex
 ```
 
-#### Text box 20
+#### 文本框 20
 
-- Shape id: `100`
-- Shape name: `矩形: 圆角 99`
+- 形状 id： `100`
+- 形状名称： `矩形: 圆角 99`
 
 ```text
 Expert Authoring Agent-Information Structuring
 ```
 
-#### Text box 21
+#### 文本框 21
 
-- Shape id: `102`
-- Shape name: `矩形: 圆角 101`
+- 形状 id： `102`
+- 形状名称： `矩形: 圆角 101`
 
 ```text
 Sentinel
 ```
 
-#### Text box 22
+#### 文本框 22
 
-- Shape id: `103`
-- Shape name: `矩形: 圆角 102`
+- 形状 id： `103`
+- 形状名称： `矩形: 圆角 102`
 
 ```text
 Integrity Review Agent-Quality Assurance
 ```
 
-#### Text box 23
+#### 文本框 23
 
-- Shape id: `105`
-- Shape name: `矩形: 圆角 104`
+- 形状 id： `105`
+- 形状名称： `矩形: 圆角 104`
 
 ```text
 Oracle
 ```
 
-#### Text box 24
+#### 文本框 24
 
-- Shape id: `106`
-- Shape name: `矩形: 圆角 105`
+- 形状 id： `106`
+- 形状名称： `矩形: 圆角 105`
 
 ```text
 Expert Diagnosis Agent-Clinical Decision Making
 ```
 
-#### Text box 25
+#### 文本框 25
 
-- Shape id: `108`
-- Shape name: `矩形: 圆角 107`
+- 形状 id： `108`
+- 形状名称： `矩形: 圆角 107`
 
 ```text
 Arbiter
 ```
 
-#### Text box 26
+#### 文本框 26
 
-- Shape id: `109`
-- Shape name: `矩形: 圆角 108`
+- 形状 id： `109`
+- 形状名称： `矩形: 圆角 108`
 
 ```text
 Patient Confirmation & Arbitration-Feedback Management
 ```
 
-#### Text box 27
+#### 文本框 27
 
-- Shape id: `123`
-- Shape name: `矩形: 圆角 122`
+- 形状 id： `123`
+- 形状名称： `矩形: 圆角 122`
 
 ```text
 Annotated information
 ```
 
-#### Text box 28
+#### 文本框 28
 
-- Shape id: `124`
-- Shape name: `矩形: 圆角 123`
+- 形状 id： `124`
+- 形状名称： `矩形: 圆角 123`
 
 ```text
 Quality Control Validation Loop
 ```
 
-#### Text box 29
+#### 文本框 29
 
-- Shape id: `50`
-- Shape name: `矩形: 圆角 49`
+- 形状 id： `50`
+- 形状名称： `矩形: 圆角 49`
 
 ```text
 Structured Dialogue
 ```
 
-#### Text box 30
+#### 文本框 30
 
-- Shape id: `121`
-- Shape name: `矩形: 圆角 120`
+- 形状 id： `121`
+- 形状名称： `矩形: 圆角 120`
 
 ```text
 Validated Data Package
 ```
 
-#### Text box 31
+#### 文本框 31
 
-- Shape id: `122`
-- Shape name: `矩形: 圆角 121`
+- 形状 id： `122`
+- 形状名称： `矩形: 圆角 121`
 
 ```text
 Decision Support Refinement
 ```
 
-#### Text box 32
+#### 文本框 32
 
-- Shape id: `93`
-- Shape name: `矩形: 圆角 92`
+- 形状 id： `93`
+- 形状名称： `矩形: 圆角 92`
 
 ```text
 Clinical 
 Knowledge Queries
 ```
 
-#### Text box 33
+#### 文本框 33
 
-- Shape id: `172`
-- Shape name: `文本框 171`
+- 形状 id： `172`
+- 形状名称： `文本框 171`
 
 ```text
 a) 
 ```
 
-#### Text box 34
+#### 文本框 34
 
-- Shape id: `94`
-- Shape name: `矩形: 圆角 93`
+- 形状 id： `94`
+- 形状名称： `矩形: 圆角 93`
 
 ```text
 Prioritized 
 Medical Evidence
 ```
 
-#### Text box 35
+#### 文本框 35
 
-- Shape id: `54`
-- Shape name: `矩形: 圆角 53`
+- 形状 id： `54`
+- 形状名称： `矩形: 圆角 53`
 
 ```text
 Confirmed Patient Profile & Requirements
 ```
 
-#### Text box 36
+#### 文本框 36
 
-- Shape id: `8`
-- Shape name: `文本框 7`
+- 形状 id： `8`
+- 形状名称： `文本框 7`
 
 ```text
 b)
 ```
 
-#### Text box 37
+#### 文本框 37
 
-- Shape id: `10`
-- Shape name: `圆角矩形 9`
+- 形状 id： `10`
+- 形状名称： `圆角矩形 9`
 
 ```text
 Standardized Patient Agent
 ```
 
-#### Text box 38
+#### 文本框 38
 
-- Shape id: `14`
-- Shape name: `文本框 13`
+- 形状 id： `14`
+- 形状名称： `文本框 13`
 
 ```text
 Diverse Clinical Manifestations: Flank pain,  Hematuria, Pyuria
@@ -834,170 +838,170 @@ Comorbidities:  Urosepsis, Anticoagulation, Congenital Anomalies
 Real-world clinical cases with de-identified personal data
 ```
 
-#### Text box 39
+#### 文本框 39
 
-- Shape id: `16`
-- Shape name: `圆角矩形 15`
+- 形状 id： `16`
+- 形状名称： `圆角矩形 15`
 
 ```text
 UroMAS V.S.
 General Large Models
 ```
 
-#### Text box 40
+#### 文本框 40
 
-- Shape id: `17`
-- Shape name: `圆角矩形 16`
+- 形状 id： `17`
+- 形状名称： `圆角矩形 16`
 
 ```text
 Junior Doctors & Examination Cohort 
 ```
 
-#### Text box 41
+#### 文本框 41
 
-- Shape id: `22`
-- Shape name: `文本框 21`
+- 形状 id： `22`
+- 形状名称： `文本框 21`
 
 ```text
 Total Participants: 94
 ```
 
-#### Text box 42
+#### 文本框 42
 
-- Shape id: `27`
-- Shape name: `文本框 26`
+- 形状 id： `27`
+- 形状名称： `文本框 26`
 
 ```text
 Total Examinations: 228
 ```
 
-#### Text box 43
+#### 文本框 43
 
-- Shape id: `28`
-- Shape name: `圆角矩形 27`
+- 形状 id： `28`
+- 形状名称： `圆角矩形 27`
 
 ```text
 Interactive history collection via natural language dialogue
 ```
 
-#### Text box 44
+#### 文本框 44
 
-- Shape id: `29`
-- Shape name: `圆角矩形 28`
+- 形状 id： `29`
+- 形状名称： `圆角矩形 28`
 
 ```text
  Written initial progress notes
 ```
 
-#### Text box 45
+#### 文本框 45
 
-- Shape id: `40`
-- Shape name: `圆角矩形 39`
+- 形状 id： `40`
+- 形状名称： `圆角矩形 39`
 
 ```text
 Rubrics based Grading Agents
 ```
 
-#### Text box 46
+#### 文本框 46
 
-- Shape id: `46`
-- Shape name: `圆角矩形 45`
+- 形状 id： `46`
+- 形状名称： `圆角矩形 45`
 
 ```text
 Output Scores based on Rubrics
 ```
 
-#### Text box 47
+#### 文本框 47
 
-- Shape id: `47`
-- Shape name: `圆角矩形 46`
+- 形状 id： `47`
+- 形状名称： `圆角矩形 46`
 
 ```text
 Grading Agent 1
 ```
 
-#### Text box 48
+#### 文本框 48
 
-- Shape id: `51`
-- Shape name: `圆角矩形 50`
+- 形状 id： `51`
+- 形状名称： `圆角矩形 50`
 
 ```text
 Grading Agent 2
 ```
 
-#### Text box 49
+#### 文本框 49
 
-- Shape id: `52`
-- Shape name: `圆角矩形 51`
+- 形状 id： `52`
+- 形状名称： `圆角矩形 51`
 
 ```text
 Grading Agent 3
 ```
 
-#### Text box 50
+#### 文本框 50
 
-- Shape id: `53`
-- Shape name: `圆角矩形 52`
+- 形状 id： `53`
+- 形状名称： `圆角矩形 52`
 
 ```text
 Rubrics based Grading Experts
 ```
 
-#### Text box 51
+#### 文本框 51
 
-- Shape id: `55`
-- Shape name: `圆角矩形 54`
+- 形状 id： `55`
+- 形状名称： `圆角矩形 54`
 
 ```text
 Output Scores based on Rubrics
 ```
 
-#### Text box 52
+#### 文本框 52
 
-- Shape id: `58`
-- Shape name: `圆角矩形 57`
+- 形状 id： `58`
+- 形状名称： `圆角矩形 57`
 
 ```text
 Grading Expert 1
 ```
 
-#### Text box 53
+#### 文本框 53
 
-- Shape id: `61`
-- Shape name: `圆角矩形 60`
+- 形状 id： `61`
+- 形状名称： `圆角矩形 60`
 
 ```text
 Grading Expert 2
 ```
 
-#### Text box 54
+#### 文本框 54
 
-- Shape id: `63`
-- Shape name: `圆角矩形 62`
+- 形状 id： `63`
+- 形状名称： `圆角矩形 62`
 
 ```text
 Grading Expert 3
 ```
 
-#### Text box 55
+#### 文本框 55
 
-- Shape id: `452`
-- Shape name: `文本框 451`
+- 形状 id： `452`
+- 形状名称： `文本框 451`
 
 ```text
 Doubao-Seed
 ```
 
-#### Text box 56
+#### 文本框 56
 
-- Shape id: `7`
-- Shape name: `圆角矩形 6`
+- 形状 id： `7`
+- 形状名称： `圆角矩形 6`
 
 ```text
 20 Complex Urolithiasis Cases 
 ```
 
-### Raw `a:t` text-run sequence
+### 原始 `a:t` 文本片段序列
 
 ```json
 [

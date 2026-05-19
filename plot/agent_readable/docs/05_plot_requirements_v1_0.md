@@ -1,14 +1,18 @@
-# Converted source: `plot/作图-1.0.docx`
+# 转换来源：`plot/作图-1.0.docx`
 
-## Conversion metadata
+## 转换元数据
 
-- Source path: `plot/作图-1.0.docx`
-- Source SHA256: `bbaeeebc4019bc79e264471b5a5045b2c08cfb0801b2e0941c4033ee3001306b`
-- Generated at: `2026-05-19T21:04:44`
-- Conversion method: pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent rule: treat the section named `Original Extract` as source material. Do not infer missing statistics, panel labels, sample sizes, or figure styles from this file.
+- 来源路径：`plot/作图-1.0.docx`
+- 来源 SHA256：`bbaeeebc4019bc79e264471b5a5045b2c08cfb0801b2e0941c4033ee3001306b`
+- 生成时间：`2026-05-19T21:04:44`
+- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
+- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
 
-## Original Extract
+## Agent 特别警示
+
+本文是第一作者的主绘图要求来源。文中“数据字典最小修改”里的 `*.csv` 名称是建议的数据结构和变量命名，不是图片交付格式，也不代表仓库当前已有这些文件。后续绘图只能使用已经定位到的真实数据；缺失项写 `UNKNOWN_OR_CONFLICTING`。
+
+## 原始摘录
 
 **MAS辅助泌尿外科住院医闭卷考试命题研究  
 最小增量数据分析、作图与补充材料完善方案**
