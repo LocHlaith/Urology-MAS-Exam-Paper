@@ -1,27 +1,32 @@
-# verify_by_fuzzywuzzy.py
+# verify_by_sentencebert.py
 # -*- coding: utf-8 -*-
 """
-verify_by_fuzzywuzzy.py
+verify_by_sentencebert.py
 
 需求实现：
-1) 只用 FuzzyWuzzy 计算相似度（不自己算 Levenshtein）
-2) 忽略 distance
+1) 调用 Sentence-BERT 生成向量，计算 cosine_similarity
+2) 与 verify_by_fuzzywuzzy.py 相互独立：本脚本不出现 fuzzywuzzy / Levenshtein 相关内容
 3) 在 new_bank_*.json 中记录旧 bank 中最像它的一题：
-   例如："fuzzywuzzy_doubt": "A3_20"
+   例如："sentencebert_doubt": "A3_20"
 4) 匹配范围：每个 new_bank_*.json 里的每道题，都与“所有旧 bank_*.json（a1/a2/a3/a4/b/x）”全库匹配
 
 额外写入字段：
-- fuzzywuzzy_doubt: 最像的旧题 ID（如 A3_20）
-- fuzzywuzzy_ratio_max: 0-100 的整数分（fuzz.ratio）
+- sentencebert_doubt: 最像的旧题 ID（如 A3_20）
+- sentencebert_cosine_max: cosine 相似度（float，-1~1）
 
 运行：
-python verify_by_fuzzywuzzy.py --dir "D:\\Desktop\\当务之急\\EAGLE\\泌尿外科\\泌尿外科专科出卷"
+python scripts/evaluation/verify_by_sentencebert.py --dir data/banks
 
-不覆盖已存在 fuzzywuzzy_doubt / fuzzywuzzy_ratio_max（默认跳过）：
-python verify_by_fuzzywuzzy.py --dir "..."  （默认）
+不覆盖已存在 sentencebert_doubt / sentencebert_cosine_max（默认跳过）：
+python verify_by_sentencebert.py --dir "..."
 
 允许覆盖：
-python verify_by_fuzzywuzzy.py --dir "..." --overwrite
+python verify_by_sentencebert.py --dir "..." --overwrite
+
+可选参数：
+--model "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+--device "cpu" / "cuda"
+--batch-size 64
 """
 
 from __future__ import annotations
@@ -31,10 +36,14 @@ import json
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR
 
 
 NEW_FILES = [
@@ -55,8 +64,8 @@ OLD_FILES = [
     "bank_x.json",
 ]
 
-KEY_DOUBT = "fuzzywuzzy_doubt"
-KEY_SCORE = "fuzzywuzzy_ratio_max"
+KEY_DOUBT = "sentencebert_doubt"
+KEY_SCORE = "sentencebert_cosine_max"
 
 
 # -------------------------
@@ -82,7 +91,7 @@ def dump_json_list(path: str, data: List[Dict[str, Any]]) -> None:
 
 
 # -------------------------
-# Text builders
+# Text builders（与 verify_by_fuzzywuzzy.py 保持一致）
 # -------------------------
 
 def _get_str(q: Dict[str, Any], key: str) -> str:
@@ -132,12 +141,9 @@ def question_to_string_by_type(q: Dict[str, Any]) -> str:
     parts: List[str] = []
 
     if t in {"A1", "A2", "X"}:
-        # 主字段
         _append_str(parts, _get_str(q, "stem"))
         _append_options_dict(parts, q.get("options"))
 
-        # 兼容可能存在的 stem1/stem2..., options1/options2...
-        #（不强依赖，存在则也纳入文本，提高鲁棒性）
         for i in range(1, 10):
             _append_str(parts, _get_str(q, f"stem{i}"))
             _append_options_dict(parts, q.get(f"options{i}"))
@@ -157,7 +163,6 @@ def question_to_string_by_type(q: Dict[str, Any]) -> str:
         _append_stem_series(parts, q, ["stem1", "stem2", "stem3"])
 
     else:
-        # 未知类型：尽量把常见字段都拼上，保证不崩
         _append_str(parts, _get_str(q, "case"))
         _append_str(parts, _get_str(q, "stem"))
         for i in range(1, 10):
@@ -170,7 +175,7 @@ def question_to_string_by_type(q: Dict[str, Any]) -> str:
 
 
 # -------------------------
-# Progress / ETA
+# Progress / ETA（与原脚本一致风格）
 # -------------------------
 
 def fmt_mmss(seconds: float) -> str:
@@ -208,11 +213,15 @@ def make_old_key(q: Dict[str, Any], fallback_index: int) -> str:
     return f"UNK_{fallback_index}"
 
 
-def build_old_choice_map(base_dir: str) -> Dict[str, str]:
+def build_old_corpus(base_dir: str) -> Tuple[List[str], List[str]]:
     """
-    返回 dict: { "A3_20": "拼接后的题干选项字符串", ... }
+    返回 (keys, texts)
+    keys 形如 ["A3_20", ...]
+    texts 为拼接后的题干选项字符串
     """
-    choice_map: Dict[str, str] = {}
+    keys: List[str] = []
+    texts: List[str] = []
+    key_set = set()
     fallback = 0
 
     for fn in OLD_FILES:
@@ -226,74 +235,143 @@ def build_old_choice_map(base_dir: str) -> Dict[str, str]:
             key = make_old_key(q, fallback)
             fallback += 1
 
-            s = question_to_string_by_type(q)
-
             # key 冲突极少见；如发生则追加后缀保证唯一
-            if key in choice_map:
+            if key in key_set:
                 suffix = 2
                 new_key = f"{key}__{suffix}"
-                while new_key in choice_map:
+                while new_key in key_set:
                     suffix += 1
                     new_key = f"{key}__{suffix}"
                 key = new_key
 
-            choice_map[key] = s
+            s = question_to_string_by_type(q)
+            keys.append(key)
+            texts.append(s)
+            key_set.add(key)
 
-    return choice_map
+    return keys, texts
+
+
+# -------------------------
+# Sentence-BERT / cosine similarity
+# -------------------------
+
+def l2_normalize(x: np.ndarray, eps: float = 1e-12) -> np.ndarray:
+    """
+    对最后一维做 L2 归一化。
+    x: (n, d) 或 (d,)
+    """
+    if x.ndim == 1:
+        denom = np.linalg.norm(x) + eps
+        return x / denom
+    denom = np.linalg.norm(x, axis=1, keepdims=True) + eps
+    return x / denom
+
+
+def embed_texts(
+    model: SentenceTransformer,
+    texts: List[str],
+    batch_size: int
+) -> np.ndarray:
+    """
+    返回 embeddings: (n, d) float32 numpy
+    """
+    if not texts:
+        return np.zeros((0, 0), dtype=np.float32)
+
+    emb = model.encode(
+        texts,
+        batch_size=batch_size,
+        show_progress_bar=False,
+        convert_to_numpy=True,
+        normalize_embeddings=False,  # 我们自己做归一化，便于控制/兼容
+    )
+    if not isinstance(emb, np.ndarray):
+        emb = np.array(emb)
+    return emb.astype(np.float32, copy=False)
+
+
+def best_matches_cosine(
+    query_emb_norm: np.ndarray,   # (m, d) 已归一化
+    old_emb_norm: np.ndarray      # (n, d) 已归一化
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    计算 cosine similarity：sim = Q @ O.T
+    返回：
+    - best_idx: (m,) 每个 query 最优 old 的索引
+    - best_sim: (m,) 每个 query 的最高相似度
+    """
+    if query_emb_norm.size == 0 or old_emb_norm.size == 0:
+        return np.zeros((query_emb_norm.shape[0],), dtype=np.int64), np.zeros((query_emb_norm.shape[0],), dtype=np.float32)
+
+    sims = query_emb_norm @ old_emb_norm.T  # (m, n)
+    best_idx = np.argmax(sims, axis=1).astype(np.int64)
+    best_sim = sims[np.arange(sims.shape[0]), best_idx].astype(np.float32)
+    return best_idx, best_sim
 
 
 # -------------------------
 # Core
 # -------------------------
 
-def best_match_fuzzywuzzy(query: str, choices: Dict[str, str]) -> Tuple[str, int]:
-    """
-    只用 FuzzyWuzzy：
-    - scorer 使用 fuzz.ratio（0-100）
-    返回 (best_key, score)
-    """
-    if not choices:
-        return "", 0
-
-    # 对 dict 形式：extractOne 返回 (matched_value, score, matched_key)
-    matched_value, score, matched_key = process.extractOne(
-        query,
-        choices,
-        scorer=fuzz.ratio
-    )
-    return str(matched_key), int(score)
-
-
 def process_new_file(
     path_new: str,
-    old_choices: Dict[str, str],
+    model: SentenceTransformer,
+    old_keys: List[str],
+    old_emb_norm: np.ndarray,
     overwrite: bool,
-    dry_run: bool
+    dry_run: bool,
+    batch_size: int
 ) -> Tuple[int, int]:
     new_qs = load_json_list(path_new)
     total = len(new_qs)
 
-    written = 0
-    skipped = 0
+    # 找出需要计算的题目索引
+    todo_indices: List[int] = []
+    todo_texts: List[str] = []
 
+    skipped = 0
+    for i, q in enumerate(new_qs):
+        if (not overwrite) and (KEY_DOUBT in q or KEY_SCORE in q):
+            skipped += 1
+            continue
+        todo_indices.append(i)
+        todo_texts.append(question_to_string_by_type(q))
+
+    written = 0
+    if not todo_indices:
+        if not dry_run:
+            dump_json_list(path_new, new_qs)
+        return written, skipped
+
+    # 批量编码 + 批量相似度（比逐题快很多）
     t0 = time.time()
     last_print = 0.0
 
-    for idx, q in enumerate(new_qs, start=1):
-        # 默认不覆盖：若已有 fuzzywuzzy_doubt 或 fuzzywuzzy_ratio_max，就跳过计算
-        if (not overwrite) and (KEY_DOUBT in q or KEY_SCORE in q):
-            skipped += 1
-        else:
-            query = question_to_string_by_type(q)
-            key, score = best_match_fuzzywuzzy(query, old_choices)
-            q[KEY_DOUBT] = key
-            q[KEY_SCORE] = score
+    # 为了保留“逐步进度条”的手感：分 batch 做并打印
+    m = len(todo_texts)
+    for start in range(0, m, batch_size):
+        end = min(m, start + batch_size)
+        batch_texts = todo_texts[start:end]
+
+        q_emb = embed_texts(model, batch_texts, batch_size=batch_size)
+        q_emb_norm = l2_normalize(q_emb)
+
+        best_idx, best_sim = best_matches_cosine(q_emb_norm, old_emb_norm)
+
+        # 写回 JSON
+        for j in range(end - start):
+            q_i = todo_indices[start + j]
+            best_old_key = old_keys[int(best_idx[j])] if old_keys else ""
+            new_qs[q_i][KEY_DOUBT] = str(best_old_key)
+            new_qs[q_i][KEY_SCORE] = float(best_sim[j])
             written += 1
 
         elapsed = time.time() - t0
-        if elapsed - last_print >= 0.2 or idx == total:
-            line = progress_line(idx, total, elapsed)
-            print(line, end="\r" if idx != total else "\n", flush=True)
+        done = min(end, m)
+        if elapsed - last_print >= 0.2 or done == m:
+            line = progress_line(done, m, elapsed)
+            print(line, end="\r" if done != m else "\n", flush=True)
             last_print = elapsed
 
     if not dry_run:
@@ -304,12 +382,28 @@ def process_new_file(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Verify new banks by FuzzyWuzzy against ALL old banks."
+        description="Verify new banks by Sentence-BERT (cosine similarity) against ALL old banks."
     )
     parser.add_argument(
         "--dir",
-        default=r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷",
+        default=str(BANK_DIR),
         help="题库目录（包含 bank_*.json 与 new_bank_*.json）",
+    )
+    parser.add_argument(
+        "--model",
+        default="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        help="SentenceTransformer 模型名或本地路径",
+    )
+    parser.add_argument(
+        "--device",
+        default=None,
+        help='推理设备，如 "cpu" / "cuda"（默认交给 sentence-transformers 自动选择）',
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=64,
+        help="编码 batch 大小（越大越快但更占显存/内存）",
     )
     parser.add_argument(
         "--overwrite",
@@ -326,10 +420,27 @@ def main():
     base_dir = args.dir
     overwrite = args.overwrite
     dry_run = args.dry_run
+    batch_size = max(1, int(args.batch_size))
 
     print("加载旧题库（合并所有 bank_*.json）...")
-    old_choices = build_old_choice_map(base_dir)
-    print(f"旧题库合计题数：{len(old_choices)}")
+    old_keys, old_texts = build_old_corpus(base_dir)
+    print(f"旧题库合计题数：{len(old_keys)}")
+
+    if not old_keys:
+        print("[ERROR] 未加载到任何旧题库题目，无法匹配。", file=sys.stderr)
+        sys.exit(2)
+
+    print(f"加载 Sentence-BERT 模型：{args.model}")
+    if args.device:
+        model = SentenceTransformer(args.model, device=args.device)
+    else:
+        model = SentenceTransformer(args.model)
+
+    print("编码旧题库向量（一次性）...")
+    t0 = time.time()
+    old_emb = embed_texts(model, old_texts, batch_size=batch_size)
+    old_emb_norm = l2_normalize(old_emb)
+    print(f"[OK] 旧题库向量维度：{old_emb_norm.shape}，耗时 {fmt_mmss(time.time() - t0)}")
 
     total_written = 0
     total_skipped = 0
@@ -341,12 +452,15 @@ def main():
             print(f"[WARN] 缺少新题库，跳过：{path_new}", file=sys.stderr)
             continue
 
-        print(f"\n处理 {fn}（overwrite={overwrite}, dry_run={dry_run}）")
+        print(f"\n处理 {fn}（overwrite={overwrite}, dry_run={dry_run}, batch_size={batch_size}）")
         written, skipped = process_new_file(
             path_new,
-            old_choices,
+            model=model,
+            old_keys=old_keys,
+            old_emb_norm=old_emb_norm,
             overwrite=overwrite,
-            dry_run=dry_run
+            dry_run=dry_run,
+            batch_size=batch_size,
         )
         processed += 1
         total_written += written

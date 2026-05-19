@@ -38,6 +38,7 @@ import argparse
 import json
 import math
 import re
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -46,6 +47,9 @@ from typing import Any, Dict, List, Optional, Tuple
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import FIGURE_DIR, LOG_DIR, STATISTICS_DIR
 
 
 # ----------------------------
@@ -541,9 +545,9 @@ def plot_per_type_stats(
 # ----------------------------
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Compute per-question generation time from logs and plot stats.")
-    p.add_argument("--logs_dir", type=str, default="./logs", help="Directory containing log files.")
-    p.add_argument("--output_png", type=str, default="./time_per_question.png", help="Output figure path (.png).")
-    p.add_argument("--output_json", type=str, default="./time_stats.json", help="Output stats JSON path.")
+    p.add_argument("--logs_dir", type=str, default=str(LOG_DIR), help="Directory containing log files.")
+    p.add_argument("--output_png", type=str, default=str(FIGURE_DIR / "time_per_question.png"), help="Output figure path (.png).")
+    p.add_argument("--output_json", type=str, default=str(STATISTICS_DIR / "time_stats.json"), help="Output stats JSON path.")
     p.add_argument("--print_batches", action="store_true", help="Print per-batch details to stdout.")
     return p.parse_args()
 

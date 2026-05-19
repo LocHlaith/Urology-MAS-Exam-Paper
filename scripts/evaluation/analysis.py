@@ -11,32 +11,29 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import requests
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from deepseek_env import load_dotenv
+from project_paths import (
+    ENV_PATH,
+    LOG_DIR as PROJECT_LOG_DIR,
+    PROJECT_ROOT,
+    analysis_prompt_files,
+    new_bank_files,
+)
 
 
 # ----------------------------
 # Paths / Constants
 # ----------------------------
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = str(PROJECT_ROOT)
 
-NEW_BANK_FILES = {
-    "A1": os.path.join(ROOT, "new_bank_a1.json"),
-    "A2": os.path.join(ROOT, "new_bank_a2.json"),
-    "A3": os.path.join(ROOT, "new_bank_a3.json"),
-    "A4": os.path.join(ROOT, "new_bank_a4.json"),
-    "B":  os.path.join(ROOT, "new_bank_b.json"),
-    "X":  os.path.join(ROOT, "new_bank_x.json"),
-}
+NEW_BANK_FILES = new_bank_files()
 
-PROMPT_FILES = {
-    "A1": os.path.join(ROOT, "prompts_for_new_bank_analysis_a1.txt"),
-    "A2": os.path.join(ROOT, "prompts_for_new_bank_analysis_a2.txt"),
-    "A3": os.path.join(ROOT, "prompts_for_new_bank_analysis_a3.txt"),
-    "A4": os.path.join(ROOT, "prompts_for_new_bank_analysis_a4.txt"),
-    "B":  os.path.join(ROOT, "prompts_for_new_bank_analysis_b.txt"),
-    "X":  os.path.join(ROOT, "prompts_for_new_bank_analysis_x.txt"),
-}
+PROMPT_FILES = analysis_prompt_files()
 
 BANK_ORDER = ["A1", "A2", "A3", "A4", "B", "X"]
 
@@ -67,7 +64,7 @@ STRIP_FIELDS = {
 # Logging
 # ----------------------------
 
-LOG_DIR = os.path.join(ROOT, "logs")
+LOG_DIR = str(PROJECT_LOG_DIR)
 os.makedirs(LOG_DIR, exist_ok=True)
 
 MAIN_LOG_PATH = os.path.join(
@@ -645,7 +642,7 @@ def main() -> None:
     args = parse_args()
 
     # Load env
-    env_path = os.path.join(ROOT, ".env")
+    env_path = str(ENV_PATH)
     try:
         if os.path.exists(env_path):
             load_dotenv(env_path)

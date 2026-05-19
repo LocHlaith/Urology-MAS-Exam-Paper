@@ -11,26 +11,30 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import requests
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from deepseek_env import load_dotenv
+from project_paths import (
+    ENV_PATH,
+    EVALUATION_PROMPT_DIR,
+    LOG_DIR as PROJECT_LOG_DIR,
+    PROJECT_ROOT,
+    new_bank_files,
+)
 
 
 # ----------------------------
 # Paths / Constants
 # ----------------------------
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = str(PROJECT_ROOT)
 
-NEW_BANK_FILES = {
-    "A1": os.path.join(ROOT, "new_bank_a1.json"),
-    "A2": os.path.join(ROOT, "new_bank_a2.json"),
-    "A3": os.path.join(ROOT, "new_bank_a3.json"),
-    "A4": os.path.join(ROOT, "new_bank_a4.json"),
-    "B":  os.path.join(ROOT, "new_bank_b.json"),
-    "X":  os.path.join(ROOT, "new_bank_x.json"),
-}
+NEW_BANK_FILES = new_bank_files()
 
 # 考点 prompt 统一使用一个文件
-PROMPT_FILE = os.path.join(ROOT, "prompt_for_test_point.txt")
+PROMPT_FILE = str(EVALUATION_PROMPT_DIR / "prompt_for_test_point.txt")
 
 BANK_ORDER = ["A1", "A2", "A3", "A4", "B", "X"]
 
@@ -62,7 +66,7 @@ STRIP_FIELDS = {
 # Logging
 # ----------------------------
 
-LOG_DIR = os.path.join(ROOT, "logs")
+LOG_DIR = str(PROJECT_LOG_DIR)
 os.makedirs(LOG_DIR, exist_ok=True)
 
 MAIN_LOG_PATH = os.path.join(
@@ -526,7 +530,7 @@ def main() -> None:
     args = parse_args()
 
     # Load env
-    env_path = os.path.join(ROOT, ".env")
+    env_path = str(ENV_PATH)
     try:
         if os.path.exists(env_path):
             load_dotenv(env_path)

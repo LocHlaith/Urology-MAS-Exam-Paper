@@ -31,13 +31,17 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR, RAW_DATASETS_DIR
+
 
 # ========= 配置 =========
-INPUT_PATH = r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\datasets\执业医师题库.txt"
+INPUT_PATH = RAW_DATASETS_DIR / "执业医师题库.txt"
 
 
 # ========= 正则 =========
@@ -507,7 +511,8 @@ def main() -> None:
     if not in_path.exists():
         raise FileNotFoundError(f"输入文件不存在：{in_path}")
 
-    out_dir = Path(__file__).resolve().parent
+    out_dir = BANK_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
     text = in_path.read_text(encoding="utf-8", errors="ignore")
     all_lines = text.splitlines()
 

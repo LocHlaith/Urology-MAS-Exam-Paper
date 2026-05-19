@@ -1,31 +1,27 @@
-# verify_by_textstat.py
+# verify_by_fuzzywuzzy.py
 # -*- coding: utf-8 -*-
 """
-verify_by_textstat.py
+verify_by_fuzzywuzzy.py
 
 需求实现：
-1) 使用 textstat 计算可读性（Flesch Reading Ease）
-2) 在 new_bank_*.json 中为每道题写入可读性分数
-3) 不覆盖已存在字段（默认跳过）；可用 --overwrite 强制覆盖
-4) 只处理 new_bank_*.json（不需要旧题库）
+1) 只用 FuzzyWuzzy 计算相似度（不自己算 Levenshtein）
+2) 忽略 distance
+3) 在 new_bank_*.json 中记录旧 bank 中最像它的一题：
+   例如："fuzzywuzzy_doubt": "A3_20"
+4) 匹配范围：每个 new_bank_*.json 里的每道题，都与“所有旧 bank_*.json（a1/a2/a3/a4/b/x）”全库匹配
 
-写入字段：
-- textstat_flesch_reading_ease: float（通常范围约 0~100，textstat 可能返回负数或 >100，属正常现象）
+额外写入字段：
+- fuzzywuzzy_doubt: 最像的旧题 ID（如 A3_20）
+- fuzzywuzzy_ratio_max: 0-100 的整数分（fuzz.ratio）
 
 运行：
-python verify_by_textstat.py --dir "D:\\Desktop\\当务之急\\EAGLE\\泌尿外科\\泌尿外科专科出卷"
+python scripts/evaluation/verify_by_fuzzywuzzy.py --dir data/banks
 
-不覆盖已存在 textstat_flesch_reading_ease（默认跳过）：
-python verify_by_textstat.py --dir "..."
+不覆盖已存在 fuzzywuzzy_doubt / fuzzywuzzy_ratio_max（默认跳过）：
+python verify_by_fuzzywuzzy.py --dir "..."  （默认）
 
 允许覆盖：
-python verify_by_textstat.py --dir "..." --overwrite
-
-仅计算不写回：
-python verify_by_textstat.py --dir "..." --dry-run
-
-依赖：
-pip install textstat
+python verify_by_fuzzywuzzy.py --dir "..." --overwrite
 """
 
 from __future__ import annotations
@@ -35,9 +31,14 @@ import json
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-import textstat
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR
 
 
 NEW_FILES = [
@@ -49,7 +50,17 @@ NEW_FILES = [
     "new_bank_x.json",
 ]
 
-KEY_SCORE = "textstat_flesch_reading_ease"
+OLD_FILES = [
+    "bank_a1.json",
+    "bank_a2.json",
+    "bank_a3.json",
+    "bank_a4.json",
+    "bank_b.json",
+    "bank_x.json",
+]
+
+KEY_DOUBT = "fuzzywuzzy_doubt"
+KEY_SCORE = "fuzzywuzzy_ratio_max"
 
 
 # -------------------------
@@ -112,7 +123,7 @@ def _append_options_series(parts: List[str], q: Dict[str, Any], keys: List[str])
 
 def question_to_string_by_type(q: Dict[str, Any]) -> str:
     """
-    按题型拼接用于可读性计算的字符串（不加分隔符）：
+    按题型拼接用于匹配的字符串（不加分隔符）：
 
     - A1/A2/X：stem、options（也兼容 stem1/stem2..., options1/options2... 若存在）
     - A3：case、stem1、options1、stem2、options2
@@ -125,10 +136,12 @@ def question_to_string_by_type(q: Dict[str, Any]) -> str:
     parts: List[str] = []
 
     if t in {"A1", "A2", "X"}:
+        # 主字段
         _append_str(parts, _get_str(q, "stem"))
         _append_options_dict(parts, q.get("options"))
 
         # 兼容可能存在的 stem1/stem2..., options1/options2...
+        #（不强依赖，存在则也纳入文本，提高鲁棒性）
         for i in range(1, 10):
             _append_str(parts, _get_str(q, f"stem{i}"))
             _append_options_dict(parts, q.get(f"options{i}"))
@@ -185,28 +198,82 @@ def progress_line(done: int, total: int, elapsed: float) -> str:
 
 
 # -------------------------
+# Old corpus build
+# -------------------------
+
+def make_old_key(q: Dict[str, Any], fallback_index: int) -> str:
+    """
+    生成 "A3_20" 这种 key；若缺字段则用 fallback 保底。
+    """
+    t = q.get("type")
+    i = q.get("id")
+    if isinstance(t, str) and t and (isinstance(i, str) or isinstance(i, int)):
+        return f"{t}_{i}"
+    return f"UNK_{fallback_index}"
+
+
+def build_old_choice_map(base_dir: str) -> Dict[str, str]:
+    """
+    返回 dict: { "A3_20": "拼接后的题干选项字符串", ... }
+    """
+    choice_map: Dict[str, str] = {}
+    fallback = 0
+
+    for fn in OLD_FILES:
+        path = os.path.join(base_dir, fn)
+        if not os.path.exists(path):
+            print(f"[WARN] 缺少旧题库：{path}", file=sys.stderr)
+            continue
+
+        qs = load_json_list(path)
+        for q in qs:
+            key = make_old_key(q, fallback)
+            fallback += 1
+
+            s = question_to_string_by_type(q)
+
+            # key 冲突极少见；如发生则追加后缀保证唯一
+            if key in choice_map:
+                suffix = 2
+                new_key = f"{key}__{suffix}"
+                while new_key in choice_map:
+                    suffix += 1
+                    new_key = f"{key}__{suffix}"
+                key = new_key
+
+            choice_map[key] = s
+
+    return choice_map
+
+
+# -------------------------
 # Core
 # -------------------------
 
-def compute_flesch_reading_ease(text: str) -> float:
+def best_match_fuzzywuzzy(query: str, choices: Dict[str, str]) -> Tuple[str, int]:
     """
-    使用 textstat 计算 Flesch Reading Ease。
-    注意：该公式主要面向英文；中文文本也能跑，但解释需谨慎。
+    只用 FuzzyWuzzy：
+    - scorer 使用 fuzz.ratio（0-100）
+    返回 (best_key, score)
     """
-    text = text if isinstance(text, str) else ""
-    text = text.strip()
-    if not text:
-        return 0.0
+    if not choices:
+        return "", 0
 
-    # textstat 有时会抛异常（极端字符/编码/内部依赖问题），这里兜底
-    try:
-        score = textstat.flesch_reading_ease(text)
-        return float(score)
-    except Exception:
-        return 0.0
+    # 对 dict 形式：extractOne 返回 (matched_value, score, matched_key)
+    matched_value, score, matched_key = process.extractOne(
+        query,
+        choices,
+        scorer=fuzz.ratio
+    )
+    return str(matched_key), int(score)
 
 
-def process_new_file(path_new: str, overwrite: bool, dry_run: bool) -> Tuple[int, int]:
+def process_new_file(
+    path_new: str,
+    old_choices: Dict[str, str],
+    overwrite: bool,
+    dry_run: bool
+) -> Tuple[int, int]:
     new_qs = load_json_list(path_new)
     total = len(new_qs)
 
@@ -217,11 +284,13 @@ def process_new_file(path_new: str, overwrite: bool, dry_run: bool) -> Tuple[int
     last_print = 0.0
 
     for idx, q in enumerate(new_qs, start=1):
-        if (not overwrite) and (KEY_SCORE in q):
+        # 默认不覆盖：若已有 fuzzywuzzy_doubt 或 fuzzywuzzy_ratio_max，就跳过计算
+        if (not overwrite) and (KEY_DOUBT in q or KEY_SCORE in q):
             skipped += 1
         else:
-            text = question_to_string_by_type(q)
-            score = compute_flesch_reading_ease(text)
+            query = question_to_string_by_type(q)
+            key, score = best_match_fuzzywuzzy(query, old_choices)
+            q[KEY_DOUBT] = key
             q[KEY_SCORE] = score
             written += 1
 
@@ -239,17 +308,17 @@ def process_new_file(path_new: str, overwrite: bool, dry_run: bool) -> Tuple[int
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Compute Flesch Reading Ease for new banks via textstat."
+        description="Verify new banks by FuzzyWuzzy against ALL old banks."
     )
     parser.add_argument(
         "--dir",
-        default=r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷",
-        help="题库目录（包含 new_bank_*.json）",
+        default=str(BANK_DIR),
+        help="题库目录（包含 bank_*.json 与 new_bank_*.json）",
     )
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help=f"覆盖已存在的 {KEY_SCORE}（默认不覆盖）",
+        help=f"覆盖已存在的 {KEY_DOUBT}/{KEY_SCORE}（默认不覆盖）",
     )
     parser.add_argument(
         "--dry-run",
@@ -261,6 +330,10 @@ def main():
     base_dir = args.dir
     overwrite = args.overwrite
     dry_run = args.dry_run
+
+    print("加载旧题库（合并所有 bank_*.json）...")
+    old_choices = build_old_choice_map(base_dir)
+    print(f"旧题库合计题数：{len(old_choices)}")
 
     total_written = 0
     total_skipped = 0
@@ -275,6 +348,7 @@ def main():
         print(f"\n处理 {fn}（overwrite={overwrite}, dry_run={dry_run}）")
         written, skipped = process_new_file(
             path_new,
+            old_choices,
             overwrite=overwrite,
             dry_run=dry_run
         )

@@ -5,23 +5,23 @@ temp_verify_by_textstat.py
 
 需求实现：
 1) 使用 textstat 计算可读性（Flesch Reading Ease）
-2) 在 temp/B.json 中为每道题写入可读性分数
+2) 在 outputs/report_drafts/B.json 中为每道题写入可读性分数
 3) 不覆盖已存在字段（默认跳过）；可用 --overwrite 强制覆盖
 
 写入字段：
 - textstat_flesch_reading_ease: float（通常范围约 0~100，textstat 可能返回负数或 >100，属正常现象）
 
 运行：
-python temp/temp_verify_by_textstat.py
+python scripts/reporting/temp_verify_by_textstat.py
 
 不覆盖已存在 textstat_flesch_reading_ease（默认跳过）：
-python temp/temp_verify_by_textstat.py
+python scripts/reporting/temp_verify_by_textstat.py
 
 允许覆盖：
-python temp/temp_verify_by_textstat.py --overwrite
+python scripts/reporting/temp_verify_by_textstat.py --overwrite
 
 仅计算不写回：
-python temp/temp_verify_by_textstat.py --dry-run
+python scripts/reporting/temp_verify_by_textstat.py --dry-run
 
 依赖：
 pip install textstat
@@ -34,12 +34,17 @@ import json
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import textstat
 
 
-TARGET_FILE = "temp/B.json"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import REPORT_DRAFTS_DIR
+
+
+TARGET_FILE = REPORT_DRAFTS_DIR / "B.json"
 KEY_SCORE = "textstat_flesch_reading_ease"
 
 
@@ -230,7 +235,7 @@ def process_file(path: str, overwrite: bool, dry_run: bool) -> Tuple[int, int]:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Compute Flesch Reading Ease for temp/B.json via textstat."
+        description="Compute Flesch Reading Ease for outputs/report_drafts/B.json via textstat."
     )
     parser.add_argument(
         "--overwrite",
@@ -247,21 +252,19 @@ def main():
     overwrite = args.overwrite
     dry_run = args.dry_run
 
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.path.dirname(base_dir)  # 回到上级目录
-    path = os.path.join(base_dir, TARGET_FILE)
+    path = str(TARGET_FILE)
 
     if not os.path.exists(path):
         print(f"[ERROR] 文件不存在：{path}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"处理 {TARGET_FILE}（overwrite={overwrite}, dry_run={dry_run}）")
+    print(f"处理 {path}（overwrite={overwrite}, dry_run={dry_run}）")
     written, skipped = process_file(
         path,
         overwrite=overwrite,
         dry_run=dry_run
     )
-    print(f"[OK] {TARGET_FILE}: 写入 {written} 题，跳过 {skipped} 题")
+    print(f"[OK] {path}: 写入 {written} 题，跳过 {skipped} 题")
 
 
 if __name__ == "__main__":

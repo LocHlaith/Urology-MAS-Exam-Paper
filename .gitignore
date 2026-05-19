@@ -3,3 +3,10 @@
 
 # Local virtual environment
 doctor/
+
+# Python/runtime byproducts
+__pycache__/
+*.py[cod]
+
+# Runtime logs are reproducible and may contain API request payloads
+outputs/logs/

@@ -1,4 +1,4 @@
-# qgeval.py
+﻿# temp_qgeval.py
 # -*- coding: utf-8 -*-
 
 import os
@@ -11,42 +11,33 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import requests
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from deepseek_env import load_dotenv
+from project_paths import (
+    ENV_PATH,
+    EVALUATION_PROMPT_DIR,
+    LOG_DIR as PROJECT_LOG_DIR,
+    PROJECT_ROOT,
+    REPORT_DRAFTS_DIR,
+)
 
 
 # ----------------------------
 # Paths / Constants
 # ----------------------------
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = str(PROJECT_ROOT)
 
-OLD_BANK_FILES = {
-    "A1": os.path.join(ROOT, "bank_a1.json"),
-    "A2": os.path.join(ROOT, "bank_a2.json"),
-    "A3": os.path.join(ROOT, "bank_a3.json"),
-    "A4": os.path.join(ROOT, "bank_a4.json"),
-    "B":  os.path.join(ROOT, "bank_b.json"),
-    "X":  os.path.join(ROOT, "bank_x.json"),
-}
-
-# 你给的新题库绝对路径（按原样写入）
-NEW_BANK_FILES = {
-    "A1": r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\new_bank_a1.json",
-    "A2": r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\new_bank_a2.json",
-    "A3": r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\new_bank_a3.json",
-    "A4": r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\new_bank_a4.json",
-    "B":  r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\new_bank_b.json",
-    "X":  r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\new_bank_x.json",
-}
-
-BANK_ORDER = ["A1", "A2", "A3", "A4", "B", "X"]
-
-PROMPT_QGEVAL_PATH = os.path.join(ROOT, "prompt_for_qgeval.txt")
+# 目标文件
+TARGET_BANK_FILE = str(REPORT_DRAFTS_DIR / "B.json")
 
 BATCH_SIZE = 100
 
-# 新题库需要过滤掉、不要上传给 deepseek 的字段
-NEW_BANK_STRIP_KEYS = {
+# 需要过滤掉、不要上传给 deepseek 的字段
+STRIP_KEYS = {
     "prototype",
     "fuzzywuzzy_doubt",
     "fuzzywuzzy_ratio_max",
@@ -55,8 +46,6 @@ NEW_BANK_STRIP_KEYS = {
     "3gram_doubt",
     "3gram_jaccard_max",
     "textstat_flesch_reading_ease",
-    # 你说“可能多了 LLM”，并明确“这几个内容不要上传给 deepseek”
-    # 这里按“LLM 也不要上传”处理
     "LLM",
 }
 
@@ -65,12 +54,12 @@ NEW_BANK_STRIP_KEYS = {
 # Logging
 # ----------------------------
 
-LOG_DIR = os.path.join(ROOT, "logs")
+LOG_DIR = str(PROJECT_LOG_DIR)
 os.makedirs(LOG_DIR, exist_ok=True)
 
 MAIN_LOG_PATH = os.path.join(
     LOG_DIR,
-    f"qgeval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    f"temp_qgeval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 )
 
 def _write_line(path: str, msg: str) -> None:
@@ -92,9 +81,9 @@ def log_block(path: str, title: str, content: str) -> None:
     _write_line(path, "=" * 80)
     _write_line(path, "")
 
-def make_batch_log_path(bank_set: str, bank_type: str, batch_index: int) -> str:
+def make_batch_log_path(batch_index: int) -> str:
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return os.path.join(LOG_DIR, f"qgeval_{bank_set}_{bank_type}_batch_{batch_index:04d}_{ts}.log")
+    return os.path.join(LOG_DIR, f"temp_qgeval_batch_{batch_index:04d}_{ts}.log")
 
 
 # ----------------------------
@@ -358,28 +347,25 @@ def set_qgeval_with_order(item: Dict[str, Any], qgeval_text: str) -> Dict[str, A
 # Core: Evaluate one bank file
 # ----------------------------
 
-def eval_one_bank(
-    bank_set: str,  # "old" or "new"
-    bank_type: str,
-    bank_files: Dict[str, str],
+def eval_target_bank(
     client: DeepSeekClient,
     system_prompt: str,
     start_batch: int = 1,
     write_user_prompt_to_batch_log: bool = True,
     sleep_seconds: float = 0.6,
 ) -> None:
-    path = bank_files[bank_type]
+    path = TARGET_BANK_FILE
     if not os.path.exists(path):
-        log_line(f"[ERROR] bank 文件不存在：{path}（跳过 {bank_set}:{bank_type}）")
+        log_line(f"[ERROR] 目标文件不存在：{path}")
         return
 
     data = read_json_list(path)
 
     pending: List[Dict[str, Any]] = [q for q in data if isinstance(q, dict) and ("QGEval" not in q)]
-    log_line(f"==> {bank_set}:{bank_type}: 总题数={len(data)}, 待评分={len(pending)}, batch_size={BATCH_SIZE}, start_batch={start_batch}")
+    log_line(f"==> 目标文件: {path}, 总题数={len(data)}, 待评分={len(pending)}, batch_size={BATCH_SIZE}, start_batch={start_batch}")
 
     if not pending:
-        log_line(f"[OK] {bank_set}:{bank_type}: 无待评分题目，跳过。")
+        log_line(f"[OK] 无待评分题目，跳过。")
         return
 
     # 建索引：原始 id -> (list_index, 题对象)
@@ -391,38 +377,35 @@ def eval_one_bank(
         try:
             qid = int(str(qid_raw).strip())
         except Exception:
-            raise ValueError(f"{bank_set}:{bank_type} 出现无法解析为 int 的 id：{qid_raw!r}")
+            raise ValueError(f"出现无法解析为 int 的 id：{qid_raw!r}")
         id_to_pos[qid] = idx
 
     batches = split_batches(pending, BATCH_SIZE)
 
     bak = backup_file(path)
-    log_line(f"[OK] {bank_set}:{bank_type}: 已备份原文件 -> {bak}")
+    log_line(f"[OK] 已备份原文件 -> {bak}")
 
     # 先写回占位（原文件已被 os.replace 挪走）
     write_json_list(path, data)
-
-    # new bank 才需要 strip；old bank 不动
-    strip_keys = NEW_BANK_STRIP_KEYS if bank_set == "new" else None
 
     for bi, batch_questions in enumerate(batches, start=1):
         if bi < start_batch:
             continue
 
-        batch_log_path = make_batch_log_path(bank_set, bank_type, bi)
+        batch_log_path = make_batch_log_path(bi)
 
-        batch_to_send = sanitize_questions_for_deepseek(batch_questions, strip_keys=strip_keys)
+        batch_to_send = sanitize_questions_for_deepseek(batch_questions, strip_keys=STRIP_KEYS)
         user_prompt = make_user_prompt_json(batch_to_send)
 
         log_block(
             batch_log_path,
-            title=f"BATCH START | set={bank_set} | bank={bank_type} | batch={bi}/{len(batches)} | n={len(batch_questions)}",
-            content=f"path={path}\nbackup={bak}\nstrip_keys={sorted(list(strip_keys)) if strip_keys else 'None'}\n"
+            title=f"BATCH START | batch={bi}/{len(batches)} | n={len(batch_questions)}",
+            content=f"path={path}\nbackup={bak}\nstrip_keys={sorted(list(STRIP_KEYS)) if STRIP_KEYS else 'None'}\n"
         )
         if write_user_prompt_to_batch_log:
             log_block(batch_log_path, "USER PROMPT (JSON, SANITIZED)", user_prompt)
 
-        log_line(f"  - {bank_set}:{bank_type} 第 {bi}/{len(batches)} 批：n={len(batch_questions)}")
+        log_line(f"  - 第 {bi}/{len(batches)} 批：n={len(batch_questions)}")
 
         try:
             text = client.chat(system_prompt=system_prompt, user_prompt=user_prompt, temperature=0.2)
@@ -468,13 +451,13 @@ def eval_one_bank(
                     f"bank_total={len(data)}\n"
                 )
             )
-            log_line(f"[OK] {bank_set}:{bank_type} 第 {bi} 批：写入 QGEval={updated}，返回行={len(rows)}，未命中id={missed}")
+            log_line(f"[OK] 第 {bi} 批：写入 QGEval={updated}，返回行={len(rows)}，未命中id={missed}")
 
             time.sleep(sleep_seconds)
 
         except Exception as e:
             err_text = f"{type(e).__name__}: {e}"
-            log_line(f"[SKIP] {bank_set}:{bank_type} 第 {bi} 批失败，已跳过：{err_text}")
+            log_line(f"[SKIP] 第 {bi} 批失败，已跳过：{err_text}")
             log_block(batch_log_path, "BATCH FAILED (SKIPPED)", err_text)
             log_block(batch_log_path, "TRACEBACK", traceback.format_exc())
             time.sleep(0.2)
@@ -482,40 +465,20 @@ def eval_one_bank(
 
     final_data = read_json_list(path)
     done = sum(1 for q in final_data if isinstance(q, dict) and ("QGEval" in q))
-    log_line(f"==> {bank_set}:{bank_type}: 完成。已评分={done}/{len(final_data)}，输出文件={path}")
+    log_line(f"==> 完成。已评分={done}/{len(final_data)}，输出文件={path}")
 
 
 # ----------------------------
 # CLI
 # ----------------------------
 
-def _split_bank_tokens(s: str) -> List[str]:
-    s = (s or "").strip()
-    if not s:
-        return []
-    parts = re.split(r"[,\s，;；|/]+", s)
-    return [p.strip().upper() for p in parts if p.strip()]
-
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Add QGEval scores into existing bank_*.json using DeepSeek.")
-    p.add_argument(
-        "--bank_set",
-        type=str,
-        default="",
-        choices=["old", "new", ""],
-        help="Choose bank set: old or new. If empty, interactive selection is used."
-    )
-    p.add_argument(
-        "--banks",
-        type=str,
-        default="",
-        help="Bank types: 'A1 A3 B' or 'A1,A3,B' or 'all'. If empty, interactive selection is used."
-    )
+    p = argparse.ArgumentParser(description="Add QGEval scores into outputs/report_drafts/B.json using DeepSeek.")
     p.add_argument(
         "--start_batch",
         type=int,
         default=1,
-        help="Start from which batch (1-based). Applied to all selected banks."
+        help="Start from which batch (1-based)."
     )
     p.add_argument(
         "--no_log_user_prompt",
@@ -530,32 +493,6 @@ def parse_args() -> argparse.Namespace:
     )
     return p.parse_args()
 
-def select_bank_set_interactive() -> str:
-    log_line("请选择题库类型：old（老题库 bank_*.json）或 new（新题库 new_bank_*.json）：")
-    s = input("> ").strip().lower()
-    if s in ("old", "new"):
-        return s
-    return ""
-
-def select_banks_interactive() -> List[str]:
-    log_line("请选择要评分的题库（如：A4 B X 或 A4,B,X 或 all）：")
-    s = input("> ").strip()
-    if not s:
-        return []
-    if s.lower() == "all":
-        return BANK_ORDER[:]
-    chosen = _split_bank_tokens(s)
-    return [x for x in chosen if x in BANK_ORDER]
-
-def select_banks_from_args(arg_banks: str) -> List[str]:
-    s = (arg_banks or "").strip()
-    if not s:
-        return []
-    if s.lower() == "all":
-        return BANK_ORDER[:]
-    chosen = _split_bank_tokens(s)
-    return [x for x in chosen if x in BANK_ORDER]
-
 
 # ----------------------------
 # Main
@@ -566,18 +503,8 @@ def main() -> None:
 
     args = parse_args()
 
-    # bank set: old/new
-    bank_set = (args.bank_set or "").strip().lower()
-    if not bank_set:
-        bank_set = select_bank_set_interactive()
-    if bank_set not in ("old", "new"):
-        log_line("[FATAL] 未选择题库类型（old/new），程序结束。")
-        return
-
-    bank_files = OLD_BANK_FILES if bank_set == "old" else NEW_BANK_FILES
-
     # Load env
-    env_path = os.path.join(ROOT, ".env")
+    env_path = str(ENV_PATH)
     try:
         if os.path.exists(env_path):
             load_dotenv(env_path)
@@ -598,61 +525,42 @@ def main() -> None:
         return
 
     # Load system prompt
+    prompt_path = str(EVALUATION_PROMPT_DIR / "prompt_for_qgeval.txt")
     try:
-        system_prompt = read_text(PROMPT_QGEVAL_PATH)
-        log_line(f"[OK] 已读取 prompt：{PROMPT_QGEVAL_PATH}")
+        system_prompt = read_text(prompt_path)
+        log_line(f"[OK] 已读取 prompt：{prompt_path}")
     except Exception:
-        log_line(f"[FATAL] 读取 prompt_for_qgeval.txt 失败：{PROMPT_QGEVAL_PATH}")
+        log_line(f"[FATAL] 读取 prompt_for_qgeval.txt 失败：{prompt_path}")
         log_block(MAIN_LOG_PATH, "EXCEPTION reading prompt_for_qgeval.txt", traceback.format_exc())
-        return
-
-    # Select banks
-    targets = select_banks_from_args(args.banks)
-    if not targets:
-        targets = select_banks_interactive()
-    if not targets:
-        log_line("[FATAL] 未选择任何题库，程序结束。")
         return
 
     if args.start_batch < 1:
         log_line(f"[FATAL] --start_batch 必须 >= 1，收到：{args.start_batch}")
         return
 
-    log_line(f"[OK] 本次选择评分：set={bank_set} | banks={targets} | start_batch={args.start_batch} | batch_size={BATCH_SIZE}")
+    log_line(f"[OK] 本次评分：start_batch={args.start_batch} | batch_size={BATCH_SIZE}")
 
-    # 提前检查文件存在性（给个更友好的提示）
-    for bt in targets:
-        p = bank_files.get(bt)
-        if not p:
-            continue
-        if not os.path.exists(p):
-            log_line(f"[WARN] 目标题库文件不存在：set={bank_set} bank={bt} path={p}")
+    # 提前检查文件存在性
+    if not os.path.exists(TARGET_BANK_FILE):
+        log_line(f"[WARN] 目标文件不存在：{TARGET_BANK_FILE}")
 
     client = DeepSeekClient(api_key=api_key, base_url=base_url, model=model, timeout=180)
 
     write_user_prompt = not args.no_log_user_prompt
 
-    # Stable order
-    for bank_type in BANK_ORDER:
-        if bank_type not in targets:
-            continue
-        try:
-            eval_one_bank(
-                bank_set=bank_set,
-                bank_type=bank_type,
-                bank_files=bank_files,
-                client=client,
-                system_prompt=system_prompt,
-                start_batch=args.start_batch,
-                write_user_prompt_to_batch_log=write_user_prompt,
-                sleep_seconds=args.sleep,
-            )
-        except Exception:
-            log_line(f"[ERROR] {bank_set}:{bank_type} 评分发生未捕获异常，已跳过该题库，继续下一个。")
-            log_block(MAIN_LOG_PATH, f"UNCAUGHT EXCEPTION in eval_one_bank({bank_set}:{bank_type})", traceback.format_exc())
-            continue
+    try:
+        eval_target_bank(
+            client=client,
+            system_prompt=system_prompt,
+            start_batch=args.start_batch,
+            write_user_prompt_to_batch_log=write_user_prompt,
+            sleep_seconds=args.sleep,
+        )
+    except Exception:
+        log_line(f"[ERROR] 评分发生未捕获异常，程序将结束。")
+        log_block(MAIN_LOG_PATH, "UNCAUGHT EXCEPTION in eval_target_bank", traceback.format_exc())
 
-    log_line("全部流程结束（失败 batch 已跳过；已评分题会自动跳过；每个 bank 文件已在开始时备份）。")
+    log_line("全部流程结束（失败 batch 已跳过；已评分题会自动跳过；文件已在开始时备份）。")
 
 
 if __name__ == "__main__":

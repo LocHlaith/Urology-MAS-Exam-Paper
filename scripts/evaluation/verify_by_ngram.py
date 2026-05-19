@@ -15,7 +15,7 @@ verify_by_ngram.py
 - {n}gram_jaccard_max: 0-100 的整数分（Jaccard*100）
 
 运行：
-python verify_by_ngram.py --dir "D:\\Desktop\\当务之急\\EAGLE\\泌尿外科\\泌尿外科专科出卷" --n 3
+python scripts/evaluation/verify_by_ngram.py --dir data/banks --n 3
 
 不覆盖已存在字段（默认跳过）：
 python verify_by_ngram.py --dir "..." --n 3
@@ -34,7 +34,11 @@ import json
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Any, Dict, FrozenSet, List, Tuple
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR
 
 
 NEW_FILES = [
@@ -360,7 +364,7 @@ def main():
     )
     parser.add_argument(
         "--dir",
-        default=r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷",
+        default=str(BANK_DIR),
         help="题库目录（包含 bank_*.json 与 new_bank_*.json）",
     )
     parser.add_argument(

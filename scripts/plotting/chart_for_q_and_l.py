@@ -25,7 +25,7 @@ chart_for_q_and_l.py
    - 不需要不区分题库的统计
 
 使用示例：
-python chart_for_q_and_l.py --input_dir "D:\\Desktop\\当务之急\\EAGLE\\泌尿外科\\泌尿外科专科出卷" --output_dir "./figs_q_and_l"
+python scripts/plotting/chart_for_q_and_l.py --input_dir data/banks --output_dir outputs/figures/qgeval_llm
 """
 
 from __future__ import annotations
@@ -34,12 +34,16 @@ import argparse
 import json
 import math
 import re
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional
 
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR, FIGURE_DIR, STATISTICS_DIR, old_bank_path
 
 
 # -----------------------------
@@ -586,22 +590,15 @@ def plot_bank_mean_std(
 # 主流程
 # -----------------------------
 def default_old_bank_files() -> List[Path]:
-    return [
-        Path(r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\bank_a1.json"),
-        Path(r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\bank_a2.json"),
-        Path(r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\bank_a3.json"),
-        Path(r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\bank_a4.json"),
-        Path(r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\bank_b.json"),
-        Path(r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\bank_x.json"),
-    ]
+    return [old_bank_path(t) for t in ["A1", "A2", "A3", "A4", "B", "X"]]
 
 
 def main() -> None:
     setup_style()
 
     parser = argparse.ArgumentParser(description="Generate paper-ready charts for QGEval/LLM (old bank vs new bank).")
-    parser.add_argument("--input_dir", type=str, required=True, help="Directory containing new_bank_*.json files.")
-    parser.add_argument("--output_dir", type=str, required=True, help="Output directory for figures.")
+    parser.add_argument("--input_dir", type=str, default=str(BANK_DIR), help="Directory containing new_bank_*.json files.")
+    parser.add_argument("--output_dir", type=str, default=str(FIGURE_DIR / "qgeval_llm"), help="Output directory for figures.")
     parser.add_argument(
         "--old_bank_files",
         nargs="*",
@@ -612,7 +609,7 @@ def main() -> None:
         "--stats_out",
         type=str,
         default=None,
-        help="Optional override: output path for statistics_for_qgeval_and_llm.txt (default: <input_dir>/statistics_for_qgeval_and_llm.txt).",
+        help="Optional override: output path for statistics_for_qgeval_and_llm.txt (default: outputs/statistics/statistics_for_qgeval_and_llm.txt).",
     )
     args = parser.parse_args()
 
@@ -620,7 +617,7 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    stats_out_path = Path(args.stats_out) if args.stats_out else (input_dir / "statistics_for_qgeval_and_llm.txt")
+    stats_out_path = Path(args.stats_out) if args.stats_out else (STATISTICS_DIR / "statistics_for_qgeval_and_llm.txt")
 
     # 旧库
     old_files = [Path(p) for p in args.old_bank_files] if args.old_bank_files else default_old_bank_files()

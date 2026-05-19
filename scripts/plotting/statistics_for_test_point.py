@@ -1,5 +1,10 @@
 import json
 import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR, STATISTICS_DIR
 
 # 考点映射表
 TEST_POINTS = {
@@ -43,11 +48,12 @@ def generate_statistics():
 
     # 遍历读取文件
     for file in files_to_read:
-        if not os.path.exists(file):
-            print(f"提示：未找到文件 {file}，已跳过。")
+        path = BANK_DIR / file
+        if not path.exists():
+            print(f"提示：未找到文件 {path}，已跳过。")
             continue
             
-        with open(file, 'r', encoding='utf-8') as f:
+        with path.open('r', encoding='utf-8') as f:
             data = json.load(f)
             
             for item in data:
@@ -66,8 +72,9 @@ def generate_statistics():
                         stats_by_tp[tp]['Total'] += 1
 
     # 写入统计结果到 txt 文件
-    output_file = "statistics_for_test_point.txt"
-    with open(output_file, 'w', encoding='utf-8') as f:
+    output_file = STATISTICS_DIR / "statistics_for_test_point.txt"
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    with output_file.open('w', encoding='utf-8') as f:
         f.write("泌尿外科专科题库 —— 考点与题型分布统计\n")
         f.write("=" * 70 + "\n\n")
         

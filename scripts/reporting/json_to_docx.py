@@ -1,7 +1,12 @@
 import json
 import os
 import re
+import sys
+from pathlib import Path
 from docx import Document
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR, BANK_DOCX_DIR
 
 # 考点映射表
 TEST_POINTS = {
@@ -130,7 +135,7 @@ def json_to_docx(json_path, docx_path):
     print(f"成功导出：{docx_path}")
 
 if __name__ == "__main__":
-    # 示例：批量处理当前目录下所有 json 文件
+    # 批量处理 data/banks 下的新题库 JSON，输出到 outputs/bank_docx。
     files_to_convert = [
         "new_bank_a1.json",
         "new_bank_a2.json",
@@ -141,8 +146,10 @@ if __name__ == "__main__":
     ]
     
     for file in files_to_convert:
-        if os.path.exists(file):
-            out_name = file.replace('.json', '.docx')
-            json_to_docx(file, out_name)
+        json_path = BANK_DIR / file
+        if json_path.exists():
+            BANK_DOCX_DIR.mkdir(parents=True, exist_ok=True)
+            out_name = BANK_DOCX_DIR / file.replace('.json', '.docx')
+            json_to_docx(str(json_path), str(out_name))
         else:
-            print(f"未找到文件: {file}")
+            print(f"未找到文件: {json_path}")

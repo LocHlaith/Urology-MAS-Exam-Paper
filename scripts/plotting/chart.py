@@ -17,7 +17,7 @@ chart.py
 12) 同一组直方图跨题型统一 y 轴范围：先统计再绘图（并统一 x 轴范围）
 
 使用示例：
-python chart.py --input_dir "D:\\Desktop\\当务之急\\EAGLE\\泌尿外科\\泌尿外科专科出卷" --output_dir "./figs"
+python scripts/plotting/chart.py --input_dir data/banks --output_dir outputs/figures/similarity
 
 注意：
 - 本脚本默认读取 input_dir 下所有 new_bank_*.json
@@ -26,7 +26,7 @@ python chart.py --input_dir "D:\\Desktop\\当务之急\\EAGLE\\泌尿外科\\泌
 修改（新增）：
 1) 分别对于各个题型，计算 fuzzywuzzy_ratio_max、sentencebert_cosine_max、3gram_jaccard_max、
    textstat_flesch_reading_ease 的 min、max、mean、std；然后不区分题型，再计算一份全体统计。
-2) 输出到 D:\\Desktop\\当务之急\\EAGLE\\泌尿外科\\泌尿外科专科出卷\\statistics.txt
+2) 输出到 outputs/statistics/statistics_for_similarity.txt
 """
 
 from __future__ import annotations
@@ -35,6 +35,7 @@ import argparse
 import json
 import math
 import re
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional
 
@@ -46,13 +47,14 @@ import matplotlib.patches as mpatches
 # 4-set venn：使用 PyPI 包 "venn"
 from venn import venn
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from project_paths import BANK_DIR, FIGURE_DIR, STATISTICS_DIR
+
 
 # -----------------------------
 # 统计输出路径（按需求固定到绝对路径）
 # -----------------------------
-STATISTICS_OUT_PATH = Path(
-    r"D:\Desktop\当务之急\EAGLE\泌尿外科\泌尿外科专科出卷\statistics.txt"
-)
+STATISTICS_OUT_PATH = STATISTICS_DIR / "statistics_for_similarity.txt"
 
 
 # -----------------------------
@@ -689,8 +691,8 @@ def main() -> None:
     setup_style()
 
     parser = argparse.ArgumentParser(description="Generate paper-ready charts from question bank JSON files.")
-    parser.add_argument("--input_dir", type=str, required=True, help="Directory containing new_bank_*.json files.")
-    parser.add_argument("--output_dir", type=str, required=True, help="Output directory for figures.")
+    parser.add_argument("--input_dir", type=str, default=str(BANK_DIR), help="Directory containing new_bank_*.json files.")
+    parser.add_argument("--output_dir", type=str, default=str(FIGURE_DIR / "similarity"), help="Output directory for figures.")
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)
