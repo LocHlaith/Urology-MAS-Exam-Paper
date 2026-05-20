@@ -1,9 +1,19 @@
-# python word_to_txt.py
+﻿"""将人类题库 Word 文件转换为 TXT 中间文件。
+
+脚本用途：把人类题库 Word 文档导出为纯文本，供结构化解析脚本读取。
+流程阶段：人类题库结构化。
+主要输入：用户在文件选择窗口中选定的 `.docx` 或 `.doc` 文件。
+主要输出：与 Word 文件同名的 `.txt` 中间文件。
+重要边界：人类题库来源是 Word；TXT 只是解析中间文件，不是独立来源，也不是 MAS 出题结果。
+"""
 
 import os
 import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox
+
+
+# ===== Word 转 TXT =====
 
 def convert_docx_to_txt(input_path: str, output_path: str) -> None:
     try:
@@ -56,10 +66,10 @@ def convert_doc_to_txt_windows(input_path: str, output_path: str) -> None:
         word = win32com.client.Dispatch("Word.Application")
         word.Visible = False
 
-        # Open 参数很多，这里只用最常用的（ReadOnly=True 更安全）
+        # 仅使用必要的 Word Open 参数，并保持只读。
         doc = word.Documents.Open(input_path, ReadOnly=True)
 
-        # 直接让 Word “另存为” txt（避免自己解析）
+        # 直接让 Word “另存为” TXT，避免自行解析旧版 .doc。
         # 注意：Word 可能会弹编码/兼容性提示，下面两行尽量压制交互
         word.DisplayAlerts = 0
 
@@ -78,6 +88,8 @@ def convert_doc_to_txt_windows(input_path: str, output_path: str) -> None:
             pass
 
 
+# ===== 文件选择 =====
+
 def pick_file() -> str:
     root = tk.Tk()
     root.withdraw()
@@ -95,6 +107,8 @@ def pick_file() -> str:
     root.destroy()
     return file_path
 
+
+# ===== 程序入口 =====
 
 def main():
     input_path = pick_file()

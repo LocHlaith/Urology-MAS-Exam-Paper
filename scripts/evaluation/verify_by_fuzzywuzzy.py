@@ -1,27 +1,10 @@
-# verify_by_fuzzywuzzy.py
-# -*- coding: utf-8 -*-
-"""
-verify_by_fuzzywuzzy.py
+﻿"""为 MAS 题库写入 FuzzyWuzzy 文本相似度字段。
 
-需求实现：
-1) 只用 FuzzyWuzzy 计算相似度（不自己算 Levenshtein）
-2) 忽略 distance
-3) 在 new_bank_*.json 中记录旧 bank 中最像它的一题：
-   例如："fuzzywuzzy_doubt": "A3_20"
-4) 匹配范围：每个 new_bank_*.json 里的每道题，都与“所有旧 bank_*.json（a1/a2/a3/a4/b/x）”全库匹配
-
-额外写入字段：
-- fuzzywuzzy_doubt: 最像的旧题 ID（如 A3_20）
-- fuzzywuzzy_ratio_max: 0-100 的整数分（fuzz.ratio）
-
-运行：
-python scripts/evaluation/verify_by_fuzzywuzzy.py --dir data/banks
-
-不覆盖已存在 fuzzywuzzy_doubt / fuzzywuzzy_ratio_max（默认跳过）：
-python verify_by_fuzzywuzzy.py --dir "..."  （默认）
-
-允许覆盖：
-python verify_by_fuzzywuzzy.py --dir "..." --overwrite
+脚本用途：比较 MAS 题库与人类题库，记录每道 MAS 题最相似的人类题库题目。
+流程阶段：题库机器评价。
+主要输入：`data/banks/new_bank_*.json` 与全部 `data/banks/bank_*.json`。
+主要输出：原地更新的 `data/banks/new_bank_*.json`，写入 `fuzzywuzzy_doubt` 与 `fuzzywuzzy_ratio_max`。
+重要边界：该指标只描述文本相似度，不判断最终题目质量，也不替代专家评审。
 """
 
 from __future__ import annotations
@@ -63,9 +46,7 @@ KEY_DOUBT = "fuzzywuzzy_doubt"
 KEY_SCORE = "fuzzywuzzy_ratio_max"
 
 
-# -------------------------
-# IO
-# -------------------------
+# ===== 文件读写 =====
 
 def load_json_list(path: str) -> List[Dict[str, Any]]:
     with open(path, "r", encoding="utf-8") as f:
@@ -85,9 +66,7 @@ def dump_json_list(path: str, data: List[Dict[str, Any]]) -> None:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
-# -------------------------
-# Text builders
-# -------------------------
+# ===== 题面文本构造 =====
 
 def _get_str(q: Dict[str, Any], key: str) -> str:
     v = q.get(key)
@@ -173,9 +152,7 @@ def question_to_string_by_type(q: Dict[str, Any]) -> str:
     return "".join(parts)
 
 
-# -------------------------
-# Progress / ETA
-# -------------------------
+# ===== 进度显示 =====
 
 def fmt_mmss(seconds: float) -> str:
     seconds = max(0.0, float(seconds))
@@ -197,9 +174,7 @@ def progress_line(done: int, total: int, elapsed: float) -> str:
     return f"{done}/{total} [{fmt_mmss(elapsed)}<{fmt_mmss(remaining)},  {rate:0.2f}s/it]"
 
 
-# -------------------------
-# Old corpus build
-# -------------------------
+# ===== 人类题库索引 =====
 
 def make_old_key(q: Dict[str, Any], fallback_index: int) -> str:
     """
@@ -222,7 +197,7 @@ def build_old_choice_map(base_dir: str) -> Dict[str, str]:
     for fn in OLD_FILES:
         path = os.path.join(base_dir, fn)
         if not os.path.exists(path):
-            print(f"[WARN] 缺少旧题库：{path}", file=sys.stderr)
+            print(f"[WARN] 缺少人类题库：{path}", file=sys.stderr)
             continue
 
         qs = load_json_list(path)
@@ -246,9 +221,7 @@ def build_old_choice_map(base_dir: str) -> Dict[str, str]:
     return choice_map
 
 
-# -------------------------
-# Core
-# -------------------------
+# ===== 主处理流程 =====
 
 def best_match_fuzzywuzzy(query: str, choices: Dict[str, str]) -> Tuple[str, int]:
     """
@@ -308,7 +281,7 @@ def process_new_file(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Verify new banks by FuzzyWuzzy against ALL old banks."
+        description="Verify MAS banks by FuzzyWuzzy against all human banks."
     )
     parser.add_argument(
         "--dir",
@@ -331,9 +304,9 @@ def main():
     overwrite = args.overwrite
     dry_run = args.dry_run
 
-    print("加载旧题库（合并所有 bank_*.json）...")
+    print("加载人类题库（合并所有 bank_*.json）...")
     old_choices = build_old_choice_map(base_dir)
-    print(f"旧题库合计题数：{len(old_choices)}")
+    print(f"人类题库合计题数：{len(old_choices)}")
 
     total_written = 0
     total_skipped = 0
@@ -342,7 +315,7 @@ def main():
     for fn in NEW_FILES:
         path_new = os.path.join(base_dir, fn)
         if not os.path.exists(path_new):
-            print(f"[WARN] 缺少新题库，跳过：{path_new}", file=sys.stderr)
+            print(f"[WARN] 缺少 MAS 题库，跳过：{path_new}", file=sys.stderr)
             continue
 
         print(f"\n处理 {fn}（overwrite={overwrite}, dry_run={dry_run}）")

@@ -1,3 +1,12 @@
+﻿"""将 MAS 题库 JSON 导出为人工审阅用 Word 文档。
+
+脚本用途：把 MAS 题库 JSON 转成便于合作者人工审阅的 Word 文档。
+流程阶段：人工审阅导出。
+主要输入：`data/banks/new_bank_*.json`。
+主要输出：`outputs/report_exports/*.docx`。
+重要边界：本脚本不产生统计结果，也不是绘图数据来源。
+"""
+
 import json
 import os
 import re
@@ -8,7 +17,9 @@ from docx import Document
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from project_paths import BANK_DIR, REPORT_EXPORTS_DIR
 
-# 考点映射表
+
+# ===== 路径与常量 =====
+
 TEST_POINTS = {
     1: "尿液检查-血尿", 2: "尿液检查-蛋白尿", 3: "尿液检查-管型尿",
     4: "肾小球疾病-概述", 5: "肾小球疾病-急性肾小球肾炎", 6: "肾小球疾病-急进性肾小球肾炎",
@@ -26,6 +37,9 @@ TEST_POINTS = {
     37: "泌尿、男性生殖系统先天性畸形及其他疾病-鞘膜积液", 38: "泌尿、男性生殖系统先天性畸形及其他疾病-精索静脉曲张",
     39: "肾功能不全-急性肾损伤（急性肾衰竭）", 40: "肾功能不全-慢性肾脏病（慢性肾衰竭）"
 }
+
+
+# ===== 文本格式化 =====
 
 def format_reference(ref_str):
     """将 A1_0, A1_3, A1_1、A1_2 格式化为 A1型题第0题，A1型题第3题"""
@@ -68,6 +82,9 @@ def parse_llm(s):
         return f"总分{total.strip()}分，流畅性{scores[0]}分、排他性{scores[1]}分、明确性{scores[2]}分、目标性{scores[3]}分、综合性{scores[4]}分、侧重性{scores[5]}分、防猜性{scores[6]}分、完整性{scores[7]}分、正确性{scores[8]}分、可解性{scores[9]}分、绝对性{scores[10]}分、迷惑性{scores[11]}分、思维性{scores[12]}分、反馈性{scores[13]}分、公平性{scores[14]}分、答案解析专门评分{scores[15]}分。"
     return s
 
+
+# ===== 导出流程 =====
+
 def json_to_docx(json_path, docx_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -78,10 +95,10 @@ def json_to_docx(json_path, docx_path):
         q_type = item.get('type', '未知')
         q_id = item.get('id', '未知')
         
-        # 1. 题头分割线
+        # 题头分割线。
         doc.add_paragraph(f"--------------------------------------------{q_type}型题第{q_id}题--------------------------------------------")
         
-        # 2. 元数据评估信息
+        # 机器评价元数据。
         doc.add_paragraph(f"出题参考：人类题库{format_reference(item.get('prototype', ''))}。")
         doc.add_paragraph(f"FuzzyWuzzy Levenshtein：最接近人类题库{format_reference(item.get('fuzzywuzzy_doubt', ''))}，值为{item.get('fuzzywuzzy_ratio_max', '')}。")
         doc.add_paragraph(f"Sentence-BERT Cosine：最接近人类题库{format_reference(item.get('sentencebert_doubt', ''))}，值为{item.get('sentencebert_cosine_max', '')}。")
@@ -89,15 +106,14 @@ def json_to_docx(json_path, docx_path):
         doc.add_paragraph(f"Flesch Reading Ease：{item.get('textstat_flesch_reading_ease', '')}。")
         doc.add_paragraph(f"QGEval：{parse_qgeval(item.get('QGEval', ''))}")
         doc.add_paragraph(f"LLM：{parse_llm(item.get('LLM', ''))}")
-        doc.add_paragraph("") # 空行分隔元数据与题目
+        doc.add_paragraph("")
         
-        # 解析考点 (处理单个或多个考点)
+        # 考点还原字段可能包含一个或多个编号。
         tp_list = item.get('test_point', [])
         tp_str = "、".join([TEST_POINTS.get(tp, str(tp)) for tp in tp_list])
         
-        # 3. 题目正文
         if q_type in ['A1', 'A2', 'X']:
-            # 单问题目，不加序号
+            # 单问题型直接写题干、选项、考点、答案和解析。
             doc.add_paragraph(item.get('stem', ''))
             opts = item.get('options', {})
             for k, v in opts.items():
@@ -107,20 +123,19 @@ def json_to_docx(json_path, docx_path):
             doc.add_paragraph(f"答案解析：{item.get('analysis', '')}")
             
         else:
-            # 多问题目 (A3, A4, B)，需要加 (1) (2) 序号
-            # 统计有几个子问题 (查找 stem1, stem2 ...)
+            # 多问题型按 stem1/stem2... 写入各小题。
             sub_count = sum(1 for k in item.keys() if k.startswith('stem') and k != 'stem')
             
             for i in range(1, sub_count + 1):
                 stem = item.get(f'stem{i}', '')
                 
-                # A3/A4 类型的 case 拼接到第一问
+                # A3/A4 的病例材料并入第一小题。
                 if i == 1 and 'case' in item:
                     stem = item['case'] + stem
                     
                 doc.add_paragraph(f"({i}) {stem}")
                 
-                # 选项获取：优先取 options1/2/3，如果没有则取共用的 options (如 B型题)
+                # 子问题优先使用独立选项；B 型题可共用 options。
                 opts = item.get(f'options{i}', item.get('options', {}))
                 for k, v in opts.items():
                     doc.add_paragraph(f"{k}. {v}")
@@ -129,13 +144,17 @@ def json_to_docx(json_path, docx_path):
                 doc.add_paragraph(f"参考答案：{item.get(f'answer{i}', '')}。")
                 doc.add_paragraph(f"答案解析：{item.get(f'analysis{i}', '')}")
                 
-        doc.add_paragraph("") # 每道大题结束后加个空行
+        # 每道大题之后保留空行。
+        doc.add_paragraph("")
 
     doc.save(docx_path)
     print(f"成功导出：{docx_path}")
 
+
+# ===== 程序入口 =====
+
 if __name__ == "__main__":
-    # 批量处理 data/banks 下的新题库 JSON，输出为给合作者人工审阅的 Word 文档。
+    # 批量处理 data/banks 下的 MAS 题库 JSON，输出为给合作者人工审阅的 Word 文档。
     files_to_convert = [
         "new_bank_a1.json",
         "new_bank_a2.json",

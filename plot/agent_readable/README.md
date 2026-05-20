@@ -1,6 +1,6 @@
 # Agent 可读绘图资料包
 
-本目录供后续绘图、统计和补充实验 agent 阅读。它把第一作者的绘图要求、工作簿数据、视觉风格参考和来源元数据分开放置。
+本目录供后续绘图、统计和补充实验 agent 阅读。它把第一作者的绘图要求、工作簿数据、视觉风格参考和来源元数据分开放置。`plot/raw/` 保存原始文件，后续 agent 通常应从本目录的结构化材料开始阅读。
 
 ## 内容
 
@@ -18,12 +18,12 @@
 
 | 原始文件 | 类型 | 主要输出 |
 | --- | --- | --- |
-| `plot/Figure 统一参数.docx` | `docx` | `plot/agent_readable/docs/01_figure_unified_parameters.md` |
-| `plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx` | `docx` | `plot/agent_readable/docs/02_analysis_statistical_protocol.md` |
-| `plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx` | `docx` | `plot/agent_readable/docs/03_figure_table_statistical_views.md` |
-| `plot/作图-1.0.docx` | `docx` | `plot/agent_readable/docs/05_plot_requirements_v1_0.md` |
-| `plot/作图格式参考/Figure1.tif` | `tif` | `plot/agent_readable/assets/visual_reference_previews/Figure1_preview.png`、`plot/agent_readable/docs/visual_references.md` |
-| `plot/作图格式参考/Figure2.tif` | `tif` | `plot/agent_readable/assets/visual_reference_previews/Figure2_preview.png`、`plot/agent_readable/docs/visual_references.md` |
-| `plot/浙江大学邵逸夫医院泌尿外科出科考考试蓝图.docx` | `docx` | `plot/agent_readable/docs/06_exam_blueprint.md` |
-| `plot/试卷作答情况 - 2.xlsx` | `xlsx` | `plot/agent_readable/docs/07_exam_responses_2_workbook.md`、`plot/agent_readable/data/exam_responses_2/*.csv` |
-| `plot/试卷作答情况.xlsx` | `xlsx` | `plot/agent_readable/docs/08_exam_responses_workbook.md`、`plot/agent_readable/data/exam_responses/*.csv` |
+| `plot/raw/Figure 统一参数.docx` | `docx` | `plot/agent_readable/docs/01_figure_unified_parameters.md` |
+| `plot/raw/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx` | `docx` | `plot/agent_readable/docs/02_analysis_statistical_protocol.md` |
+| `plot/raw/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx` | `docx` | `plot/agent_readable/docs/03_figure_table_statistical_views.md` |
+| `plot/raw/作图-1.0.docx` | `docx` | `plot/agent_readable/docs/05_plot_requirements_v1_0.md` |
+| `plot/raw/style_references/Figure1.tif` | `tif` | `plot/agent_readable/assets/visual_reference_previews/Figure1_preview.png`、`plot/agent_readable/docs/visual_references.md` |
+| `plot/raw/style_references/Figure2.tif` | `tif` | `plot/agent_readable/assets/visual_reference_previews/Figure2_preview.png`、`plot/agent_readable/docs/visual_references.md` |
+| `plot/raw/浙江大学邵逸夫医院泌尿外科出科考考试蓝图.docx` | `docx` | `plot/agent_readable/docs/06_exam_blueprint.md` |
+| `plot/raw/试卷作答情况 - 2.xlsx` | `xlsx` | `plot/agent_readable/docs/07_exam_responses_2_workbook.md`、`plot/agent_readable/data/exam_responses_2/*.csv` |
+| `plot/raw/试卷作答情况.xlsx` | `xlsx` | `plot/agent_readable/docs/08_exam_responses_workbook.md`、`plot/agent_readable/data/exam_responses/*.csv` |

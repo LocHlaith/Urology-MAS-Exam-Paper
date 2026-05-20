@@ -1,8 +1,8 @@
-# 转换来源：`plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
+# 转换来源：`plot/raw/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
 
 ## 转换元数据
 
-- 来源路径：`plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
+- 来源路径：`plot/raw/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
 - 来源 SHA256：`c2123c878cd32d373d3241d7c8a56fd8ccc6c85852ee076d414ef0f9604e4901`
 - 生成时间：`2026-05-19T21:04:44`
 - 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)

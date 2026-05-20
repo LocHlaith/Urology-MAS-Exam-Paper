@@ -1,6 +1,6 @@
 [
   {
-    "source_path": "plot/Figure 统一参数.docx",
+    "source_path": "plot/raw/Figure 统一参数.docx",
     "source_type": "docx",
     "sha256": "af00e49483f91fc8f7a4c34d7fe8552955ac5c99140002997a342c774a92c315",
     "size_bytes": 12551,
@@ -10,7 +10,7 @@
     "conversion": "pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)"
   },
   {
-    "source_path": "plot/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx",
+    "source_path": "plot/raw/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx",
     "source_type": "docx",
     "sha256": "c2123c878cd32d373d3241d7c8a56fd8ccc6c85852ee076d414ef0f9604e4901",
     "size_bytes": 44242,
@@ -20,7 +20,7 @@
     "conversion": "pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)"
   },
   {
-    "source_path": "plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx",
+    "source_path": "plot/raw/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx",
     "source_type": "docx",
     "sha256": "b4b2f3ce3b3f8c2f64dc82ec01fa99fcc624b364e74bc474d70b38fffe9f93f3",
     "size_bytes": 53459,
@@ -30,7 +30,7 @@
     "conversion": "pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)"
   },
   {
-    "source_path": "plot/作图-1.0.docx",
+    "source_path": "plot/raw/作图-1.0.docx",
     "source_type": "docx",
     "sha256": "bbaeeebc4019bc79e264471b5a5045b2c08cfb0801b2e0941c4033ee3001306b",
     "size_bytes": 71004,
@@ -40,7 +40,7 @@
     "conversion": "pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)"
   },
   {
-    "source_path": "plot/作图格式参考/Figure1.tif",
+    "source_path": "plot/raw/style_references/Figure1.tif",
     "source_type": "tif",
     "sha256": "8a74691b50a12476388622afb2c71b1a88a001e8fe0f25a5690f32729bdc3052",
     "size_bytes": 75402948,
@@ -57,7 +57,7 @@
     }
   },
   {
-    "source_path": "plot/作图格式参考/Figure2.tif",
+    "source_path": "plot/raw/style_references/Figure2.tif",
     "source_type": "tif",
     "sha256": "397a71f39c919b83723d80cb31157c1e30e4c590f67ab15e22f77169396d91db",
     "size_bytes": 115126896,
@@ -74,7 +74,7 @@
     }
   },
   {
-    "source_path": "plot/浙江大学邵逸夫医院泌尿外科出科考考试蓝图.docx",
+    "source_path": "plot/raw/浙江大学邵逸夫医院泌尿外科出科考考试蓝图.docx",
     "source_type": "docx",
     "sha256": "2244972d19f827b41c50530f53fe3ec933eae629d0904ca7df584911bf235323",
     "size_bytes": 21952,
@@ -84,7 +84,7 @@
     "conversion": "pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)"
   },
   {
-    "source_path": "plot/试卷作答情况 - 2.xlsx",
+    "source_path": "plot/raw/试卷作答情况 - 2.xlsx",
     "source_type": "xlsx",
     "sha256": "fb0f08ee2e9f632bc35bb665bf37928a2892f2f325ebb9126cb0e5681b35e902",
     "size_bytes": 107483,
@@ -543,7 +543,7 @@
     ]
   },
   {
-    "source_path": "plot/试卷作答情况.xlsx",
+    "source_path": "plot/raw/试卷作答情况.xlsx",
     "source_type": "xlsx",
     "sha256": "9ef9c40476a17284eed254e027347f8c672a60462f3f19049ef306fa6bce790c",
     "size_bytes": 244679,

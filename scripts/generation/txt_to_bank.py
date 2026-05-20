@@ -1,30 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-txt_to_bank.py
+﻿"""将人类题库 TXT 中间文件解析为题库 JSON。
 
-从执业医师题库.txt中抽取题干/选项/答案/解析，分别生成：
-- bank_a1.json
-- bank_a2.json
-- bank_a3.json
-- bank_a4.json
-- bank_b.json
-
-修复点（本次重点）：
-- 更强力删除 stem 中的“页码/总题数”（如：8/51、15 /51）
-- 更强力删除 stem 中的“考试场次编码”（如：2018U1-6、2022. 2-U2-57、2022. 2-U2-35）
-- 支持 stem 为多行时，仅对“第一条有效行”做编码剥离，并保留其余正文行
-- 提取“答案解析”并将其作为 "analysis" 字段置于题目末尾
-
-规则要点：
-1) 忽略：题号、考试场次、难度、正确率统计、大纲分析、知识点分析、考点还原等（只保留题干/选项/答案/解析；A3/A4还需case）
-2) A3/A4在原文件中统一标记为“A3/A4型题”，需按“相邻且病例相同”分组：
-   - 3题同病例 => A4
-   - 2题同病例 => A3
-   - 孤立（前后病例都不同）=> 强制按A2写入 bank_a2.json（stem=case+题干）
-3) B同理按“相邻且选项相同”分组：
-   - 2题或3题同选项 => B组写入 bank_b.json
-   - 孤立B => 强制按A2写入 bank_a2.json
-4) 本题库不含X/E题型：无需处理
+脚本用途：从 Word 导出的 TXT 中提取题干、选项、参考答案、答案解析和病例题结构。
+流程阶段：人类题库结构化。
+主要输入：`data/raw/datasets/执业医师题库.txt`。
+主要输出：`data/banks/bank_*.json`，即人类题库。
+重要边界：本脚本不调用模型，不生成 MAS 题库；当前 TXT 中没有的题型不会被凭空生成。
 """
 
 from __future__ import annotations
@@ -40,11 +20,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from project_paths import BANK_DIR, RAW_DATASETS_DIR
 
 
-# ========= 配置 =========
+# ===== 路径与常量 =====
 INPUT_PATH = RAW_DATASETS_DIR / "执业医师题库.txt"
 
 
-# ========= 正则 =========
+# ===== 正则规则 =====
 RE_HEADER = re.compile(r"单选题-(A1|A2|B|A3/A4)型题")
 RE_OPTION = re.compile(r"^\s*([A-E])\s*[\.．、]\s*(.*)\s*$")
 RE_ANSWER = re.compile(r"答案\s*[:：]\s*([A-E])\b")
@@ -58,7 +38,7 @@ RE_YEARLINE = re.compile(r"^\s*(19|20)\d{2}\b")
 RE_PAGINATION = re.compile(r"^\s*\d+\s*/\s*\d+\s*$")
 
 
-# ========= 数据结构 =========
+# ===== 数据结构 =====
 @dataclass
 class Block:
     """原始分块：从一个“单选题-xxx型题”标题到下一个标题之前"""
@@ -77,7 +57,7 @@ class SingleQ:
     analysis: str = ""          # 答案解析
 
 
-# ========= 工具函数 =========
+# ===== 文本清洗工具 =====
 def _clean_line(s: str) -> str:
     s = s.replace("\ufeff", "")
     s = s.rstrip("\n").strip()
@@ -233,7 +213,7 @@ def _find_first_option_index(lines: List[str]) -> Optional[int]:
     return None
 
 
-# ========= 分块 =========
+# ===== 原文分块 =====
 def split_blocks(all_lines: List[str]) -> List[Block]:
     """
     按“单选题-xxx型题”标题分块。标题行本身不放入Block.lines。
@@ -268,7 +248,7 @@ def split_blocks(all_lines: List[str]) -> List[Block]:
     return blocks
 
 
-# ========= 解析单题（A1/A2/B） =========
+# ===== 单题解析 =====
 def parse_single_from_block(block: Block) -> Optional[SingleQ]:
     """
     解析A1/A2/B单题：
@@ -297,7 +277,7 @@ def parse_single_from_block(block: Block) -> Optional[SingleQ]:
     return SingleQ(stem=stem, options=options, answer=answer, analysis=analysis)
 
 
-# ========= 解析单题（A3/A4） =========
+# ===== 病例题解析 =====
 def parse_a3a4_single_from_block(block: Block) -> Optional[SingleQ]:
     """
     对“A3/A4型题”块：将其解析为一个“带case的单题”：
@@ -340,7 +320,7 @@ def parse_a3a4_single_from_block(block: Block) -> Optional[SingleQ]:
     return SingleQ(stem=stem, options=options, answer=answer, case=case, analysis=analysis)
 
 
-# ========= 分组与落库 =========
+# ===== 分组与落库 =====
 def emit_a1(a1_items: List[SingleQ]) -> List[dict]:
     out = []
     for i, q in enumerate(a1_items):
@@ -505,7 +485,7 @@ def make_a2_from_a3a4_single(q: SingleQ) -> SingleQ:
     return SingleQ(stem=stem, options=q.options, answer=q.answer, case=None, analysis=q.analysis)
 
 
-# ========= 主流程 =========
+# ===== 程序入口 =====
 def main() -> None:
     in_path = Path(INPUT_PATH)
     if not in_path.exists():

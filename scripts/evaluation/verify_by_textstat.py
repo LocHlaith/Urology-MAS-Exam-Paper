@@ -1,31 +1,10 @@
-# verify_by_textstat.py
-# -*- coding: utf-8 -*-
-"""
-verify_by_textstat.py
+﻿"""为 MAS 题库写入可读性字段。
 
-需求实现：
-1) 使用 textstat 计算可读性（Flesch Reading Ease）
-2) 在 new_bank_*.json 中为每道题写入可读性分数
-3) 不覆盖已存在字段（默认跳过）；可用 --overwrite 强制覆盖
-4) 只处理 new_bank_*.json（不需要旧题库）
-
-写入字段：
-- textstat_flesch_reading_ease: float（通常范围约 0~100，textstat 可能返回负数或 >100，属正常现象）
-
-运行：
-python scripts/evaluation/verify_by_textstat.py --dir data/banks
-
-不覆盖已存在 textstat_flesch_reading_ease（默认跳过）：
-python verify_by_textstat.py --dir "..."
-
-允许覆盖：
-python verify_by_textstat.py --dir "..." --overwrite
-
-仅计算不写回：
-python verify_by_textstat.py --dir "..." --dry-run
-
-依赖：
-pip install textstat
+脚本用途：使用 textstat 计算 MAS 题库题面的 Flesch Reading Ease。
+流程阶段：题库机器评价。
+主要输入：`data/banks/new_bank_*.json`。
+主要输出：原地更新的 `data/banks/new_bank_*.json`，写入 `textstat_flesch_reading_ease`。
+重要边界：该指标主要面向英文可读性解释；在本项目中仅作机器派生字段，不代表专家评分。
 """
 
 from __future__ import annotations
@@ -56,9 +35,7 @@ NEW_FILES = [
 KEY_SCORE = "textstat_flesch_reading_ease"
 
 
-# -------------------------
-# IO
-# -------------------------
+# ===== 文件读写 =====
 
 def load_json_list(path: str) -> List[Dict[str, Any]]:
     with open(path, "r", encoding="utf-8") as f:
@@ -78,9 +55,7 @@ def dump_json_list(path: str, data: List[Dict[str, Any]]) -> None:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
-# -------------------------
-# Text builders
-# -------------------------
+# ===== 题面文本构造 =====
 
 def _get_str(q: Dict[str, Any], key: str) -> str:
     v = q.get(key)
@@ -164,9 +139,7 @@ def question_to_string_by_type(q: Dict[str, Any]) -> str:
     return "".join(parts)
 
 
-# -------------------------
-# Progress / ETA
-# -------------------------
+# ===== 进度显示 =====
 
 def fmt_mmss(seconds: float) -> str:
     seconds = max(0.0, float(seconds))
@@ -188,9 +161,7 @@ def progress_line(done: int, total: int, elapsed: float) -> str:
     return f"{done}/{total} [{fmt_mmss(elapsed)}<{fmt_mmss(remaining)},  {rate:0.2f}s/it]"
 
 
-# -------------------------
-# Core
-# -------------------------
+# ===== 主处理流程 =====
 
 def compute_flesch_reading_ease(text: str) -> float:
     """
@@ -243,7 +214,7 @@ def process_new_file(path_new: str, overwrite: bool, dry_run: bool) -> Tuple[int
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Compute Flesch Reading Ease for new banks via textstat."
+        description="Compute Flesch Reading Ease for MAS banks via textstat."
     )
     parser.add_argument(
         "--dir",
@@ -273,7 +244,7 @@ def main():
     for fn in NEW_FILES:
         path_new = os.path.join(base_dir, fn)
         if not os.path.exists(path_new):
-            print(f"[WARN] 缺少新题库，跳过：{path_new}", file=sys.stderr)
+            print(f"[WARN] 缺少 MAS 题库，跳过：{path_new}", file=sys.stderr)
             continue
 
         print(f"\n处理 {fn}（overwrite={overwrite}, dry_run={dry_run}）")

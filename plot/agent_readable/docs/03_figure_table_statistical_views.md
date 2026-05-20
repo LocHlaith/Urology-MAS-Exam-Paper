@@ -1,8 +1,8 @@
-# 转换来源：`plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
+# 转换来源：`plot/raw/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
 
 ## 转换元数据
 
-- 来源路径：`plot/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
+- 来源路径：`plot/raw/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
 - 来源 SHA256：`b4b2f3ce3b3f8c2f64dc82ec01fa99fcc624b364e74bc474d70b38fffe9f93f3`
 - 生成时间：`2026-05-19T21:04:44`
 - 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)

@@ -6,13 +6,13 @@
 
 | 来源文件 | 尺寸 | 色彩模式 | 原始字节数 | 预览 |
 | --- | --- | --- | ---: | --- |
-| `plot/作图格式参考/Figure1.tif` | `3861 x 4503` | `CMYK` | 75402948 | `plot/agent_readable/assets/visual_reference_previews/Figure1_preview.png` |
-| `plot/作图格式参考/Figure2.tif` | `4381 x 6165` | `CMYK` | 115126896 | `plot/agent_readable/assets/visual_reference_previews/Figure2_preview.png` |
+| `plot/raw/style_references/Figure1.tif` | `3861 x 4503` | `CMYK` | 75402948 | `plot/agent_readable/assets/visual_reference_previews/Figure1_preview.png` |
+| `plot/raw/style_references/Figure2.tif` | `4381 x 6165` | `CMYK` | 115126896 | `plot/agent_readable/assets/visual_reference_previews/Figure2_preview.png` |
 
-## `plot/作图格式参考/Figure1.tif`
+## `plot/raw/style_references/Figure1.tif`
 
 ![preview](../assets/visual_reference_previews/Figure1_preview.png)
 
-## `plot/作图格式参考/Figure2.tif`
+## `plot/raw/style_references/Figure2.tif`
 
 ![preview](../assets/visual_reference_previews/Figure2_preview.png)

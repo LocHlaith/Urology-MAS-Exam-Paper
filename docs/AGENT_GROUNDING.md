@@ -1,6 +1,6 @@
 # Agent 防幻觉规则
 
-本仓库同时包含资料结构化、生成题库、评价脚本、人工核对材料和第一作者绘图要求。生成论文图、统计结论或面向正文的表述前，必须遵守本文件。
+本仓库同时包含人类题库结构化、MAS 出题、评价脚本、人工核对材料和第一作者绘图要求。生成论文图、统计结论或面向正文的表述前，必须遵守本文件。
 
 ## 来源优先级
 
@@ -12,7 +12,7 @@
 6. 用户明确提供的锁定分析数据或试卷 JSON
 7. `outputs/report_drafts/*.txt`
 
-`outputs/report_drafts/*.txt` 只用于人工核对试卷解析与标注内容，不是研究设计或绘图要求的权威来源。
+`outputs/report_drafts/*.txt` 只用于人工核对试卷答案解析与考点还原内容，不是研究设计或绘图要求的权威来源。
 
 `docs/PLOTTING_READINESS_AUDIT.md` 记录当前本地数据能支持哪些图表、哪些信息缺失，以及哪些内容不能推断。遇到 `UNKNOWN_OR_CONFLICTING` 必须停止并请求澄清。
 
@@ -31,10 +31,10 @@
 
 ## 实际代码链
 
-- `scripts/generation/word_to_txt.py` 和 `scripts/generation/txt_to_bank.py` 用于把已经取得的人类题库转换为程序可读的 `data/banks/bank_*.json`。这一步是资料结构化，不是 DeepSeek 出题。
-- `scripts/generation/bank_to_new_bank.py` 才是 DeepSeek/MAS 出题脚本：它读取人类题库和 `prompts/generation/`，生成 `data/banks/new_bank_*.json`。
-- `scripts/evaluation/analysis.py`、`analysis_make_up.py`、`test_point.py` 只标注 `new_bank_*.json`。
-- `scripts/evaluation/qgeval.py` 和 `llm.py` 可通过 `--bank_set old/new` 评价人类题库或新题库。
+- `scripts/generation/word_to_txt.py` 和 `scripts/generation/txt_to_bank.py` 用于把已经取得的人类题库转换为程序可读的 `data/banks/bank_*.json`。人类题库来源是 Word，TXT 只是程序解析中间文件；这一步是资料结构化，不是 MAS 出题。
+- `scripts/generation/bank_to_new_bank.py` 是 MAS 出题脚本：它读取人类题库和 `prompts/generation/`，生成 `data/banks/new_bank_*.json`。
+- `scripts/generation/add_answer_explanation.py` 和 `scripts/generation/add_test_point.py` 用于在 MAS 题库生成后补充“答案解析”和“考点还原”，属于生成后的内容补全，不属于质量评价。
+- `scripts/evaluation/qgeval.py` 和 `llm.py` 可通过 `--bank_set old/new` 评价人类题库或 MAS 题库；其中 `old` 是历史兼容写法，含义为人类题库，`new` 含义为 MAS 题库。
 - `scripts/evaluation/verify_by_*` 用于比较 `new_bank_*.json` 与人类题库 `bank_*.json`。
 - `scripts/evaluation/exam_paper_*` 处理用户明确提供的组卷后试卷 JSON；这类脚本与题库评价脚本同属评价与标注，不属于报告导出。
 - `scripts/reporting/json_to_docx.py` 只用于人工审阅导出，不是绘图数据来源。
@@ -45,7 +45,7 @@
 - 不要把 `XXX` 等占位符当成真实数据。
 - 不要把示例命令、docstring、旧绝对路径当作分析要求。
 - 原始数据元信息中可能有旧电脑上的 `source_file` 绝对路径；仓库内路径应以 `scripts/project_paths.py` 为准。
-- 不要混用 `bank_*.json` 和 `new_bank_*.json`，除非明确说明比较的是人类题库与 DeepSeek/MAS 生成题库。
+- 不要混用 `bank_*.json` 和 `new_bank_*.json`，除非明确说明比较的是人类题库与 MAS 题库。
 - 不要把原始绘图要求中出现的 `*.csv` 数据表名理解为仓库已经存在的文件，也不要理解为图片交付格式；它们是统计设计或数据字典层面的表名。
 - 不要把人工核对 TXT 当作正式统计结果；正式图需要从原始 JSON、workbook 或锁定分析数据重算。
 

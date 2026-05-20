@@ -1,5 +1,11 @@
-# bank_to_new_bank.py
-# -*- coding: utf-8 -*-
+﻿"""根据人类题库和生成提示词生成 MAS 题库。
+
+脚本用途：调用模型，根据人类题库和出题提示词生成或追加 MAS 题库。
+流程阶段：MAS 出题。
+主要输入：`data/banks/bank_*.json` 与 `prompts/generation/prompts_for_bank_to_new_bank_*.txt`。
+主要输出：`data/banks/new_bank_*.json`。
+重要边界：DeepSeek 只是当前 API 服务提供方；研究表述统一为 MAS 出题。失败 batch 会跳过，输出为增量追加。
+"""
 
 import os
 import json
@@ -21,22 +27,20 @@ from project_paths import (
     LOG_DIR as PROJECT_LOG_DIR,
     PROJECT_ROOT,
     generation_prompt_files,
-    new_bank_files,
-    old_bank_files,
+    human_bank_files,
+    mas_bank_files,
 )
 
 
-# ----------------------------
-# Paths / Constants
-# ----------------------------
+# ===== 路径与常量 =====
 
 ROOT = str(PROJECT_ROOT)
 
-BANK_FILES = old_bank_files()
+BANK_FILES = human_bank_files()
 
 PROMPT_FILES = generation_prompt_files()
 
-NEW_BANK_FILES = new_bank_files()
+NEW_BANK_FILES = mas_bank_files()
 
 BANK_ORDER = ["A1", "A2", "A3", "A4", "B", "X"]
 
@@ -50,9 +54,7 @@ BATCH_SIZES = {
 }
 
 
-# ----------------------------
-# Logging
-# ----------------------------
+# ===== 日志 =====
 
 LOG_DIR = str(PROJECT_LOG_DIR)
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -86,9 +88,7 @@ def make_batch_log_path(target_type: str, batch_index: int) -> str:
     return os.path.join(LOG_DIR, f"{target_type}_batch_{batch_index:04d}_{ts}.log")
 
 
-# ----------------------------
-# Utility: IO
-# ----------------------------
+# ===== 文件读写 =====
 
 def read_text(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
@@ -110,15 +110,10 @@ def write_json_list(path: str, data: List[Dict[str, Any]]) -> None:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
-# ----------------------------
-# Utility: DeepSeek API
-# ----------------------------
+# ===== DeepSeek API 客户端 =====
 
 class DeepSeekClient:
-    """
-    DeepSeek OpenAI-style Chat Completions:
-    POST {base_url}/chat/completions
-    """
+    """DeepSeek API 的 OpenAI-style Chat Completions 客户端。"""
     def __init__(self, api_key: str, base_url: str, model: str, timeout: int = 180):
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
@@ -149,11 +144,7 @@ class DeepSeekClient:
             raise RuntimeError(f"无法从返回中提取 message.content: {json.dumps(obj, ensure_ascii=False)[:2000]}")
 
 
-# ----------------------------
-# Utility: Response JSON extraction
-# 1) 原来的“数组提取”保留（有就用）
-# 2) 新增“对象打捞”：从文本中抓所有完整闭合的 {...} JSON 对象
-# ----------------------------
+# ===== 模型返回解析 =====
 
 _JSON_FENCE_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)\s*```", re.IGNORECASE)
 
@@ -263,8 +254,8 @@ def iter_json_object_candidates(text: str) -> List[str]:
 
 def harvest_json_objects(text: str) -> List[Dict[str, Any]]:
     """
-    从文本中“打捞”所有能 json.loads 为 dict 的 {...}。
-    注意：只针对 dict；不会把数组当题库写入。
+    从模型返回文本中提取所有可解析的 JSON 对象片段。
+    只接收 dict；不会把数组整体当作题库写入。
     """
     results: List[Dict[str, Any]] = []
     for cand in iter_json_object_candidates(text):
@@ -277,9 +268,7 @@ def harvest_json_objects(text: str) -> List[Dict[str, Any]]:
     return results
 
 
-# ----------------------------
-# Batching logic
-# ----------------------------
+# ===== 批处理与提示词 =====
 
 def source_banks_for(target_type: str) -> List[str]:
     return [b for b in BANK_ORDER if b != target_type]
@@ -339,9 +328,7 @@ def dedupe_questions(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return out
 
 
-# ----------------------------
-# Orchestration
-# ----------------------------
+# ===== 主处理流程 =====
 
 def load_all_banks_safely() -> Dict[str, List[Dict[str, Any]]]:
     banks: Dict[str, List[Dict[str, Any]]] = {}
@@ -399,7 +386,7 @@ def refresh_one_bank(
     start_len = len(new_bank)
 
     log_line(
-        f"\n==> 开始翻新 {target_type}: batch_size={batch_size}, "
+        f"\n==> 开始生成 MAS {target_type}: batch_size={batch_size}, "
         f"来源顺序={sources}, 来源总题数={total_source}, 批次数={len(batches)}, "
         f"从第 {start_batch} 轮开始, 现有输出={start_len} -> {out_path}"
     )
@@ -424,14 +411,14 @@ def refresh_one_bank(
         if write_user_prompt_to_batch_log:
             log_block(batch_log_path, "USER PROMPT (JSON)", user_prompt)
 
-        log_line(f"  - {target_type} 第 {bi}/{len(batches)} 轮：题数={len(batch_questions)}（截断也尽量打捞）")
+        log_line(f"  - {target_type} 第 {bi}/{len(batches)} 轮：题数={len(batch_questions)}（尽量保留可解析对象）")
 
         try:
             text = client.chat(system_prompt=system_prompt, user_prompt=user_prompt)
 
             log_block(batch_log_path, title="DEEPSEEK RAW RESPONSE", content=text)
 
-            # 1) 先尝试解析数组（能成就用）
+            # 优先尝试解析完整 JSON 数组。
             parsed_list: List[Dict[str, Any]] = []
             array_err: Optional[str] = None
             try:
@@ -439,10 +426,10 @@ def refresh_one_bank(
             except Exception as e:
                 array_err = f"{type(e).__name__}: {e}"
 
-            # 2) 不管数组是否成功，都“打捞”所有完整 {...} 对象（满足你的核心诉求）
+            # 若完整数组解析失败，继续提取可解析的单个 JSON 对象，降低截断造成的损失。
             salvaged = harvest_json_objects(text)
 
-            # 决策：优先用 parsed_list；同时把打捞到的对象合并进来（去重）
+            # 优先使用完整数组；同时合并单个对象解析结果并按 id 去重。
             combined: List[Dict[str, Any]] = []
             if parsed_list:
                 combined.extend(parsed_list)
@@ -452,8 +439,7 @@ def refresh_one_bank(
             combined = dedupe_questions(combined)
 
             if not combined:
-                # 真的一个 {} 都没有：这才算“血本无归”
-                msg = "返回中未打捞到任何可解析的 JSON 对象(dict)，本 batch 写入 0"
+                msg = "返回中未获得任何可解析的 JSON 对象(dict)，本 batch 写入 0"
                 log_line(f"[SKIP] {target_type} 第 {bi} 轮：{msg}")
                 log_block(batch_log_path, "NO USABLE OBJECTS", msg + (f"\narray_parse_error={array_err}" if array_err else ""))
                 time.sleep(0.2)
@@ -463,7 +449,7 @@ def refresh_one_bank(
                 log_block(batch_log_path, "ARRAY PARSE FAILED (SALVAGED OBJECTS USED)", array_err)
 
             if parsed_list and len(parsed_list) != len(batch_questions):
-                log_line(f"[WARN] {target_type} 第 {bi} 轮：数组返回题数={len(parsed_list)}，期望={len(batch_questions)}（仍将合并打捞写入）")
+                log_line(f"[WARN] {target_type} 第 {bi} 轮：数组返回题数={len(parsed_list)}，期望={len(batch_questions)}（仍将合并可解析对象写入）")
                 log_block(
                     batch_log_path,
                     "WARN: ARRAY COUNT MISMATCH",
@@ -485,7 +471,7 @@ def refresh_one_bank(
                     f"total_out={len(new_bank)}"
                 )
             )
-            log_line(f"[OK] {target_type} 第 {bi} 轮：写入 {len(normalized)} 题（解析+打捞），累计 {len(new_bank)}")
+            log_line(f"[OK] {target_type} 第 {bi} 轮：写入 {len(normalized)} 题，累计 {len(new_bank)}")
 
             time.sleep(0.6)
 
@@ -500,17 +486,15 @@ def refresh_one_bank(
     log_line(f"==> 完成 {target_type}: 本次新增 {len(new_bank) - start_len} 题，当前累计 {len(new_bank)} -> {out_path}")
 
 
-# ----------------------------
-# CLI selection
-# ----------------------------
+# ===== 命令行入口 =====
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Refresh selected new_bank files incrementally.")
+    p = argparse.ArgumentParser(description="按题型生成或追加 MAS 题库。")
     p.add_argument(
         "--banks",
         type=str,
         default="",
-        help="Bank types: supports 'A1 A3 B' or 'A1,A3,B' or 'all'. If empty, interactive selection is used."
+        help="题型，可写为 'A1 A3 B'、'A1,A3,B' 或 'all'；留空时进入交互选择。"
     )
     p.add_argument(
         "--no_log_user_prompt",
@@ -531,7 +515,7 @@ def _split_bank_tokens(s: str) -> List[str]:
     return [p.strip().upper() for p in parts if p.strip()]
 
 def select_banks_interactive() -> List[str]:
-    log_line("请选择要翻新的题库（如：A4 B X 或 A4,B,X 或 all）：")
+    log_line("请选择要生成的 MAS 题库类型（如：A4 B X 或 A4,B,X 或 all）：")
     s = input("> ").strip()
     if not s:
         return []
@@ -582,7 +566,7 @@ def main() -> None:
 
     args = parse_args()
 
-    # Load env
+    # 加载环境变量。
     env_path = str(ENV_PATH)
     try:
         if os.path.exists(env_path):
@@ -598,7 +582,7 @@ def main() -> None:
     model = (os.getenv("DEEPSEEK_MODEL") or "deepseek-reasoner").strip()
     base_url = (os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com").strip()
 
-    # 选择目标 banks（允许多选）
+    # 选择待生成的 MAS 题库类型。
     targets = select_banks_from_args(args.banks)
     if not targets:
         targets = select_banks_interactive()
@@ -607,7 +591,7 @@ def main() -> None:
         log_line("[FATAL] 未选择任何题库，程序结束。")
         return
 
-    log_line(f"[OK] 本次选择翻新：{targets}")
+    log_line(f"[OK] 本次选择生成 MAS 题库：{targets}")
 
     # 询问每种题型从第几轮开始
     try:
@@ -625,10 +609,10 @@ def main() -> None:
 
     client = DeepSeekClient(api_key=api_key, base_url=base_url, model=model)
 
-    # Load banks safely
+    # 读取人类题库。
     banks = load_all_banks_safely()
 
-    # Refresh selected banks in stable order
+    # 按固定题型顺序生成 MAS 题库。
     write_user_prompt = not args.no_log_user_prompt
     for target_type in BANK_ORDER:
         if target_type not in targets:
@@ -642,7 +626,7 @@ def main() -> None:
                 write_user_prompt_to_batch_log=write_user_prompt
             )
         except Exception:
-            log_line(f"[ERROR] 翻新题库 {target_type} 发生未捕获异常，已跳过该题库，继续下一个。")
+            log_line(f"[ERROR] 生成 MAS 题库 {target_type} 发生未捕获异常，已跳过该题库，继续下一个。")
             log_block(MAIN_LOG_PATH, f"UNCAUGHT EXCEPTION in refresh_one_bank({target_type})", traceback.format_exc())
             continue
 

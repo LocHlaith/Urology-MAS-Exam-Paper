@@ -1,5 +1,11 @@
-# llm.py
-# -*- coding: utf-8 -*-
+"""为人类题库或 MAS 题库写入 LLM rubric 机器评分。
+
+脚本用途：调用模型按医学教育/题目质量 rubric 为题库题目打分。
+流程阶段：题库机器评价。
+主要输入：`data/banks/bank_*.json` 或 `data/banks/new_bank_*.json`，以及 `prompts/evaluation/prompt_for_llm.txt`。
+主要输出：原地更新的题库 JSON，写入 `LLM` 字段。
+重要边界：`--bank_set old` 是历史兼容写法，含义为人类题库；`--bank_set new` 含义为 MAS 题库。机器评分不替代专家评分。
+"""
 
 import os
 import json
@@ -21,20 +27,18 @@ from project_paths import (
     EVALUATION_PROMPT_DIR,
     LOG_DIR as PROJECT_LOG_DIR,
     PROJECT_ROOT,
-    new_bank_files,
-    old_bank_files,
+    human_bank_files,
+    mas_bank_files,
 )
 
 
-# ----------------------------
-# Paths / Constants
-# ----------------------------
+# ===== 路径与常量 =====
 
 ROOT = str(PROJECT_ROOT)
 
-OLD_BANK_FILES = old_bank_files()
+HUMAN_BANK_FILES = human_bank_files()
 
-NEW_BANK_FILES = new_bank_files()
+MAS_BANK_FILES = mas_bank_files()
 
 BANK_ORDER = ["A1", "A2", "A3", "A4", "B", "X"]
 
@@ -42,15 +46,11 @@ PROMPT_LLM_PATH = str(EVALUATION_PROMPT_DIR / "prompt_for_llm.txt")
 
 BATCH_SIZE = 100
 
-# LLM 评分项数量（不含 id）
+# LLM 评分项数量，不含 id。
 LLM_SCORE_COUNT = 16
-LLM_TOTAL_COLS = 1 + LLM_SCORE_COUNT  # id + 16 scores
+LLM_TOTAL_COLS = 1 + LLM_SCORE_COUNT  # id 与 16 项评分。
 
-# 新题库中不要上传 deepseek 的字段
-# 说明：
-# - 你明确列出的 8 个新增字段：不上传
-# - “可能多了 QGEval”：这里也不上传，避免把 QGEval 带给 LLM 评分造成泄漏/偏置
-# - “LLM”本身也不上传（本脚本是在生成 LLM；即使重跑也不应把旧 LLM 传上去）
+# 发送给模型前移除已生成的评价字段，避免机器评分之间互相泄漏或偏置。
 NEW_BANK_STRIP_KEYS = {
     "prototype",
     "fuzzywuzzy_doubt",
@@ -65,9 +65,7 @@ NEW_BANK_STRIP_KEYS = {
 }
 
 
-# ----------------------------
-# Logging
-# ----------------------------
+# ===== 日志 =====
 
 LOG_DIR = str(PROJECT_LOG_DIR)
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -101,9 +99,7 @@ def make_batch_log_path(bank_set: str, bank_type: str, batch_index: int) -> str:
     return os.path.join(LOG_DIR, f"llm_{bank_set}_{bank_type}_batch_{batch_index:04d}_{ts}.log")
 
 
-# ----------------------------
-# Utility: IO
-# ----------------------------
+# ===== 文件读写 =====
 
 def read_text(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
@@ -131,15 +127,10 @@ def backup_file(path: str) -> Optional[str]:
     return bak
 
 
-# ----------------------------
-# Utility: DeepSeek API
-# ----------------------------
+# ===== DeepSeek API 客户端 =====
 
 class DeepSeekClient:
-    """
-    DeepSeek OpenAI-style Chat Completions:
-    POST {base_url}/chat/completions
-    """
+    """DeepSeek API 的 OpenAI-style Chat Completions 客户端。"""
     def __init__(self, api_key: str, base_url: str, model: str, timeout: int = 180):
         self.api_key = api_key
         self.base_url = base_url.rstrip("/")
@@ -170,9 +161,7 @@ class DeepSeekClient:
             raise RuntimeError(f"无法从返回中提取 message.content: {json.dumps(obj, ensure_ascii=False)[:2000]}")
 
 
-# ----------------------------
-# Utility: Response extraction (array-of-arrays)
-# ----------------------------
+# ===== 模型返回解析 =====
 
 _JSON_FENCE_RE = re.compile(r"```(?:json)?\s*([\s\S]*?)\s*```", re.IGNORECASE)
 
@@ -272,9 +261,7 @@ def parse_llm_rows(obj: Any) -> List[Tuple[int, List[int]]]:
     return rows
 
 
-# ----------------------------
-# Batching / Prompt
-# ----------------------------
+# ===== 批处理与提示词 =====
 
 def split_batches(items: List[Dict[str, Any]], batch_size: int) -> List[List[Dict[str, Any]]]:
     out: List[List[Dict[str, Any]]] = []
@@ -310,9 +297,7 @@ def format_llm(scores: List[int]) -> str:
     return f"{total}: {','.join(str(x) for x in scores)}"
 
 
-# ----------------------------
-# Core: LLM insertion ordering
-# ----------------------------
+# ===== 字段写回顺序 =====
 
 def set_llm_with_order(item: Dict[str, Any], llm_text: str) -> Dict[str, Any]:
     """
@@ -345,12 +330,10 @@ def set_llm_with_order(item: Dict[str, Any], llm_text: str) -> Dict[str, Any]:
     return new_item
 
 
-# ----------------------------
-# Core: Evaluate one bank file
-# ----------------------------
+# ===== 主处理流程 =====
 
 def eval_one_bank(
-    bank_set: str,  # "old" or "new"
+    bank_set: str,  # "old"=人类题库, "new"=MAS 题库
     bank_type: str,
     bank_files: Dict[str, str],
     client: DeepSeekClient,
@@ -475,9 +458,7 @@ def eval_one_bank(
     log_line(f"==> {bank_set}:{bank_type}: 完成。已评分={done}/{len(final_data)}，输出文件={path}")
 
 
-# ----------------------------
-# CLI
-# ----------------------------
+# ===== 命令行入口 =====
 
 def _split_bank_tokens(s: str) -> List[str]:
     s = (s or "").strip()
@@ -487,13 +468,13 @@ def _split_bank_tokens(s: str) -> List[str]:
     return [p.strip().upper() for p in parts if p.strip()]
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Add LLM scores into existing bank_*.json using DeepSeek.")
+    p = argparse.ArgumentParser(description="为人类题库或 MAS 题库写入 LLM rubric 机器评分。")
     p.add_argument(
         "--bank_set",
         type=str,
         default="",
         choices=["old", "new", ""],
-        help="Choose bank set: old or new. If empty, interactive selection is used."
+        help="题库集合：old=人类题库 bank_*.json；new=MAS 题库 new_bank_*.json。留空则交互选择。"
     )
     p.add_argument(
         "--banks",
@@ -521,7 +502,7 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 def select_bank_set_interactive() -> str:
-    log_line("请选择题库类型：old（老题库 bank_*.json）或 new（新题库 new_bank_*.json）：")
+    log_line("请选择题库类型：old（人类题库 bank_*.json）或 new（MAS 题库 new_bank_*.json）：")
     s = input("> ").strip().lower()
     if s in ("old", "new"):
         return s
@@ -547,9 +528,7 @@ def select_banks_from_args(arg_banks: str) -> List[str]:
     return [x for x in chosen if x in BANK_ORDER]
 
 
-# ----------------------------
-# Main
-# ----------------------------
+# ===== 程序入口 =====
 
 def main() -> None:
     log_line(f"主日志文件：{MAIN_LOG_PATH}")
@@ -563,9 +542,9 @@ def main() -> None:
         log_line("[FATAL] 未选择题库类型（old/new），程序结束。")
         return
 
-    bank_files = OLD_BANK_FILES if bank_set == "old" else NEW_BANK_FILES
+    bank_files = HUMAN_BANK_FILES if bank_set == "old" else MAS_BANK_FILES
 
-    # Load env
+    # 加载环境变量。
     env_path = str(ENV_PATH)
     try:
         if os.path.exists(env_path):
@@ -577,7 +556,7 @@ def main() -> None:
         log_line("[ERROR] 加载 .env 失败（将继续尝试系统环境变量）")
         log_block(MAIN_LOG_PATH, "EXCEPTION loading .env", traceback.format_exc())
 
-    # 必须用 _003
+    # 读取 LLM rubric 评分专用 API key。
     api_key = (os.getenv("DEEPSEEK_API_KEY_003") or "").strip()
     model = (os.getenv("DEEPSEEK_MODEL") or "deepseek-reasoner").strip()
     base_url = (os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com").strip()
@@ -586,7 +565,7 @@ def main() -> None:
         log_line("[FATAL] 未读取到 DEEPSEEK_API_KEY_003。请检查 .env 或系统环境变量。")
         return
 
-    # Load system prompt
+    # 读取 LLM rubric 评分提示词。
     try:
         system_prompt = read_text(PROMPT_LLM_PATH)
         log_line(f"[OK] 已读取 prompt：{PROMPT_LLM_PATH}")
@@ -595,7 +574,7 @@ def main() -> None:
         log_block(MAIN_LOG_PATH, "EXCEPTION reading prompt_for_llm.txt", traceback.format_exc())
         return
 
-    # Select banks
+    # 选择待评分题库。
     targets = select_banks_from_args(args.banks)
     if not targets:
         targets = select_banks_interactive()

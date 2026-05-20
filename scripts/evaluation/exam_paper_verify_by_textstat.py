@@ -1,30 +1,10 @@
-# exam_paper_verify_by_textstat.py
-# -*- coding: utf-8 -*-
-"""
-exam_paper_verify_by_textstat.py
+﻿"""为指定试卷 JSON 写入可读性字段。
 
-需求实现：
-1) 使用 textstat 计算可读性（Flesch Reading Ease）
-2) 为第一作者组卷后的试卷 JSON 写入可读性分数
-3) 不覆盖已存在字段（默认跳过）；可用 --overwrite 强制覆盖
-
-写入字段：
-- textstat_flesch_reading_ease: float（通常范围约 0~100，textstat 可能返回负数或 >100，属正常现象）
-
-运行：
-python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json>
-
-不覆盖已存在 textstat_flesch_reading_ease（默认跳过）：
-python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json>
-
-允许覆盖：
-python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json> --overwrite
-
-仅计算不写回：
-python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json> --dry-run
-
-依赖：
-pip install textstat
+脚本用途：使用 textstat 计算第一作者组卷后试卷题目的 Flesch Reading Ease。
+流程阶段：试卷机器评价。
+主要输入：用户通过 `--target-file` 明确指定的试卷 JSON。
+主要输出：原地更新的试卷 JSON，写入 `textstat_flesch_reading_ease`。
+重要边界：不得从历史路径或文件名推断试卷文件；该指标不代表专家评分。
 """
 
 from __future__ import annotations
@@ -45,9 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 KEY_SCORE = "textstat_flesch_reading_ease"
 
 
-# -------------------------
-# IO
-# -------------------------
+# ===== 文件读写 =====
 
 def load_json_list(path: str) -> List[Dict[str, Any]]:
     with open(path, "r", encoding="utf-8") as f:
@@ -67,9 +45,7 @@ def dump_json_list(path: str, data: List[Dict[str, Any]]) -> None:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
-# -------------------------
-# Text builders
-# -------------------------
+# ===== 题面文本构造 =====
 
 def _get_str(q: Dict[str, Any], key: str) -> str:
     v = q.get(key)
@@ -153,9 +129,7 @@ def question_to_string_by_type(q: Dict[str, Any]) -> str:
     return "".join(parts)
 
 
-# -------------------------
-# Progress / ETA
-# -------------------------
+# ===== 进度显示 =====
 
 def fmt_mmss(seconds: float) -> str:
     seconds = max(0.0, float(seconds))
@@ -177,9 +151,7 @@ def progress_line(done: int, total: int, elapsed: float) -> str:
     return f"{done}/{total} [{fmt_mmss(elapsed)}<{fmt_mmss(remaining)},  {rate:0.2f}s/it]"
 
 
-# -------------------------
-# Core
-# -------------------------
+# ===== 主处理流程 =====
 
 def compute_flesch_reading_ease(text: str) -> float:
     """

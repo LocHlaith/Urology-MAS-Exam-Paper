@@ -2,8 +2,8 @@
 
 ## 代码
 
-- `scripts/generation/`：包含两类性质不同的脚本：一类把人类题库材料结构化为 `bank_*.json`，另一类调用 DeepSeek/MAS 生成 `new_bank_*.json`。
-- `scripts/evaluation/`：为题库或用户明确提供的试卷 JSON 补充相似度、可读性、QGEval、LLM 评分、题目解析和考点标注。
+- `scripts/generation/`：包含三类脚本：把人类题库 Word 结构化为 `bank_*.json`，根据人类题库生成 MAS 题库 `new_bank_*.json`，以及为 MAS 题库补充答案解析和考点还原。
+- `scripts/evaluation/`：为题库或用户明确提供的试卷 JSON 写入文本相似度、可读性、QGEval 和 LLM 等机器派生评价字段。
 - `scripts/reporting/`：将题库 JSON 导出为给合作者人工审阅的 Word 材料；不作为绘图数据来源。
 - `scripts/project_paths.py`：集中管理仓库路径。仓库结构变化时优先更新这个文件。
 
@@ -11,10 +11,9 @@
 
 - `data/raw/datasets/`：资料文档和文本导出。
 - `data/banks/bank_*.json`：人类题库文件。
-- `data/banks/new_bank_*.json`：MAS 生成题库及其累计评价字段。
-- `prompts/generation/`：DeepSeek/MAS 阅读人类题库并生成新题库时使用的 prompt。
-- `prompts/analysis/`：生成题目解析字段时使用的 prompt。
-- `prompts/evaluation/`：QGEval、LLM 评分和考点标注相关 prompt。
+- `data/banks/new_bank_*.json`：MAS 题库及其累计评价字段。
+- `prompts/generation/`：MAS 出题、答案解析补充和考点还原使用的 prompt。
+- `prompts/evaluation/`：QGEval 与 LLM 评分相关 prompt。
 
 ## 输出
 
@@ -24,6 +23,6 @@
 
 ## 绘图要求
 
-`plot/` 保存第一作者提供的原始绘图包。`plot/agent_readable/` 是为了便于 agent 阅读而做的结构化整理，不替代原始文件。
+`plot/raw/` 保存第一作者提供但不建议后续 agent 直接读取的原始绘图文件。`plot/agent_readable/` 是为了便于 agent 阅读而做的结构化整理，不替代原始文件。
 
 第一作者要求最终图片为可编辑 PDF；统计整理中可能出现 CSV、JSON、Excel 或其他表格，但这些不是图片交付格式。

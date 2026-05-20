@@ -1,8 +1,8 @@
-# 转换来源：`plot/作图-1.0.docx`
+# 转换来源：`plot/raw/作图-1.0.docx`
 
 ## 转换元数据
 
-- 来源路径：`plot/作图-1.0.docx`
+- 来源路径：`plot/raw/作图-1.0.docx`
 - 来源 SHA256：`bbaeeebc4019bc79e264471b5a5045b2c08cfb0801b2e0941c4033ee3001306b`
 - 生成时间：`2026-05-19T21:04:44`
 - 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)

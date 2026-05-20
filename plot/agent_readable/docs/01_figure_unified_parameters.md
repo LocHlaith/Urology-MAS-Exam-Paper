@@ -1,8 +1,8 @@
-# 转换来源：`plot/Figure 统一参数.docx`
+# 转换来源：`plot/raw/Figure 统一参数.docx`
 
 ## 转换元数据
 
-- 来源路径：`plot/Figure 统一参数.docx`
+- 来源路径：`plot/raw/Figure 统一参数.docx`
 - 来源 SHA256：`af00e49483f91fc8f7a4c34d7fe8552955ac5c99140002997a342c774a92c315`
 - 生成时间：`2026-05-19T21:04:44`
 - 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)

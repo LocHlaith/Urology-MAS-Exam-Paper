@@ -21,13 +21,13 @@
 
 ## 项目目的与作者分工
 
-本项目服务于论文：比较人类出题质量与 DeepSeek/MAS 辅助出题质量，并评估真实考试中的考生表现、来源辨识、效率和安全性。
+本项目服务于论文：比较人类出题质量与 MAS 出题质量，并评估真实考试中的考生表现、来源辨识、效率和安全性。
 
 我是论文第二作者，负责本项目中的编程、统计和绘图。代码流程大致为：
 
-1. 人类题库来自 Word/TXT 等材料，先被转换为程序可读的 `data/banks/bank_*.json`。
-2. DeepSeek 阅读人类题库和提示词，生成 `data/banks/new_bank_*.json`。
-3. 对新题库、人类题库或用户明确提供的组卷后试卷 JSON 进行文本相似度、可读性、QGEval、LLM 评分、解析和考点标注。
+1. 人类题库来源是 Word，先转换为 TXT 中间文件，再结构化为 `data/banks/bank_*.json`。
+2. 模型阅读人类题库和提示词，生成 MAS 题库 `data/banks/new_bank_*.json`。
+3. 对 MAS 题库补充答案解析和考点还原，并对 MAS 题库、人类题库或用户明确提供的组卷后试卷 JSON 进行文本相似度、可读性、QGEval、LLM 评分。
 4. 根据 `plot/` 中第一作者给出的绘图要求，整理数据并输出可编辑 PDF 图。
 
 ## 已复核的绘图来源
@@ -63,13 +63,13 @@
 ### 题库 JSON
 
 - 人类题库：`data/banks/bank_*.json`，共 775 条。A1 267，A2 422，A3 48，A4 20，B 12，X 6。
-- DeepSeek/MAS 新题库：`data/banks/new_bank_*.json`，共 3676 条。A1 480，A2 323，A3 647，A4 679，B 788，X 759。
-- 新题库包含部分机器评价字段：文本相似度、可读性、QGEval、LLM、`test_point` 等。
-- 人类题库也包含 QGEval/LLM 字段，但缺少新题库中的相似度、可读性和考点字段。
+- MAS 题库：`data/banks/new_bank_*.json`，共 3676 条。A1 480，A2 323，A3 647，A4 679，B 788，X 759。
+- MAS 题库包含部分机器评价字段：文本相似度、可读性、QGEval、LLM、`test_point` 等。
+- 人类题库也包含 QGEval/LLM 字段，但缺少 MAS 题库中的相似度、可读性和考点字段。
 
 ### 作答工作簿
 
-- 原始工作簿：`plot/试卷作答情况.xlsx`、`plot/试卷作答情况 - 2.xlsx`。
+- 原始工作簿：`plot/raw/试卷作答情况.xlsx`、`plot/raw/试卷作答情况 - 2.xlsx`。
 - 已转换摘要：`plot/agent_readable/docs/08_exam_responses_workbook.md`、`plot/agent_readable/docs/07_exam_responses_2_workbook.md`。
 - 可见信息包括：M卷/P卷、A/B卷、院区、年级、姓名/编号、题号、标准答案、作答、分值、前 27%/30% 与后 27%/30% 名单、疲劳性探索与总时长、评价系统与图灵测试等。
 - 已确认映射：M卷 = MAS，P卷 = 人类。该映射可用于整理题块级 MAS-Human 配对得分和题目来源。
@@ -84,7 +84,7 @@
 
 ### 人工核对材料
 
-- `outputs/report_drafts/` 当前保留 A/B 卷解析标注版 TXT，可用于核对试卷解析、评分字段和标注文字。
+- `outputs/report_drafts/` 当前保留 A/B 卷解析标注版 TXT，可用于核对试卷答案解析、评分字段和考点还原文字。
 - 该目录不是绘图要求来源，也不是锁定统计结果来源。
 
 ## 关键缺口
@@ -125,7 +125,7 @@
 | Supplementary Fig. source misclassification | 可从评价系统与图灵测试/来源判断相关 sheet 开始；需真实来源和评价者定义。 |
 | Supplementary Fig. efficiency sensitivity | 缺基础效率数据和情景假设，暂不能画。 |
 | Supplementary Table prompt/model settings | prompt 文件存在；模型版本、temperature、运行配置、完整 prompt log 需核对。 |
-| Supplementary Table text overlap/readability | 新题库层面可探索；若代表最终入卷题，需先锁定最终题目清单。 |
+| Supplementary Table text overlap/readability | MAS 题库层面可探索；若代表最终入卷题，需先锁定最终题目清单。 |
 
 ## 禁止推断清单
 
@@ -133,7 +133,7 @@
 - 不要把原文建议的数据表名当成当前仓库已有文件。
 - 不要把机器评分 QGEval/LLM 写成最终盲法专家评分。
 - 不要把人工核对 TXT 写成锁定统计结果；正式图需要从 JSON、workbook 或锁定分析数据重算。
-- 不要把 `bank_*.json` 和 `new_bank_*.json` 混写；前者统一称为人类题库，后者称为 DeepSeek/MAS 新题库。
+- 不要把 `bank_*.json` 和 `new_bank_*.json` 混写；前者统一称为人类题库，后者称为 MAS 题库。
 - 不要把来源辨识接近随机解释为质量等同。
 - 不要对 Form A 和 Form B 做配对分析；配对只适用于同一考生的 MAS block 与 Human block。
 - 不要把 M/P 映射反过来；本项目已确认 M卷 = MAS，P卷 = 人类。
