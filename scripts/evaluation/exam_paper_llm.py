@@ -21,7 +21,6 @@ from project_paths import (
     EVALUATION_PROMPT_DIR,
     LOG_DIR as PROJECT_LOG_DIR,
     PROJECT_ROOT,
-    REPORT_DRAFTS_DIR,
 )
 
 
@@ -30,9 +29,6 @@ from project_paths import (
 # ----------------------------
 
 ROOT = str(PROJECT_ROOT)
-
-# 只处理第一作者从 new_bank 抽题组卷后的试卷 JSON
-BANK_FILE = str(REPORT_DRAFTS_DIR / "B.json")
 
 PROMPT_LLM_PATH = str(EVALUATION_PROMPT_DIR / "prompt_for_llm.txt")
 
@@ -342,17 +338,18 @@ def set_llm_with_order(item: Dict[str, Any], llm_text: str) -> Dict[str, Any]:
 
 
 # ----------------------------
-# Core: Evaluate outputs/report_drafts/B.json
+# Core: Evaluate exam paper JSON
 # ----------------------------
 
 def eval_exam_paper(
     client: DeepSeekClient,
     system_prompt: str,
+    target_file: str,
     start_batch: int = 1,
     write_user_prompt_to_batch_log: bool = True,
     sleep_seconds: float = 0.6,
 ) -> None:
-    path = BANK_FILE
+    path = target_file
     if not os.path.exists(path):
         log_line(f"[ERROR] bank 文件不存在：{path}")
         return
@@ -361,10 +358,10 @@ def eval_exam_paper(
 
     # 只处理未写入 LLM 的题（不影响已有 QGEval）
     pending: List[Dict[str, Any]] = [q for q in data if isinstance(q, dict) and ("LLM" not in q)]
-    log_line(f"==> outputs/report_drafts/B.json: 总题数={len(data)}, 待评分={len(pending)}, batch_size={BATCH_SIZE}, start_batch={start_batch}")
+    log_line(f"==> 目标文件: {path}, 总题数={len(data)}, 待评分={len(pending)}, batch_size={BATCH_SIZE}, start_batch={start_batch}")
 
     if not pending:
-        log_line(f"[OK] outputs/report_drafts/B.json: 无待评分题目，跳过。")
+        log_line(f"[OK] 无待评分题目，跳过。")
         return
 
     # 建索引：id -> list_index
@@ -376,13 +373,13 @@ def eval_exam_paper(
         try:
             qid = int(str(qid_raw).strip())
         except Exception:
-            raise ValueError(f"outputs/report_drafts/B.json 出现无法解析为 int 的 id：{qid_raw!r}")
+            raise ValueError(f"目标文件出现无法解析为 int 的 id：{qid_raw!r}")
         id_to_pos[qid] = idx
 
     batches = split_batches(pending, BATCH_SIZE)
 
     bak = backup_file(path)
-    log_line(f"[OK] outputs/report_drafts/B.json: 已备份原文件 -> {bak}")
+    log_line(f"[OK] 已备份原文件 -> {bak}")
 
     # 原文件已被 os.replace 挪走，先写回占位
     write_json_list(path, data)
@@ -401,13 +398,13 @@ def eval_exam_paper(
 
         log_block(
             batch_log_path,
-            title=f"BATCH START | bank=outputs/report_drafts/B.json | batch={bi}/{len(batches)} | n={len(batch_questions)}",
+            title=f"BATCH START | target={path} | batch={bi}/{len(batches)} | n={len(batch_questions)}",
             content=f"path={path}\nbackup={bak}\nstrip_keys={sorted(list(strip_keys)) if strip_keys else 'None'}\n"
         )
         if write_user_prompt_to_batch_log:
             log_block(batch_log_path, "USER PROMPT (JSON, SANITIZED)", user_prompt)
 
-        log_line(f"  - outputs/report_drafts/B.json 第 {bi}/{len(batches)} 批：n={len(batch_questions)}")
+        log_line(f"  - 第 {bi}/{len(batches)} 批：n={len(batch_questions)}")
 
         try:
             text = client.chat(system_prompt=system_prompt, user_prompt=user_prompt, temperature=0.2)
@@ -452,13 +449,13 @@ def eval_exam_paper(
                     f"bank_total={len(data)}\n"
                 )
             )
-            log_line(f"[OK] outputs/report_drafts/B.json 第 {bi} 批：写入 LLM={updated}，返回行={len(rows)}，未命中id={missed}")
+            log_line(f"[OK] 第 {bi} 批：写入 LLM={updated}，返回行={len(rows)}，未命中id={missed}")
 
             time.sleep(sleep_seconds)
 
         except Exception as e:
             err_text = f"{type(e).__name__}: {e}"
-            log_line(f"[SKIP] outputs/report_drafts/B.json 第 {bi} 批失败，已跳过：{err_text}")
+            log_line(f"[SKIP] 第 {bi} 批失败，已跳过：{err_text}")
             log_block(batch_log_path, "BATCH FAILED (SKIPPED)", err_text)
             log_block(batch_log_path, "TRACEBACK", traceback.format_exc())
             time.sleep(0.2)
@@ -466,7 +463,7 @@ def eval_exam_paper(
 
     final_data = read_json_list(path)
     done = sum(1 for q in final_data if isinstance(q, dict) and ("LLM" in q))
-    log_line(f"==> outputs/report_drafts/B.json: 完成。已评分={done}/{len(final_data)}，输出文件={path}")
+    log_line(f"==> 完成。已评分={done}/{len(final_data)}，输出文件={path}")
 
 
 # ----------------------------
@@ -474,7 +471,14 @@ def eval_exam_paper(
 # ----------------------------
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Add LLM scores into outputs/report_drafts/B.json using DeepSeek.")
+    p = argparse.ArgumentParser(description="Add LLM scores into an exam paper JSON using DeepSeek.")
+    p.add_argument(
+        "--target-file",
+        "--target_file",
+        dest="target_file",
+        required=True,
+        help="待处理的试卷 JSON 文件路径。"
+    )
     p.add_argument(
         "--start_batch",
         type=int,
@@ -538,11 +542,11 @@ def main() -> None:
         log_line(f"[FATAL] --start_batch 必须 >= 1，收到：{args.start_batch}")
         return
 
-    log_line(f"[OK] 本次选择评分：bank=outputs/report_drafts/B.json | start_batch={args.start_batch} | batch_size={BATCH_SIZE}")
+    log_line(f"[OK] 本次选择评分：target={args.target_file} | start_batch={args.start_batch} | batch_size={BATCH_SIZE}")
 
     # 预检查文件是否存在
-    if not os.path.exists(BANK_FILE):
-        log_line(f"[WARN] 目标题库文件不存在：{BANK_FILE}")
+    if not os.path.exists(args.target_file):
+        log_line(f"[WARN] 目标题库文件不存在：{args.target_file}")
 
     client = DeepSeekClient(api_key=api_key, base_url=base_url, model=model, timeout=180)
     write_user_prompt = not args.no_log_user_prompt
@@ -551,12 +555,13 @@ def main() -> None:
         eval_exam_paper(
             client=client,
             system_prompt=system_prompt,
+            target_file=args.target_file,
             start_batch=args.start_batch,
             write_user_prompt_to_batch_log=write_user_prompt,
             sleep_seconds=args.sleep,
         )
     except Exception:
-        log_line(f"[ERROR] outputs/report_drafts/B.json 评分发生未捕获异常，程序将正常结束。")
+        log_line(f"[ERROR] 评分发生未捕获异常，程序将正常结束。")
         log_block(MAIN_LOG_PATH, f"UNCAUGHT EXCEPTION in eval_exam_paper", traceback.format_exc())
 
     log_line("全部流程结束（失败 batch 已跳过；已评分题会自动跳过；文件已在开始时备份）。")

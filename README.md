@@ -13,14 +13,14 @@
 
 ## 目录说明
 
-- `scripts/`：可运行脚本，按实际用途分为人类题库转换、DeepSeek 出题、评价标注、试卷评价和报告导出。
+- `scripts/`：可运行脚本，按实际用途分为人类题库转换、DeepSeek 出题、题库/试卷评价、题目标注和人工审阅导出。
 - `scripts/project_paths.py`：项目路径的单一事实来源。新增脚本应优先复用这里的路径常量。
 - `prompts/`：DeepSeek 调用所需 prompt，按生成、分析、评价分组。
 - `data/banks/`：题库 JSON。`bank_*.json` 是人类题库，`new_bank_*.json` 是 DeepSeek/MAS 生成题库。
 - `data/raw/datasets/`：原始 Word、TXT、PPT 数据材料。
 - `plot/`：第一作者提供的绘图要求、格式参考和作答工作簿。
-- `plot/agent_readable/`：已转换成 agent 友好形式的绘图要求、工作簿单元格导出、PPT 媒体和 TIF 预览。
-- `outputs/`：派生产物，包括 `bank_docx/`、`statistics/`、`report_drafts/`、`figures/`。
+- `plot/agent_readable/`：已转换成 agent 友好形式的绘图要求、工作簿单元格导出和 TIF 预览。
+- `outputs/`：当前保留的输出材料，主要用于人工核对和后续正式绘图输出。
 - `docs/`：给人和 agent 看的工程说明、防幻觉规则和绘图就绪性审计。
 
 ## Agent 使用规则

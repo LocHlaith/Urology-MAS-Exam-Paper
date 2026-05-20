@@ -6,7 +6,7 @@ from pathlib import Path
 from docx import Document
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from project_paths import BANK_DIR, BANK_DOCX_DIR
+from project_paths import BANK_DIR, REPORT_EXPORTS_DIR
 
 # 考点映射表
 TEST_POINTS = {
@@ -135,7 +135,7 @@ def json_to_docx(json_path, docx_path):
     print(f"成功导出：{docx_path}")
 
 if __name__ == "__main__":
-    # 批量处理 data/banks 下的新题库 JSON，输出到 outputs/bank_docx。
+    # 批量处理 data/banks 下的新题库 JSON，输出为给合作者人工审阅的 Word 文档。
     files_to_convert = [
         "new_bank_a1.json",
         "new_bank_a2.json",
@@ -148,8 +148,8 @@ if __name__ == "__main__":
     for file in files_to_convert:
         json_path = BANK_DIR / file
         if json_path.exists():
-            BANK_DOCX_DIR.mkdir(parents=True, exist_ok=True)
-            out_name = BANK_DOCX_DIR / file.replace('.json', '.docx')
+            REPORT_EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+            out_name = REPORT_EXPORTS_DIR / file.replace('.json', '.docx')
             json_to_docx(str(json_path), str(out_name))
         else:
             print(f"未找到文件: {json_path}")

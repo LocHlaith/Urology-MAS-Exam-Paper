@@ -17,10 +17,9 @@ EVALUATION_PROMPT_DIR = PROMPT_DIR / "evaluation"
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 LOG_DIR = OUTPUT_DIR / "logs"
-BANK_DOCX_DIR = OUTPUT_DIR / "bank_docx"
-STATISTICS_DIR = OUTPUT_DIR / "statistics"
 FIGURE_DIR = OUTPUT_DIR / "figures"
 REPORT_DRAFTS_DIR = OUTPUT_DIR / "report_drafts"
+REPORT_EXPORTS_DIR = OUTPUT_DIR / "report_exports"
 
 ENV_PATH = PROJECT_ROOT / ".env"
 
@@ -66,5 +65,5 @@ def analysis_prompt_files() -> Dict[str, str]:
 
 
 def ensure_output_dirs(extra_dirs: Iterable[Path] = ()) -> None:
-    for path in [OUTPUT_DIR, LOG_DIR, BANK_DOCX_DIR, STATISTICS_DIR, FIGURE_DIR, REPORT_DRAFTS_DIR, *extra_dirs]:
+    for path in [OUTPUT_DIR, LOG_DIR, FIGURE_DIR, REPORT_DRAFTS_DIR, REPORT_EXPORTS_DIR, *extra_dirs]:
         path.mkdir(parents=True, exist_ok=True)

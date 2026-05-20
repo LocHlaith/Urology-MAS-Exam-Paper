@@ -5,23 +5,23 @@ exam_paper_verify_by_textstat.py
 
 需求实现：
 1) 使用 textstat 计算可读性（Flesch Reading Ease）
-2) 在 outputs/report_drafts/B.json 中为第一作者组卷后的试卷题目写入可读性分数
+2) 为第一作者组卷后的试卷 JSON 写入可读性分数
 3) 不覆盖已存在字段（默认跳过）；可用 --overwrite 强制覆盖
 
 写入字段：
 - textstat_flesch_reading_ease: float（通常范围约 0~100，textstat 可能返回负数或 >100，属正常现象）
 
 运行：
-python scripts/evaluation/exam_paper_verify_by_textstat.py
+python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json>
 
 不覆盖已存在 textstat_flesch_reading_ease（默认跳过）：
-python scripts/evaluation/exam_paper_verify_by_textstat.py
+python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json>
 
 允许覆盖：
-python scripts/evaluation/exam_paper_verify_by_textstat.py --overwrite
+python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json> --overwrite
 
 仅计算不写回：
-python scripts/evaluation/exam_paper_verify_by_textstat.py --dry-run
+python scripts/evaluation/exam_paper_verify_by_textstat.py --target-file <exam_paper_json> --dry-run
 
 依赖：
 pip install textstat
@@ -41,10 +41,7 @@ import textstat
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from project_paths import REPORT_DRAFTS_DIR
 
-
-TARGET_FILE = REPORT_DRAFTS_DIR / "B.json"
 KEY_SCORE = "textstat_flesch_reading_ease"
 
 
@@ -235,7 +232,14 @@ def process_file(path: str, overwrite: bool, dry_run: bool) -> Tuple[int, int]:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Compute Flesch Reading Ease for outputs/report_drafts/B.json via textstat."
+        description="Compute Flesch Reading Ease for an exam paper JSON via textstat."
+    )
+    parser.add_argument(
+        "--target-file",
+        "--target_file",
+        dest="target_file",
+        required=True,
+        help="待处理的试卷 JSON 文件路径。",
     )
     parser.add_argument(
         "--overwrite",
@@ -252,7 +256,7 @@ def main():
     overwrite = args.overwrite
     dry_run = args.dry_run
 
-    path = str(TARGET_FILE)
+    path = args.target_file
 
     if not os.path.exists(path):
         print(f"[ERROR] 文件不存在：{path}", file=sys.stderr)

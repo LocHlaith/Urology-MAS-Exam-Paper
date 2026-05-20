@@ -21,7 +21,6 @@ from project_paths import (
     EVALUATION_PROMPT_DIR,
     LOG_DIR as PROJECT_LOG_DIR,
     PROJECT_ROOT,
-    REPORT_DRAFTS_DIR,
 )
 
 
@@ -30,9 +29,6 @@ from project_paths import (
 # ----------------------------
 
 ROOT = str(PROJECT_ROOT)
-
-# 目标文件
-TARGET_BANK_FILE = str(REPORT_DRAFTS_DIR / "B.json")
 
 BATCH_SIZE = 100
 
@@ -350,11 +346,12 @@ def set_qgeval_with_order(item: Dict[str, Any], qgeval_text: str) -> Dict[str, A
 def eval_target_bank(
     client: DeepSeekClient,
     system_prompt: str,
+    target_bank_file: str,
     start_batch: int = 1,
     write_user_prompt_to_batch_log: bool = True,
     sleep_seconds: float = 0.6,
 ) -> None:
-    path = TARGET_BANK_FILE
+    path = target_bank_file
     if not os.path.exists(path):
         log_line(f"[ERROR] 目标文件不存在：{path}")
         return
@@ -473,7 +470,14 @@ def eval_target_bank(
 # ----------------------------
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Add QGEval scores into the exam paper JSON at outputs/report_drafts/B.json using DeepSeek.")
+    p = argparse.ArgumentParser(description="Add QGEval scores into an exam paper JSON using DeepSeek.")
+    p.add_argument(
+        "--target-file",
+        "--target_file",
+        dest="target_file",
+        required=True,
+        help="待处理的试卷 JSON 文件路径。"
+    )
     p.add_argument(
         "--start_batch",
         type=int,
@@ -541,8 +545,8 @@ def main() -> None:
     log_line(f"[OK] 本次评分：start_batch={args.start_batch} | batch_size={BATCH_SIZE}")
 
     # 提前检查文件存在性
-    if not os.path.exists(TARGET_BANK_FILE):
-        log_line(f"[WARN] 目标文件不存在：{TARGET_BANK_FILE}")
+    if not os.path.exists(args.target_file):
+        log_line(f"[WARN] 目标文件不存在：{args.target_file}")
 
     client = DeepSeekClient(api_key=api_key, base_url=base_url, model=model, timeout=180)
 
@@ -552,6 +556,7 @@ def main() -> None:
         eval_target_bank(
             client=client,
             system_prompt=system_prompt,
+            target_bank_file=args.target_file,
             start_batch=args.start_batch,
             write_user_prompt_to_batch_log=write_user_prompt,
             sleep_seconds=args.sleep,
