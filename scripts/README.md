@@ -47,4 +47,4 @@
 
 ## 人工审阅导出
 
-- `scripts/reporting/json_to_docx.py`：将题库 JSON 导出为给合作者人工审阅的 Word 文档。该脚本不是绘图数据来源。
+- `scripts/reporting/json_to_docx.py`：将题库 JSON 导出为给合作者人工审阅的 Word 文档。

@@ -1,21 +1,26 @@
-# 泌尿外科 MAS 出科考试论文项目
+# 泌尿外科出科考试命卷论文项目
 
-本仓库服务于一项比较“人类出题质量”与“MAS 出题质量”的泌尿外科规培出科考试论文。我是论文第二作者，负责本项目中的编程、统计和绘图工作。
+本仓库服务于一项比较“人类出题质量”和“MAS（多智能体系统）出题质量”的论文。我是论文第二作者，负责本项目中的编程、统计和绘图工作。
 
 ## 项目流程
 
-1. 第一阶段：整理人类题库。人类题库来源是 Word，代码先将 Word 转成 TXT 中间文件，再结构化为 `data/banks/bank_*.json`。
-2. 第二阶段：MAS 出题。模型读取人类题库和提示词，生成 JSON 格式的 MAS 题库，即 `data/banks/new_bank_*.json`。
-3. 第三阶段：内容补全与评价。对 MAS 题库补充答案解析、考点还原，并对人类题库、MAS 题库或第一作者组卷后的试卷进行文本相似度、可读性、QGEval 和 LLM 评分。
-4. 第四阶段：统计与绘图。根据第一作者在 `plot/` 中给出的绘图要求，整理分析数据并输出可编辑 PDF 图。
+- 一、获得人类题库
+我们邀请人类专家命制了人类题库。因为医学专家习惯使用Word，而Word不便于机器处理，所以我们先将Word文档转换为TXT文件，再结构化为JSON格式。
 
-## 目录说明
+- 二、获得MAS题库
+我们调用deepseek-reasoner模型，学习人类题库和命题规范，生成JSON格式的MAS题库。第一轮生成题干和选项，第二轮生成答案解析和考点还原。
 
-- `scripts/`：可运行脚本，按实际用途分为人类题库结构化、MAS 出题与内容补全、题库/试卷评价和人工审阅导出。
-- `scripts/project_paths.py`：项目路径的单一事实来源。新增脚本应优先复用这里的路径常量。
-- `prompts/`：模型调用所需 prompt，按生成与评价分组。
-- `data/banks/`：题库 JSON。`bank_*.json` 是人类题库，`new_bank_*.json` 是 MAS 题库。
-- `plot/`：第一作者提供的绘图要求、格式参考和作答工作簿。
-- `plot/agent_readable/`：已转换成 agent 友好形式的绘图要求、工作簿单元格导出和 TIF 预览。
-- `outputs/`：当前保留的输出材料，主要用于人工核对和后续正式绘图输出。
-- `docs/`：给人和 agent 看的工程说明、防幻觉规则和绘图就绪性审计。
+- 三、机器评价题库
+对于人类题库的每道题目，我们标注了可读性，然后调用deepseek-reasoner模型，标注了QGEval评分和LLM评分。
+对于MAS题库的每道题目，我们标注了可读性、和人类题库的文本相似性，然后调用deepseek-reasoner模型，标注了QGEval评分和LLM评分。
+
+- 四、组成试卷
+我们从人类题库和MAS题库中随机抽取题目，组成人类试卷（P卷）和MAS试卷（M卷）。为了便于第一作者查看试卷，我将试卷转换为TXT文件，即outputs\report_drafts中的P卷解析标注版和M卷解析标注版。因为QGEval评分和LLM评分具有随机性，所以对于每道题，我们调用了四次deepseek-reasoner模型，获得了四组QGEval评分和LLM评分，所以P卷解析标注版和M卷解析标注版各有四份。
+
+- 五、模拟考试
+为了消除考生疲劳的影响，我们将“P卷在前、M卷在后”的考试称为A卷，将“M卷在前、P卷在后”的考试称为B卷，得到了考生的作答数据，即plot\data\exam_responses和plot\data\exam_responses_2。其中，plot\data\exam_responses未标注题型，而plot\data\exam_responses_2标注了题型。
+
+- 六、数据处理和论文绘图
+第一作者对我的绘图要求放在plot\docs和plot\assets\visual_reference_previews目录下。你会发现现有的P卷解析标注版和M卷解析标注版，以及plot\data\exam_responses和plot\data\exam_responses_2还不能满足第一作者的绘图要求，因此在绘图之前，需要进行数据处理。
+
+注意，第一作者的绘图要求是由AI辅助生成的，各要求之间也许存在consistency问题。因此，你在数据处理和论文绘图之前，必须仔细阅读各个要求文件，充分理解第一作者的真实意图，并解决consistency问题。
