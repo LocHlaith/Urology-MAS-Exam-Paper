@@ -21,6 +21,6 @@
 为了消除考生疲劳的影响，我们将“P卷在前、M卷在后”的考试称为A卷，将“M卷在前、P卷在后”的考试称为B卷，得到了考生的作答数据，即plot\data\exam_responses和plot\data\exam_responses_2。其中，plot\data\exam_responses未标注题型，而plot\data\exam_responses_2标注了题型。
 
 - 六、数据处理和论文绘图
-第一作者对我的绘图要求放在plot\docs和plot\assets\visual_reference_previews目录下。你会发现现有的P卷解析标注版和M卷解析标注版，以及plot\data\exam_responses和plot\data\exam_responses_2还不能满足第一作者的绘图要求，因此在绘图之前，需要进行数据处理。
+第一作者对我的绘图要求放在plot目录下。plot\docs和plot\assets\visual_reference_previews是五张其他论文的优秀图片，我的绘图质量应对标这五张优秀图片。你会发现现有的P卷解析标注版和M卷解析标注版，以及plot\data\exam_responses和plot\data\exam_responses_2还不能满足第一作者的绘图要求，因此在绘图之前，需要进行数据处理。
 
 注意，第一作者的绘图要求是由AI辅助生成的，各要求之间也许存在consistency问题。因此，你在数据处理和论文绘图之前，必须仔细阅读各个要求文件，充分理解第一作者的真实意图，并解决consistency问题。
