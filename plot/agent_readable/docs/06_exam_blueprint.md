@@ -1,20 +1,4 @@
-# 转换来源：`plot/raw/浙江大学邵逸夫医院泌尿外科出科考考试蓝图.docx`
-
-## 转换元数据
-
-- 来源路径：`plot/raw/浙江大学邵逸夫医院泌尿外科出科考考试蓝图.docx`
-- 来源 SHA256：`2244972d19f827b41c50530f53fe3ec933eae629d0904ca7df584911bf235323`
-- 生成时间：`2026-05-19T21:04:45`
-- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
-
-## Agent 特别警示
-
-本文件给出考试蓝图和目标题型/认知层级结构，不等于最终入卷题的逐题清单。蓝图中的 Recall、Comprehension、Application、Analysis 与统计 protocol 中的 knowledge、application、reasoning 不是自动等价关系；正式作图前必须冻结映射规则。
-
-## 原始摘录
-
-**邵逸夫医院泌尿外科出科考试蓝图（Exam Blueprint）**
+## 邵逸夫医院泌尿外科出科考试蓝图（Exam Blueprint）
 
 **一、 总体信息 (General Information)**
 

@@ -1,25 +1,3 @@
-# 转换来源：`plot/raw/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
-
-## 转换元数据
-
-- 来源路径：`plot/raw/MAS_Statistical_Protocol_Package/Figure_Table_Statistical_Views.docx`
-- 来源 SHA256：`b4b2f3ce3b3f8c2f64dc82ec01fa99fcc624b364e74bc474d70b38fffe9f93f3`
-- 生成时间：`2026-05-19T21:04:44`
-- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
-
-## Agent 特别警示
-
-原文中的 `*.csv` 名称用于说明理想统计粒度和连接关系，不代表当前仓库已有这些文件。若本地没有对应锁定分析表，必须标记为 `UNKNOWN_OR_CONFLICTING`，不能按表名自行编造数据。
-
-## 原始摘录
-
-**Figure/Table 统计视角、数据来源与设计目的说明书**
-
-MAS 辅助泌尿外科住院医闭卷考试命题研究 · 图表级分析指南
-
-用途：供研究生、统计师与临床专家在同一套术语下理解每张图表的统计单位、数据来源、模型层级与结果解释边界。
-
 保密说明：本文档采用虚构题目编号和示例，不包含真实来源揭盲信息。真实来源标签应仅在数据库锁定和盲法评分完成后合并。
 
 # **0. 先理解“统计粒度”：每一行数据代表什么**

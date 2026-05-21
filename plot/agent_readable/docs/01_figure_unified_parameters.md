@@ -1,36 +1,18 @@
-# 转换来源：`plot/raw/Figure 统一参数.docx`
+软件：Python 3.11 + Matplotlib
 
-## 转换元数据
+字体：DejaVu Sans
 
-- 来源路径：`plot/raw/Figure 统一参数.docx`
-- 来源 SHA256：`af00e49483f91fc8f7a4c34d7fe8552955ac5c99140002997a342c774a92c315`
-- 生成时间：`2026-05-19T21:04:44`
-- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
+正文字号：8 pt
 
-## Agent 特别警示
+Panel 字母：10 pt bold
 
-原文列出 PNG / PDF / SVG，是统一参数文档中的可选输出格式。结合项目要求，正式论文图片交付应以可编辑 PDF 为准；PNG 只能作为预览或中间检查。
+背景：白色、不透明
 
-## 原始摘录
+分辨率：600 dpi
 
-\#\# Figure 统一参数
+输出格式：可编辑 PDF
 
-\* 软件：Python 3.11 + Matplotlib
-
-\* 字体：\*\*DejaVu Sans\*\*
-
-\* 正文字号：\*\*8 pt\*\*
-
-\* Panel 字母：\*\*10 pt bold\*\*
-
-\* 背景：白色、不透明
-
-\* 分辨率：\*\*600 dpi\*\*
-
-\* 输出格式：PNG / PDF / SVG
-
-\* SVG 设置：保留可编辑文字，不转路径
+SVG 设置：保留可编辑文字，不转路径
 
 \`\`\`python
 
@@ -169,7 +151,3 @@ MODEL\_FILLS = {
 }
 
 \`\`\`
-
-\#\# 可写入 Methods 的简洁表述
-
-Figures were generated using Python 3.11 and Matplotlib with a unified visual style. DejaVu Sans was used throughout; body text, axis labels, tick labels, legends and annotations were set to 8 pt, and panel labels were set to 10 pt bold. A muted colour palette with paired dark strokes and light fills was used consistently across groups, models and endpoints. Figures were exported with a white, non-transparent background at 600 dpi, with editable text preserved in vector outputs where applicable.

@@ -1,22 +1,3 @@
-# 转换来源：`plot/raw/作图-1.0.docx`
-
-## 转换元数据
-
-- 来源路径：`plot/raw/作图-1.0.docx`
-- 来源 SHA256：`bbaeeebc4019bc79e264471b5a5045b2c08cfb0801b2e0941c4033ee3001306b`
-- 生成时间：`2026-05-19T21:04:44`
-- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
-
-## Agent 特别警示
-
-本文是第一作者的主绘图要求来源。文中“数据字典最小修改”里的 `*.csv` 名称是建议的数据结构和变量命名，不是图片交付格式，也不代表仓库当前已有这些文件。后续绘图只能使用已经定位到的真实数据；缺失项写 `UNKNOWN_OR_CONFLICTING`。
-
-## 原始摘录
-
-**MAS辅助泌尿外科住院医闭卷考试命题研究  
-最小增量数据分析、作图与补充材料完善方案**
-
 *目标期刊优先适配：npj Digital Medicine；备选：JAMA Network Open、NEJM AI*
 
 版本定位：单机构双院区（主院区与非主院区，约25+25）、同场考试、A/B双顺序题块随机分配、入卷前专家-AI平行安全筛查、最终专家盲法质量评价、来源辨识与总量效率/成本评估。
@@ -34,23 +15,19 @@
 
 # 二、必须冻结的最终设计表述
 
--   设计名称：single-institution, two-setting, randomized two-sequence block-order validation study。
+- 设计名称：single-institution, two-setting, randomized two-sequence block-order validation study。
 
--   研究场景：主院区与非主院区，各约25名考生；非主院区可为合并场景，不进行单个分院区推断。
+- 研究场景：主院区与非主院区，各约25名考生；非主院区可为合并场景，不进行单个分院区推断。
 
--   A/B顺序：按当前表格固定为 Form A = Human → MAS；Form B = MAS → Human。全文不得出现相反版本。
+- A/B顺序：按当前表格固定为 Form A = Human → MAS；Form B = MAS → Human。全文不得出现相反版本。
 
--   随机方式：建议仅按 training setting（主院区/非主院区）分层区组随机；PGY不再分层分析，只作为描述变量或协变量。
+- 随机方式：建议仅按 training setting（主院区/非主院区）分层区组随机；PGY不再分层分析，只作为描述变量或协变量。
 
--   入卷前：采用AI自动评分/安全筛查，达到阈值后由另一批专家平行审核；此阶段为安全与组卷质量控制，不作为最终研究终点。
+- 入卷前：采用AI自动评分/安全筛查，达到阈值后由另一批专家平行审核；此阶段为安全与组卷质量控制，不作为最终研究终点。
 
--   最终评分：采用另一组盲法专家进行题目质量评分、缺陷判断和来源辨识；主终点只使用人类专家盲法复合质量评分。
+- 最终评分：采用另一组盲法专家进行题目质量评分、缺陷判断和来源辨识；主终点只使用人类专家盲法复合质量评分。
 
--   效率/成本：由于人工流程只能获得整卷总时间，主文只做总量比较与质量校正效率；不做人工与MAS逐阶段比较。
-
-**建议Methods核心表述：**
-
-> This was a single-institution, two-setting, randomized two-sequence block-order validation study conducted across main-campus and non-main-campus training settings. The examination consisted of two 50-item blocks: one MAS-assisted block and one human-written block. Form A presented the human-written block followed by the MAS-assisted block, whereas Form B presented the MAS-assisted block followed by the human-written block. Within each training setting, examinees were randomly assigned to Form A or Form B. The design enabled within-examinee comparison between item sources while partially controlling for block-order and fatigue effects. Training-setting analyses were exploratory because the study was not powered for setting-specific inference.
+- 效率/成本：由于人工流程只能获得整卷总时间，主文只做总量比较与质量校正效率；不做人工与MAS逐阶段比较。
 
 # 三、最小增加工作量的主文图表重构
 
@@ -88,65 +65,65 @@
 
 由浙江大学医学院附属邵逸夫医院的泌尿外科临床带教专家王老师出题并组卷，而后由其他几位泌尿外科临床带教专家定期更新题库与替换试题后，我们得到了一份人工专家测试卷。将两者进行组合成A卷与B卷，其中A卷是 Human→MAS，B卷是MAS→Human以尽可能排除考试过程中疲劳效应的干扰。然后将试卷随机分发给不同年级以及不同院区的考生。
 
--   Panel A：题库输入与MAS生成：授权历史材料、考试蓝图(暂缓）、指南/共识、题型与认知层级约束。
+- Panel A：题库输入与MAS生成：授权历史材料、考试蓝图(暂缓）、指南/共识、题型与认知层级约束。
 
--   Panel B：AI自动评分与安全筛查：指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义、critical defect flag。
+- Panel B：AI自动评分与安全筛查：指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义、critical defect flag。
 
--   Panel C：专家平行入卷审核：仅用于安全筛查与入卷控制；不参与最终盲法主评分。
+- Panel C：专家平行入卷审核：仅用于安全筛查与入卷控制；不参与最终盲法主评分。
 
--   Panel D：考试设计：Form A = Human→MAS；Form B = MAS→Human；主院区/非主院区内随机。
+- Panel D：考试设计：Form A = Human→MAS；Form B = MAS→Human；主院区/非主院区内随机。
 
--   Panel E：终点域：专家质量非劣效、major/critical defects、认知层级边界、来源辨识、学生表现、总量质量校正效率。
+- Panel E：终点域：专家质量非劣效、major/critical defects、认知层级边界、来源辨识、学生表现、总量质量校正效率。
 
 ## Figure 2. Primary expert-rated quality and safety-critical defects
 
--   Panel A：主终点森林图。横轴为MAS-Human专家复合质量评分差；虚线为−0.30分或−0.20 SD非劣效界值。
+- Panel A：主终点森林图。横轴为MAS-Human专家复合质量评分差；虚线为−0.30分或−0.20 SD非劣效界值。
 
--   Panel B：专家分维度评分。建议只保留人类专家rubric，不把AI大法官放入主图。
+- Panel B：专家分维度评分。建议只保留人类专家rubric，不把AI大法官放入主图。
 
--   Panel C：major defects与critical defects。critical defects至少包括答案键错误、指南不一致、多个合理答案、潜在不安全建议。
+- Panel C：major defects与critical defects。critical defects至少包括答案键错误、指南不一致、多个合理答案、潜在不安全建议。
 
--   Panel D：缺陷adjudication流程。展示独立判断、分歧、第三方裁决和最终缺陷状态。
+- Panel D：缺陷adjudication流程。展示独立判断、分歧、第三方裁决和最终缺陷状态。
 
--   Panel E：专家评分一致性：ICC、weighted kappa或一致率。
+- Panel E：专家评分一致性：ICC、weighted kappa或一致率。
 
 ## Figure 3. Performance boundaries by cognitive level
 
--   Panel A：不同认知层级的专家质量评分差。
+- Panel A：不同认知层级的专家质量评分差。
 
--   Panel B：不同认知层级的major/critical defect风险差。
+- Panel B：不同认知层级的major/critical defect风险差。
 
--   Panel C：不同认知层级的学生正确率差。
+- Panel C：不同认知层级的学生正确率差。
 
--   Panel D：source × cognitive\_level交互模型估计。
+- Panel D：source × cognitive\_level交互模型估计。
 
--   Panel E：探索性CTT指标按认知层级或整体展示；若图面拥挤，CTT移至Supplement。
+- Panel E：探索性CTT指标按认知层级或整体展示；若图面拥挤，CTT移至Supplement。
 
 ## Figure 4. Source detectability and aggregate quality-adjusted efficiency
 
--   Panel A：专家与学生来源辨识准确率及90% CI，叠加45%–55%严格等效区间。
+- Panel A：专家与学生来源辨识准确率及90% CI，叠加45%–55%严格等效区间。
 
--   Panel B：来源辨识混淆矩阵。
+- Panel B：来源辨识混淆矩阵。
 
--   Panel C：balanced accuracy、sensitivity、specificity；若有confidence，可加AUC到Supplement。
+- Panel C：balanced accuracy、sensitivity、specificity；若有confidence，可加AUC到Supplement。
 
--   Panel D：整卷总人力时间比较，区分专家人力、非专家人力、AI/API成本。
+- Panel D：整卷总人力时间比较，区分专家人力、非专家人力、AI/API成本。
 
--   Panel E：每道最终合格题总人力时间，以及每道无重大缺陷合格题总人力时间。
+- Panel E：每道最终合格题总人力时间，以及每道无重大缺陷合格题总人力时间。
 
--   Panel F：人工总时间敏感性分析：base case、人工时间−20%、人工时间+20%；避免逐阶段比较。
+- Panel F：人工总时间敏感性分析：base case、人工时间−20%、人工时间+20%；避免逐阶段比较。
 
 ## Figure 5. Examinee-level performance and block-order effects
 
--   Panel A：A/B顺序示意。
+- Panel A：A/B顺序示意。
 
--   Panel B：每名考生MAS题块与人工题块配对得分。
+- Panel B：每名考生MAS题块与人工题块配对得分。
 
--   Panel C：MAS-Human个体内差值分布，按Form A/B着色。
+- Panel C：MAS-Human个体内差值分布，按Form A/B着色。
 
--   Panel D：混合模型估计的总体MAS-human正确率差，调整block\_position、order\_group、training\_setting、training\_year、topic、cognitive\_level。
+- Panel D：混合模型估计的总体MAS-human正确率差，调整block\_position、order\_group、training\_setting、training\_year、topic、cognitive\_level。
 
--   Panel E：主院区/非主院区探索性展示，用于说明队列同质性或异质性，不作确证性推断。
+- Panel E：主院区/非主院区探索性展示，用于说明队列同质性或异质性，不作确证性推断。
 
 # 五、补充材料与SI图表最小包
 
@@ -173,22 +150,22 @@
 推荐模型：**  
 quality\_score \~ source + topic + cognitive\_level + item\_type + has\_vignette + (1 \| rater\_id) + (1 \| item\_id)**
 
--   核心估计：MAS − Human 调整后均值差。
+- 核心估计：MAS − Human 调整后均值差。
 
--   判定：95% CI下限 &gt; −δ。
+- 判定：95% CI下限 &gt; −δ。
 
--   δ建议：主尺度为−0.30/5分；同时报告标准化界值−0.20 SD。
+- δ建议：主尺度为−0.30/5分；同时报告标准化界值−0.20 SD。
 
--   如果缺少历史SD，可在解盲前用盲态pooled SD将−0.20 SD换算为原始分数，并同时报告−0.30分敏感性结果。
+- 如果缺少历史SD，可在解盲前用盲态pooled SD将−0.20 SD换算为原始分数，并同时报告−0.30分敏感性结果。
 
 ## 6.2 重大缺陷与critical defects
 
 推荐模型：**  
 major\_defect \~ source + topic + cognitive\_level + item\_type + (1 \| rater\_id) + (1 \| item\_id)**
 
--   若缺陷事件稀疏导致混合logistic不收敛，则预设降级为adjudicated item-level风险差、Fisher exact test或bootstrap CI。
+- 若缺陷事件稀疏导致混合logistic不收敛，则预设降级为adjudicated item-level风险差、Fisher exact test或bootstrap CI。
 
--   critical defects单独报告，并设为安全否决项。即使平均质量评分非劣效，如果出现不可接受critical defect，也不能宣称工作流可无条件部署。
+- critical defects单独报告，并设为安全否决项。即使平均质量评分非劣效，如果出现不可接受critical defect，也不能宣称工作流可无条件部署。
 
 ## 6.3 学生作答与顺序效应
 
@@ -198,31 +175,31 @@ correct\_ij \~ source + block\_position + order\_group + training\_setting + tra
 关键探索模型：**  
 correct\_ij \~ source \* cognitive\_level + block\_position + order\_group + training\_setting + training\_year + topic + (1 \| student\_id) + (1 \| item\_id)**
 
--   source×cognitive\_level 是npjDM版本最重要的能力边界分析。
+- source×cognitive\_level 是npjDM版本最重要的能力边界分析。
 
--   source×training\_setting仅作探索性展示，不作为结论依据。
+- source×training\_setting仅作探索性展示，不作为结论依据。
 
--   Form A/B之间不是配对关系，不能用配对t检验；同一考生MAS vs Human题块得分才是配对分析。
+- Form A/B之间不是配对关系，不能用配对t检验；同一考生MAS vs Human题块得分才是配对分析。
 
 ## 6.4 来源辨识
 
--   主指标：accuracy、balanced accuracy、sensitivity、specificity。
+- 主指标：accuracy、balanced accuracy、sensitivity、specificity。
 
--   严格等效区间：45%–55%；宽松敏感性区间可预设40%–60%，但不能事后改。
+- 严格等效区间：45%–55%；宽松敏感性区间可预设40%–60%，但不能事后改。
 
--   CI必须考虑rater与item聚类；如果混合模型复杂，可报告cluster bootstrap CI。
+- CI必须考虑rater与item聚类；如果混合模型复杂，可报告cluster bootstrap CI。
 
--   解释要谨慎：不可辨识不等于质量等同，只说明评价者无法稳定判断来源。
+- 解释要谨慎：不可辨识不等于质量等同，只说明评价者无法稳定判断来源。
 
 ## 6.5 总量效率/成本
 
--   主分析：整卷总人力时间、每道最终合格题总人力时间、每道无重大缺陷合格题总人力时间。
+- 主分析：整卷总人力时间、每道最终合格题总人力时间、每道无重大缺陷合格题总人力时间。
 
--   区分：total human time、expert time、non-expert time、API cost。
+- 区分：total human time、expert time、non-expert time、API cost。
 
--   人工流程只有总时间，因此不做逐阶段比较。MAS若有逐阶段记录，仅作为描述性SI。
+- 人工流程只有总时间，因此不做逐阶段比较。MAS若有逐阶段记录，仅作为描述性SI。
 
--   必须报告time\_source和time\_granularity，避免审稿人质疑回忆偏倚。
+- 必须报告time\_source和time\_granularity，避免审稿人质疑回忆偏倚。
 
 # 七、还可以补充、但工作量不大的分析/实验
 
@@ -240,17 +217,17 @@ correct\_ij \~ source \* cognitive\_level + block\_position + order\_group + tra
 
 # 八、数据字典最小修改
 
--   exam\_form\_assignment.csv：campus改为training\_setting，取值main/non\_main；保留training\_year但不分层分析。
+- exam\_form\_assignment.csv：campus改为training\_setting，取值main/non\_main；保留training\_year但不分层分析。
 
--   responses.csv：campus同样改为training\_setting；form定义统一为A=Human→MAS，B=MAS→Human。
+- responses.csv：campus同样改为training\_setting；form定义统一为A=Human→MAS，B=MAS→Human。
 
--   expert\_ratings.csv：增加rater\_phase，区分pre-administration safety screening与blinded\_outcome\_rating。主终点只取blinded\_outcome\_rating。
+- expert\_ratings.csv：增加rater\_phase，区分pre-administration safety screening与blinded\_outcome\_rating。主终点只取blinded\_outcome\_rating。
 
--   新增mas\_candidate\_log.csv：candidate\_id、AI\_score、AI\_flags、pass\_AI\_threshold、expert\_screen\_decision、exclusion\_reason、final\_item\_id。
+- 新增mas\_candidate\_log.csv：candidate\_id、AI\_score、AI\_flags、pass\_AI\_threshold、expert\_screen\_decision、exclusion\_reason、final\_item\_id。
 
--   development\_time\_cost.csv改为workflow\_total\_time\_cost.csv：workflow、total\_minutes、total\_expert\_minutes、total\_nonexpert\_minutes、api\_cost、number\_final\_items、number\_nondefective\_items、time\_source、time\_granularity。
+- development\_time\_cost.csv改为workflow\_total\_time\_cost.csv：workflow、total\_minutes、total\_expert\_minutes、total\_nonexpert\_minutes、api\_cost、number\_final\_items、number\_nondefective\_items、time\_source、time\_granularity。
 
--   若MAS有逐阶段时间，另设mas\_phase\_time\_cost.csv；不得与人工流程做逐阶段对比。
+- 若MAS有逐阶段时间，另设mas\_phase\_time\_cost.csv；不得与人工流程做逐阶段对比。
 
 |                                 |                                                                                                                                                                            |                                    |
 |---------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
@@ -264,17 +241,13 @@ correct\_ij \~ source \* cognitive\_level + block\_position + order\_group + tra
 
 目前没有权威文献直接规定“医学考试题目5分专家质量评分的非劣效界值应为−0.30分”。最稳妥做法是采用三角支撑：CONSORT非劣效报告规范 + 医学教育非劣效方法学 + MID/half-SD分布法 + 本地专家共识/盲态SD换算。
 
--   主界值：−0.30/5分。
+- 主界值：−0.30/5分。
 
--   标准化解释：约等于−0.20 SD，小于常用half-SD MID经验阈值，因此属于保守的小效应劣势。
+- 标准化解释：约等于−0.20 SD，小于常用half-SD MID经验阈值，因此属于保守的小效应劣势。
 
--   程序保障：数据锁定前预设；若使用盲态pooled SD换算，应在source unblinding前完成。
+- 程序保障：数据锁定前预设；若使用盲态pooled SD换算，应在source unblinding前完成。
 
--   安全保障：非劣效通过仍需major/critical defect双门槛，不让平均分掩盖安全问题。
-
-**建议Methods表述：**
-
-> The noninferiority margin was prespecified before source unblinding as −0.30 points on the 5-point composite expert quality scale, corresponding approximately to a small standardized difference of −0.20 SD based on historical or blinded pooled expert-rating variability. Because no universally accepted minimally important difference exists for expert-rated examination-item quality, the margin was triangulated using noninferiority reporting guidance, methodological recommendations for equivalence and noninferiority designs in medical education, distribution-based interpretability benchmarks, and assessment-committee consensus. Noninferiority was interpreted together with safety requirements: no excess in major defects and no unacceptable critical defects.
+- 安全保障：非劣效通过仍需major/critical defect双门槛，不让平均分掩盖安全问题。
 
 # 十、删改清单：为提高npjDM机会必须做的清洁工作
 
@@ -293,28 +266,28 @@ correct\_ij \~ source \* cognitive\_level + block\_position + order\_group + tra
 
 # 十一、推荐投稿包装
 
--   主标题建议：Prospective validation of an auditable multi-agent AI workflow for urology residency examination-item generation。
+- 主标题建议：Prospective validation of an auditable multi-agent AI workflow for urology residency examination-item generation。
 
--   备选标题：Validation of multi-agent-system-assisted item generation for urology residency written examinations: a two-setting randomized block-order study。
+- 备选标题：Validation of multi-agent-system-assisted item generation for urology residency written examinations: a two-setting randomized block-order study。
 
--   摘要Question：Can an auditable, human-in-the-loop multi-agent AI workflow generate urology residency examination items that are noninferior to human-written items in blinded expert-rated quality without increasing safety-critical defects?
+- 摘要Question：Can an auditable, human-in-the-loop multi-agent AI workflow generate urology residency examination items that are noninferior to human-written items in blinded expert-rated quality without increasing safety-critical defects?
 
--   摘要Meaning：MAS可作为专家在环的题库建设辅助工作流，但不能替代人工终审，也不能证明其全面评价临床能力。
+- 摘要Meaning：MAS可作为专家在环的题库建设辅助工作流，但不能替代人工终审，也不能证明其全面评价临床能力。
 
 # 十二、参考依据与可查询文献
 
-1.  npj Digital Medicine. Aims and scope. https://www.nature.com/npjdigitalmed/aims
+1. npj Digital Medicine. Aims and scope. https://www.nature.com/npjdigitalmed/aims
 
-2.  NEJM AI. About / Aims and Scope. https://ai.nejm.org/about
+2. NEJM AI. About / Aims and Scope. https://ai.nejm.org/about
 
-3.  JAMA Network Open. Instructions for Authors. https://jamanetwork.com/journals/jamanetworkopen/pages/instructions-for-authors
+3. JAMA Network Open. Instructions for Authors. https://jamanetwork.com/journals/jamanetworkopen/pages/instructions-for-authors
 
-4.  Piaggio G, Elbourne DR, Pocock SJ, Evans SJW, Altman DG; CONSORT Group. Reporting of Noninferiority and Equivalence Randomized Trials: Extension of the CONSORT 2010 Statement. JAMA. 2012;308(24):2594-2604. doi:10.1001/jama.2012.87802
+4. Piaggio G, Elbourne DR, Pocock SJ, Evans SJW, Altman DG; CONSORT Group. Reporting of Noninferiority and Equivalence Randomized Trials: Extension of the CONSORT 2010 Statement. JAMA. 2012;308(24):2594-2604. doi:10.1001/jama.2012.87802
 
-5.  Klasen M, Sopka S. Demonstrating equivalence and non-inferiority of medical education concepts. Medical Education. 2021;55(4):455-461. doi:10.1111/medu.14420
+5. Klasen M, Sopka S. Demonstrating equivalence and non-inferiority of medical education concepts. Medical Education. 2021;55(4):455-461. doi:10.1111/medu.14420
 
-6.  Althunian TA, de Boer A, Groenwold RHH, Klungel OH. Defining the non-inferiority margin and analysing non-inferiority: an overview. British Journal of Clinical Pharmacology. 2017;83(8):1636-1642. doi:10.1111/bcp.13280
+6. Althunian TA, de Boer A, Groenwold RHH, Klungel OH. Defining the non-inferiority margin and analysing non-inferiority: an overview. British Journal of Clinical Pharmacology. 2017;83(8):1636-1642. doi:10.1111/bcp.13280
 
-7.  Norman GR, Sloan JA, Wyrwich KW. Interpretation of changes in health-related quality of life: the remarkable universality of half a standard deviation. Medical Care. 2003;41(5):582-592. doi:10.1097/00005650-200305000-00004
+7. Norman GR, Sloan JA, Wyrwich KW. Interpretation of changes in health-related quality of life: the remarkable universality of half a standard deviation. Medical Care. 2003;41(5):582-592. doi:10.1097/00005650-200305000-00004
 
 **最终建议：**以npj Digital Medicine作为冲刺包装，但不要把小样本双院区当作卖点。真正卖点是可审计MAS工作流、入卷前AI-专家安全筛查、盲法专家非劣效、critical defects、认知层级边界和总量质量校正效率。若数据结果不够强，JMIR Medical Education或BMC Medical Education是更现实落点。

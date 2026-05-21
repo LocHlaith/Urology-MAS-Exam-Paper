@@ -1,40 +1,18 @@
-# 转换来源：`plot/raw/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
-
-## 转换元数据
-
-- 来源路径：`plot/raw/MAS_Statistical_Protocol_Package/Analysis_Statistical_Protocol.docx`
-- 来源 SHA256：`c2123c878cd32d373d3241d7c8a56fd8ccc6c85852ee076d414ef0f9604e4901`
-- 生成时间：`2026-05-19T21:04:44`
-- 转换方法：pandoc docx -> GitHub-Flavored Markdown (`--wrap=none`)
-- Agent 规则：将“原始摘录”部分视为来源材料。不要从本文件推断缺失的统计量、panel 标签、样本量或图形样式。
-
-## Agent 特别警示
-
-原文中的 `source_key.csv`、`item_master.csv`、`expert_ratings.csv`、`responses.csv` 等名称是统计 protocol 设想的数据表名，不代表当前仓库已经存在这些锁定分析表，也不是图片交付格式。正式图片交付仍为可编辑 PDF。
-
-## 原始摘录
-
-**分析与统计 Protocol**
-
-MAS 辅助泌尿外科住院医闭卷考试命题研究 · Statistical Analysis Protocol
-
-用途：供研究生、统计师与临床专家在同一套术语下理解每张图表的统计单位、数据来源、模型层级与结果解释边界。
-
 保密说明：本文档采用虚构题目编号和示例，不包含真实来源揭盲信息。真实来源标签应仅在数据库锁定和盲法评分完成后合并。
 
 # **1. 研究目标与总体设计**
 
-本研究目标是验证一个可审计、专家在环的多智能体 AI/MAS 命题工作流，在泌尿外科住院医闭卷考试题目生成中的质量、安全性、认知层级边界、来源辨识、考生表现和总量效率。研究设计为 single-institution, two-setting, randomized two-sequence block-order validation study。
+本研究目标是验证一个可审计、专家在环的多智能体 MAS 命题工作流，在泌尿外科住院医闭卷考试题目生成中的质量、安全性、认知层级边界、来源辨识、考生表现和总量效率。研究设计为 single-institution, two-setting, randomized two-sequence block-order validation study。
 
--   考试由两个 50 题题块组成：一个 MAS-assisted block，一个 human-written block。
+- 考试由两个 50 题题块组成：一个 MAS-assisted block，一个 human-written block。
 
--   Form A = Human → MAS；Form B = MAS → Human。
+- Form A = Human → MAS；Form B = MAS → Human。
 
--   在 training setting 内进行随机分配；training setting 分为 main 与 non\_main。
+- 在 training setting 内进行随机分配；training setting 分为 main 与 non\_main。
 
--   主终点仅使用最终盲法专家复合质量评分；入卷前 AI 和专家筛查属于工作流安全控制。
+- 主终点仅使用最终盲法专家复合质量评分；入卷前 AI 和专家筛查属于工作流安全控制。
 
--   training year 作为描述变量或协变量，不作为主要分层推断依据。
+- training year 作为描述变量或协变量，不作为主要分层推断依据。
 
 # **2. 盲法、锁库与来源标签管理**
 
@@ -84,11 +62,11 @@ quality\_score \~ source + topic + cognitive\_level + item\_type + has\_vignette
 
 分维度评分可采用与主模型类似的混合模型，按维度分别估计 MAS-Human 差值。若维度较多，建议控制解释重点，不把每个维度都作为主要终点。
 
--   连续总分或维度分：ICC 或混合模型方差成分。
+- 连续总分或维度分：ICC 或混合模型方差成分。
 
--   有序等级：weighted kappa。
+- 有序等级：weighted kappa。
 
--   二分类缺陷：kappa、Gwet AC1 或一致率；事件稀少时 Gwet AC1 更稳。
+- 二分类缺陷：kappa、Gwet AC1 或一致率；事件稀少时 Gwet AC1 更稳。
 
 # **7. major/critical defects 分析**
 
@@ -150,13 +128,13 @@ correct\_ij \~ source\*cognitive\_level + block\_position + order\_group + train
 
 # **13. 缺失数据和异常值处理**
 
--   专家评分缺失：记录缺失原因；主模型可使用可用评分，敏感性分析可限制于完整评分题目。
+- 专家评分缺失：记录缺失原因；主模型可使用可用评分，敏感性分析可限制于完整评分题目。
 
--   考生作答缺失：未作答默认记为 incorrect；若技术性缺失，单独标记并做敏感性分析。
+- 考生作答缺失：未作答默认记为 incorrect；若技术性缺失，单独标记并做敏感性分析。
 
--   题目被考试后裁定 critical defect：主分析保留并标记；敏感性分析可排除该题，报告对正确率和 CTT 的影响。
+- 题目被考试后裁定 critical defect：主分析保留并标记；敏感性分析可排除该题，报告对正确率和 CTT 的影响。
 
--   极端作答时间如使用：预设截尾规则，例如低于 1 秒或高于 99th percentile 作为异常。
+- 极端作答时间如使用：预设截尾规则，例如低于 1 秒或高于 99th percentile 作为异常。
 
 # **14. 多重性与推断层级**
 
@@ -171,35 +149,3 @@ correct\_ij \~ source\*cognitive\_level + block\_position + order\_group + train
 3\. 所有图表均由分析数据集自动生成，不手工改数。
 
 4\. 导出 fig3\_item\_level.csv、fig3\_rater\_item\_level.csv、fig3\_response\_level.csv 作为 Figure 3 的可追溯中间表。
-
-5\. 每个主要模型保存公式、软件版本、包版本、随机种子和输出日志。
-
-# **16. 建议的结果报告顺序**
-
-1\. 先报告题目蓝图和随机化平衡，证明比较基础合理。
-
-2\. 报告主终点专家质量非劣效，并立即报告 major/critical defects。
-
-3\. 报告认知层级边界，强调 high-complexity reasoning items 的能力边界。
-
-4\. 报告来源辨识，避免将不可辨识解释为质量等同。
-
-5\. 报告考生表现与顺序效应，说明实际考试中的难度校准。
-
-6\. 最后报告总量质量校正效率和敏感性分析。
-
-# **17. 推荐论文句式**
-
--   Noninferiority was assessed using the adjusted mean difference in blinded expert-rated composite quality scores between MAS-assisted and human-written items.
-
--   Cognitive-level analyses were prespecified to identify potential performance boundaries across knowledge recall, clinical application, and higher-order reasoning items.
-
--   Critical defects were interpreted as a safety endpoint and were not averaged into the quality score.
-
--   Source detectability was interpreted as the ability to identify item origin, not as evidence of quality equivalence.
-
--   Efficiency was evaluated using aggregate workflow-level human time and quality-adjusted time per nondefective final item.
-
-# **18. 交付给研究生的数据理解口诀**
-
-先问粒度，再选模型；先锁来源，再做盲评；先看安全，再谈非劣；先调顺序，再比正确率；先做总量，再谈效率。
