@@ -28,6 +28,8 @@ from project_paths import (
     PROJECT_ROOT,
     answer_explanation_prompt_files,
     mas_bank_files,
+    mas_bank_files_in_dir,
+    runtime_log_dir,
 )
 
 
@@ -36,6 +38,16 @@ from project_paths import (
 ROOT = str(PROJECT_ROOT)
 
 NEW_BANK_FILES = mas_bank_files()
+
+
+def set_new_bank_dir(new_bank_dir: str) -> None:
+    """临时改写 MAS 题库读写目录，用于统计或试跑时保护正式 new_bank。"""
+    global NEW_BANK_FILES
+    if not new_bank_dir:
+        return
+    bank_dir = Path(new_bank_dir)
+    bank_dir.mkdir(parents=True, exist_ok=True)
+    NEW_BANK_FILES = mas_bank_files_in_dir(bank_dir)
 
 PROMPT_FILES = answer_explanation_prompt_files()
 
@@ -66,8 +78,7 @@ STRIP_FIELDS = {
 
 # ===== 日志 =====
 
-LOG_DIR = str(PROJECT_LOG_DIR)
-os.makedirs(LOG_DIR, exist_ok=True)
+LOG_DIR = str(runtime_log_dir())
 
 MAIN_LOG_PATH = os.path.join(
     LOG_DIR,
@@ -433,6 +444,7 @@ def refresh_one_type_answer_explanation(
     write_user_prompt_to_batch_log: bool = True,
     sleep_s: float = 0.6,
     allow_b_two_explanations: bool = False,
+    max_batches: Optional[int] = None,
 ) -> None:
     in_path = NEW_BANK_FILES[target_type]
     prompt_path = PROMPT_FILES[target_type]
@@ -451,7 +463,7 @@ def refresh_one_type_answer_explanation(
     log_line(
         f"\n==> 开始生成答案解析 {target_type}: batch_size={batch_size}, "
         f"总题数={len(bank)}, 待补答案解析={len(pending)}, 批次数={len(batches)}, "
-        f"从第 {start_batch} 轮开始 -> {in_path}"
+        f"从第 {start_batch} 轮开始, 最多处理={max_batches or '不限'} 轮 -> {in_path}"
     )
 
     # 建立 id -> index（用于回写）
@@ -462,9 +474,13 @@ def refresh_one_type_answer_explanation(
 
     updated_count = 0
 
+    attempted_batches = 0
     for bi, batch_questions in enumerate(batches, start=1):
         if bi < start_batch:
             continue
+        if max_batches is not None and attempted_batches >= max_batches:
+            break
+        attempted_batches += 1
 
         batch_log_path = make_batch_log_path(target_type, bi)
         user_prompt = make_user_prompt_json(batch_questions)
@@ -502,7 +518,8 @@ def refresh_one_type_answer_explanation(
                 msg = "返回中未提取到任何可解析 JSON 对象(dict)，本 batch 写入 0"
                 log_line(f"[SKIP] {target_type} 第 {bi} 轮：{msg}")
                 log_block(batch_log_path, "NO USABLE OBJECTS", msg + (f"\narray_parse_error={array_err}" if array_err else ""))
-                time.sleep(0.2)
+                if sleep_s > 0:
+                    time.sleep(min(0.2, sleep_s))
                 continue
 
             if array_err:
@@ -550,7 +567,8 @@ def refresh_one_type_answer_explanation(
             log_line(f"[SKIP] {target_type} 第 {bi} 轮失败，已跳过：{err_text}")
             log_block(batch_log_path, "BATCH FAILED (SKIPPED)", err_text)
             log_block(batch_log_path, "TRACEBACK", traceback.format_exc())
-            time.sleep(0.2)
+            if sleep_s > 0:
+                time.sleep(min(0.2, sleep_s))
             continue
 
     log_line(f"==> 完成 {target_type}: 本次共更新答案解析 {updated_count} 题 -> {in_path}")
@@ -570,6 +588,27 @@ def parse_args() -> argparse.Namespace:
         "--no_log_user_prompt",
         action="store_true",
         help="Do not write user prompt JSON into per-batch log files (smaller logs)."
+    )
+    p.add_argument(
+        "--start_batches",
+        "--start-batches",
+        type=str,
+        default="",
+        help="非交互指定每个题型从第几轮 batch 开始，如 '1' 或 '1 3 5'；留空时仍交互询问。"
+    )
+    p.add_argument(
+        "--max_batches",
+        "--max-batches",
+        type=int,
+        default=0,
+        help="每个题型最多处理多少个 batch；0 表示不限制。"
+    )
+    p.add_argument(
+        "--new_bank_dir",
+        "--new-bank-dir",
+        type=str,
+        default="",
+        help="临时 MAS 题库读写目录；留空时读写正式 data/banks/new_bank_*.json。"
     )
     p.add_argument(
         "--sleep",
@@ -633,9 +672,31 @@ def ask_start_batches(targets: List[str]) -> Dict[str, int]:
     return out
 
 
+def parse_start_batches_arg(targets: List[str], raw: str) -> Dict[str, int]:
+    nums = re.split(r"[\s,，;；|/]+", (raw or "").strip()) if raw else []
+    nums = [x for x in nums if x]
+    if not nums:
+        return {}
+    if len(nums) == 1 and len(targets) > 1:
+        nums = nums * len(targets)
+    if len(nums) != len(targets):
+        raise ValueError(f"开始轮次数量不匹配：期望 {len(targets)} 个，实际 {len(nums)} 个：{nums}")
+
+    out: Dict[str, int] = {}
+    for t, n in zip(targets, nums):
+        v = int(n)
+        if v < 1:
+            raise ValueError(f"{t} 的开始轮次必须 >= 1，收到：{v}")
+        out[t] = v
+    return out
+
+
 def main() -> None:
     log_line(f"主日志文件：{MAIN_LOG_PATH}")
     args = parse_args()
+    if args.new_bank_dir:
+        set_new_bank_dir(args.new_bank_dir)
+        log_line(f"[OK] 临时 MAS 题库读写目录：{Path(args.new_bank_dir).resolve()}")
 
     # 加载环境变量。
     env_path = str(ENV_PATH)
@@ -665,13 +726,17 @@ def main() -> None:
     log_line(f"[OK] 本次选择生成答案解析：{targets}")
 
     try:
-        start_batches = ask_start_batches(targets)
+        if args.start_batches:
+            start_batches = parse_start_batches_arg(targets, args.start_batches)
+        else:
+            start_batches = ask_start_batches(targets)
     except Exception:
         log_line("[FATAL] 读取开始轮次失败，程序结束。")
         log_block(MAIN_LOG_PATH, "EXCEPTION reading start batches", traceback.format_exc())
         return
 
     log_line(f"[OK] 开始轮次设置：{start_batches}")
+    max_batches = int(args.max_batches) if int(args.max_batches) > 0 else None
 
     if not api_key:
         log_line("[FATAL] 未读取到 DEEPSEEK_API_KEY_001：请检查 .env 或系统环境变量。")
@@ -698,8 +763,9 @@ def main() -> None:
                 client,
                 start_batch=start_batches.get(t, 1),
                 write_user_prompt_to_batch_log=write_user_prompt,
-                sleep_s=float(args.sleep),
+                sleep_s=max(float(args.sleep), 0.0),
                 allow_b_two_explanations=bool(args.allow_b_two_explanations),
+                max_batches=max_batches,
             )
         except Exception:
             log_line(f"[ERROR] 生成答案解析 {t} 发生未捕获异常，已跳过该题库，继续下一个。")

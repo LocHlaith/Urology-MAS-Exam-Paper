@@ -143,6 +143,76 @@ MACHINE_PROXY_DOMAIN_COMPONENTS = {
 
 MACHINE_PROXY_DOMAIN_FIELDS = [f"machine_proxy_{key}" for key in MACHINE_PROXY_DOMAIN_COMPONENTS]
 
+MACHINE_SAFETY_SCREEN_COMPONENTS = {
+    "guideline_consistency": {
+        "label": "Guideline consistency",
+        "components": [
+            ("qgeval", "相关性", 5, 0.25),
+            ("qgeval", "一致性", 5, 0.15),
+            ("llm", "目标性", 5, 0.25),
+            ("llm", "侧重性", 5, 0.15),
+            ("llm", "正确性", 5, 0.20),
+        ],
+    },
+    "single_best_answer": {
+        "label": "Single best answer",
+        "components": [
+            ("qgeval", "可回答性", 5, 0.25),
+            ("qgeval", "答案一致性", 5, 0.25),
+            ("llm", "可解性", 5, 0.20),
+            ("llm", "绝对性", 5, 0.20),
+            ("llm", "排他性", 5, 0.10),
+        ],
+    },
+    "answer_key_validation": {
+        "label": "Answer-key validation",
+        "components": [
+            ("qgeval", "答案一致性", 5, 0.25),
+            ("llm", "正确性", 5, 0.25),
+            ("llm", "可解性", 5, 0.25),
+            ("llm", "绝对性", 5, 0.15),
+            ("llm", "答案解析专门评分", 5, 0.10),
+        ],
+    },
+    "distractor_effectiveness": {
+        "label": "Distractor effectiveness",
+        "components": [
+            ("llm", "迷惑性", 5, 0.35),
+            ("llm", "防猜性", 5, 0.25),
+            ("llm", "完整性", 5, 0.15),
+            ("llm", "排他性", 5, 0.15),
+            ("qgeval", "答案一致性", 5, 0.10),
+        ],
+    },
+    "stem_ambiguity_control": {
+        "label": "Stem ambiguity controlled",
+        "components": [
+            ("qgeval", "清晰度", 5, 0.30),
+            ("qgeval", "流畅性", 5, 0.15),
+            ("qgeval", "一致性", 5, 0.10),
+            ("llm", "排他性", 5, 0.25),
+            ("llm", "明确性", 4, 0.20),
+        ],
+    },
+}
+
+MACHINE_SAFETY_SCREEN_FIELDS = [f"{key}_score_5" for key in MACHINE_SAFETY_SCREEN_COMPONENTS]
+SAFETY_PASS_THRESHOLD = 4.0
+SAFETY_CRITICAL_THRESHOLD = 3.0
+
+SAFETY_CRITICAL_COMPONENTS = [
+    ("qgeval", "清晰度", 5, "stem_unclear"),
+    ("qgeval", "一致性", 5, "internal_inconsistency"),
+    ("qgeval", "可回答性", 5, "not_answerable"),
+    ("qgeval", "答案一致性", 5, "answer_inconsistent"),
+    ("llm", "排他性", 5, "nonexclusive_or_ambiguous"),
+    ("llm", "目标性", 5, "off_blueprint"),
+    ("llm", "侧重性", 5, "outdated_or_peripheral"),
+    ("llm", "正确性", 5, "factual_error"),
+    ("llm", "可解性", 5, "answer_key_error"),
+    ("llm", "绝对性", 5, "multiple_plausible_answers"),
+]
+
 
 # ===== 通用工具 =====
 
@@ -214,6 +284,73 @@ def machine_proxy_scores(row: Dict[str, Any]) -> Dict[str, Optional[float]]:
         if output[domain_key] is not None:
             domain_values.append(output[domain_key])
     output["machine_proxy_quality_score"] = statistics.fmean(domain_values) if domain_values else None
+    return output
+
+
+def weighted_normalized_score(row: Dict[str, Any], components: Sequence[Tuple[str, str, float, float]]) -> Optional[float]:
+    weighted_sum = 0.0
+    weight_sum = 0.0
+    for prefix, name, max_score, weight in components:
+        value = normalize_rubric_score(row.get(f"{prefix}_{name}"), max_score)
+        if value is None:
+            continue
+        weighted_sum += value * weight
+        weight_sum += weight
+    return weighted_sum / weight_sum if weight_sum else None
+
+
+def answer_key_format_ok(answer_key: Any, item_type: Any) -> int:
+    value = clean_cell(answer_key).upper()
+    letters = re.findall(r"[A-E]", value)
+    if not letters:
+        return 0
+    compact = "".join(letters)
+    if len(set(compact)) != len(compact):
+        return 0
+    if clean_cell(item_type).upper() != "X" and len(compact) != 1:
+        return 0
+    return 1
+
+
+def safety_component_failure_reasons(row: Dict[str, Any]) -> List[str]:
+    reasons = []
+    for prefix, name, max_score, reason in SAFETY_CRITICAL_COMPONENTS:
+        value = normalize_rubric_score(row.get(f"{prefix}_{name}"), max_score)
+        if value is not None and value <= 2.0:
+            reasons.append(reason)
+    return reasons
+
+
+def machine_safety_screen_scores(row: Dict[str, Any], item_row: Dict[str, Any]) -> Dict[str, Any]:
+    output: Dict[str, Any] = {}
+    for domain, spec in MACHINE_SAFETY_SCREEN_COMPONENTS.items():
+        output[f"{domain}_score_5"] = weighted_normalized_score(row, spec["components"])
+
+    format_ok = answer_key_format_ok(item_row.get("answer_key", ""), item_row.get("item_type", ""))
+    output["answer_key_format_ok"] = format_ok
+    if not format_ok and output.get("answer_key_validation_score_5") is not None:
+        output["answer_key_validation_score_5"] = min(float(output["answer_key_validation_score_5"]), 1.0)
+
+    for domain in MACHINE_SAFETY_SCREEN_COMPONENTS:
+        score = output.get(f"{domain}_score_5")
+        output[f"{domain}_pass"] = 1 if score is not None and score >= SAFETY_PASS_THRESHOLD else 0
+
+    score_values = [float(output[field]) for field in MACHINE_SAFETY_SCREEN_FIELDS if output.get(field) is not None]
+    domain_failures = [
+        domain
+        for domain in MACHINE_SAFETY_SCREEN_COMPONENTS
+        if output.get(f"{domain}_score_5") is not None and float(output[f"{domain}_score_5"]) < SAFETY_CRITICAL_THRESHOLD
+    ]
+    component_reasons = safety_component_failure_reasons(row)
+    if not format_ok:
+        component_reasons.append("invalid_answer_key_format")
+
+    output["safety_screen_mean_score_5"] = statistics.fmean(score_values) if score_values else None
+    output["safety_screen_min_score_5"] = min(score_values) if score_values else None
+    output["major_defect_flag"] = 1 if any(output.get(f"{domain}_pass") == 0 for domain in MACHINE_SAFETY_SCREEN_COMPONENTS) else 0
+    output["critical_defect_flag"] = 1 if domain_failures or component_reasons else 0
+    output["critical_defect_reasons"] = ";".join(sorted(set(domain_failures + component_reasons)))
+    output["all_safety_domains_pass"] = 1 if output["major_defect_flag"] == 0 and output["critical_defect_flag"] == 0 else 0
     return output
 
 
@@ -738,6 +875,108 @@ def aggregate_machine_ratings(machine_ratings: Sequence[Dict[str, Any]]) -> Tupl
     return summary_rows, defect_rows
 
 
+def build_machine_safety_screening(
+    machine_ratings: Sequence[Dict[str, Any]],
+    item_master: Sequence[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    item_by_id = {row["item_id"]: row for row in item_master}
+    output = []
+    for row in machine_ratings:
+        item_row = item_by_id.get(row["item_id"], {})
+        run_id_match = re.search(r"(\d+)$", clean_cell(row.get("rater_id", "")))
+        run_id = maybe_int(run_id_match.group(1)) if run_id_match else None
+        screen_row = {
+            "item_id": row.get("item_id"),
+            "paper": row.get("paper"),
+            "paper_item_no": row.get("paper_item_no"),
+            "source_true": row.get("source_true"),
+            "item_type": item_row.get("item_type"),
+            "rater_id": row.get("rater_id"),
+            "run_id": run_id,
+            "rater_phase": row.get("rater_phase"),
+            "answer_key": item_row.get("answer_key"),
+        }
+        screen_row.update(machine_safety_screen_scores(dict(row), item_row))
+        output.append(screen_row)
+    return output
+
+
+def aggregate_machine_safety_screening(screen_rows: Sequence[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    grouped: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for row in screen_rows:
+        grouped[row["item_id"]].append(row)
+
+    item_rows = []
+    for iid, rows in grouped.items():
+        base = rows[0]
+        output: Dict[str, Any] = {
+            "item_id": iid,
+            "paper": base.get("paper"),
+            "paper_item_no": base.get("paper_item_no"),
+            "source_true": base.get("source_true"),
+            "item_type": base.get("item_type"),
+            "n_machine_runs": len(rows),
+            "answer_key": base.get("answer_key"),
+            "answer_key_format_ok": base.get("answer_key_format_ok"),
+        }
+        for domain in MACHINE_SAFETY_SCREEN_COMPONENTS:
+            scores = [maybe_float(row.get(f"{domain}_score_5")) for row in rows]
+            scores = [score for score in scores if score is not None]
+            passes = [maybe_float(row.get(f"{domain}_pass")) for row in rows]
+            passes = [score for score in passes if score is not None]
+            output[f"{domain}_score_5_mean"] = statistics.fmean(scores) if scores else None
+            output[f"{domain}_score_5_sd"] = statistics.stdev(scores) if len(scores) > 1 else 0 if scores else None
+            output[f"{domain}_pass_rate"] = statistics.fmean(passes) if passes else None
+        critical_values = [int(row.get("critical_defect_flag") or 0) for row in rows]
+        major_values = [int(row.get("major_defect_flag") or 0) for row in rows]
+        all_pass_values = [int(row.get("all_safety_domains_pass") or 0) for row in rows]
+        output["critical_defect_runs"] = sum(critical_values)
+        output["critical_defect_rate"] = statistics.fmean(critical_values) if critical_values else None
+        output["critical_defect_any_run"] = 1 if any(critical_values) else 0
+        output["major_defect_runs"] = sum(major_values)
+        output["major_defect_rate"] = statistics.fmean(major_values) if major_values else None
+        output["major_defect_consensus"] = 1 if sum(major_values) >= 2 else 0
+        output["all_safety_domains_pass_rate"] = statistics.fmean(all_pass_values) if all_pass_values else None
+        reasons = sorted({reason for row in rows for reason in clean_cell(row.get("critical_defect_reasons", "")).split(";") if reason})
+        output["critical_defect_reasons"] = ";".join(reasons)
+        item_rows.append(output)
+
+    source_rows = []
+    for source in ["Human", "MAS"]:
+        rows = [row for row in item_rows if row.get("source_true") == source]
+        if not rows:
+            continue
+        for domain, spec in MACHINE_SAFETY_SCREEN_COMPONENTS.items():
+            pass_rates = [maybe_float(row.get(f"{domain}_pass_rate")) for row in rows]
+            pass_rates = [value for value in pass_rates if value is not None]
+            scores = [maybe_float(row.get(f"{domain}_score_5_mean")) for row in rows]
+            scores = [value for value in scores if value is not None]
+            source_rows.append(
+                {
+                    "source_true": source,
+                    "screening_domain": domain,
+                    "screening_domain_label": spec["label"],
+                    "n_items": len(rows),
+                    "mean_score_5": statistics.fmean(scores) if scores else None,
+                    "item_level_pass_fraction": statistics.fmean(pass_rates) if pass_rates else None,
+                    "display_direction": "higher_is_better",
+                }
+            )
+        no_critical = [1.0 - float(row.get("critical_defect_rate") or 0) for row in rows]
+        source_rows.append(
+            {
+                "source_true": source,
+                "screening_domain": "no_critical_defect_flag",
+                "screening_domain_label": "No critical defect flag",
+                "n_items": len(rows),
+                "mean_score_5": "",
+                "item_level_pass_fraction": statistics.fmean(no_critical) if no_critical else None,
+                "display_direction": "higher_is_better",
+            }
+        )
+    return sorted(item_rows, key=lambda r: (r.get("source_true", ""), int(r.get("paper_item_no") or 0))), source_rows
+
+
 def add_item_level_summaries(
     item_master: List[Dict[str, Any]],
     machine_summary: List[Dict[str, Any]],
@@ -982,6 +1221,8 @@ def main() -> None:
     responses, assignments, block_scores, paired_scores, answer_rows = build_response_tables()
     item_master, machine_ratings = build_report_tables(answer_rows)
     machine_summary, defect_rows = aggregate_machine_ratings(machine_ratings)
+    safety_screen_rows = build_machine_safety_screening(machine_ratings, item_master)
+    safety_item_summary, safety_source_summary = aggregate_machine_safety_screening(safety_screen_rows)
     ctt_rows = build_ctt_rows(responses)
     item_level = add_item_level_summaries(item_master, machine_summary, ctt_rows)
     source_detection = parse_source_detection(PROJECT_ROOT / "plot" / "agent_readable" / "data" / "exam_responses" / "17_source.csv")
@@ -1100,6 +1341,66 @@ def main() -> None:
     machine_summary_fields = sorted({key for row in machine_summary for key in row})
     write_csv(PLOT_DATA_DIR / "machine_rating_summary.csv", machine_summary, machine_summary_fields)
     write_csv(
+        PLOT_DATA_DIR / "machine_safety_screening_by_run.csv",
+        safety_screen_rows,
+        [
+            "item_id",
+            "paper",
+            "paper_item_no",
+            "source_true",
+            "item_type",
+            "rater_id",
+            "run_id",
+            "rater_phase",
+            "answer_key",
+            "answer_key_format_ok",
+            *MACHINE_SAFETY_SCREEN_FIELDS,
+            *[f"{domain}_pass" for domain in MACHINE_SAFETY_SCREEN_COMPONENTS],
+            "safety_screen_mean_score_5",
+            "safety_screen_min_score_5",
+            "major_defect_flag",
+            "critical_defect_flag",
+            "critical_defect_reasons",
+            "all_safety_domains_pass",
+        ],
+    )
+    write_csv(
+        PLOT_DATA_DIR / "machine_safety_screening_summary.csv",
+        safety_item_summary,
+        [
+            "item_id",
+            "paper",
+            "paper_item_no",
+            "source_true",
+            "item_type",
+            "n_machine_runs",
+            "answer_key",
+            "answer_key_format_ok",
+            *[field for domain in MACHINE_SAFETY_SCREEN_COMPONENTS for field in (f"{domain}_score_5_mean", f"{domain}_score_5_sd", f"{domain}_pass_rate")],
+            "major_defect_runs",
+            "major_defect_rate",
+            "major_defect_consensus",
+            "critical_defect_runs",
+            "critical_defect_rate",
+            "critical_defect_any_run",
+            "critical_defect_reasons",
+            "all_safety_domains_pass_rate",
+        ],
+    )
+    write_csv(
+        PLOT_DATA_DIR / "machine_safety_screening_source_summary.csv",
+        safety_source_summary,
+        [
+            "source_true",
+            "screening_domain",
+            "screening_domain_label",
+            "n_items",
+            "mean_score_5",
+            "item_level_pass_fraction",
+            "display_direction",
+        ],
+    )
+    write_csv(
         PLOT_DATA_DIR / "defect_adjudication_proxy.csv",
         defect_rows,
         ["item_id", "source_true", "final_major_defect", "final_critical_defect", "adjudication_reason"],
@@ -1161,6 +1462,66 @@ def main() -> None:
         ],
         ["proxy_domain", "proxy_domain_label", "component_source", "component_name", "component_max_score", "normalization"],
     )
+    write_csv(
+        PLOT_DATA_DIR / "machine_safety_screening_crosswalk.csv",
+        [
+            {
+                "screening_domain": domain,
+                "screening_domain_label": spec["label"],
+                "component_source": component[0],
+                "component_name": component[1],
+                "component_max_score": component[2],
+                "component_weight": component[3],
+                "normalization": "1 + 4 * (raw - 1) / (max_score - 1)",
+                "domain_score": "weighted mean of normalized components",
+                "pass_rule": f"domain_score >= {SAFETY_PASS_THRESHOLD}",
+                "critical_rule": f"domain_score < {SAFETY_CRITICAL_THRESHOLD}, any critical component <= 2, or invalid answer-key format",
+            }
+            for domain, spec in MACHINE_SAFETY_SCREEN_COMPONENTS.items()
+            for component in spec["components"]
+        ]
+        + [
+            {
+                "screening_domain": "critical_defect_flag",
+                "screening_domain_label": "Critical defect flag",
+                "component_source": component[0],
+                "component_name": component[1],
+                "component_max_score": component[2],
+                "component_weight": "",
+                "normalization": "1 + 4 * (raw - 1) / (max_score - 1)",
+                "domain_score": "binary flag",
+                "pass_rule": "critical_defect_flag == 0",
+                "critical_rule": "normalized component <= 2",
+            }
+            for component in SAFETY_CRITICAL_COMPONENTS
+        ]
+        + [
+            {
+                "screening_domain": "critical_defect_flag",
+                "screening_domain_label": "Critical defect flag",
+                "component_source": "derived",
+                "component_name": "answer_key_format_ok",
+                "component_max_score": "",
+                "component_weight": "",
+                "normalization": "legal A-E key; non-X items require one key, X items allow one or more unique keys",
+                "domain_score": "binary flag",
+                "pass_rule": "critical_defect_flag == 0",
+                "critical_rule": "answer_key_format_ok == 0",
+            }
+        ],
+        [
+            "screening_domain",
+            "screening_domain_label",
+            "component_source",
+            "component_name",
+            "component_max_score",
+            "component_weight",
+            "normalization",
+            "domain_score",
+            "pass_rule",
+            "critical_rule",
+        ],
+    )
     write_csv(PLOT_DATA_DIR / "table1_item_blueprint_textual_characteristics.csv", table1, list(table1[0]) if table1 else [])
     write_csv(PLOT_DATA_DIR / "table2_examinee_baseline_randomization_balance.csv", table2, list(table2[0]) if table2 else [])
     write_csv(PLOT_DATA_DIR / "table3_primary_key_secondary_endpoints.csv", table3, list(table3[0]) if table3 else [])
@@ -1192,6 +1553,8 @@ def main() -> None:
             "n_responses": len(responses),
             "n_missing_responses_scored_incorrect": sum(int(r.get("response_missing", 0)) for r in responses),
             "n_machine_rating_rows": len(machine_ratings),
+            "n_machine_safety_screening_rows": len(safety_screen_rows),
+            "n_machine_safety_screening_item_rows": len(safety_item_summary),
         }
     )
     write_json(PLOT_DATA_DIR / "data_inventory.json", inventory)
@@ -1202,6 +1565,7 @@ def main() -> None:
         "training_setting": "原始院区 A/B 保留为 training_setting_code；绘图口径映射为 A=main, B=non_main。",
         "cognitive_level": "A1=recall, B=comprehension, A2=application, A3/A4/X=analysis; 论文三层映射为 recall/comprehension->knowledge, application->application, analysis->reasoning。",
         "score_phase": "解析标注版中的四轮 QGEval/LLM 写入 rater_phase=machine_annotation；原始细则经 machine_rating_domain_crosswalk.csv 归一化并映射为 machine_proxy_* 字段，仅作QC/探索性代理。",
+        "ai_safety_screening": "machine_safety_screening_by_run.csv 将23项 QGEval/LLM 评分归一化到1-5分，并加权转换为指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义控制和 critical defect flag；machine_safety_screening_crosswalk.csv 记录函数关系。",
         "source_detection": "17_source.csv 只记录成对来源判断是否成功；source_detection_confusion_matrix.csv 按 forced-pair 成功/失败反推，不能替代逐题 source_guess 原始表。",
         "workflow_efficiency": "当前仓库未包含 workflow_total_time_cost.csv；脚本保留输出位置和图面占位，不用考生考试时长冒充工作流人力时间。",
         "expert_scores": "最终盲法专家质量复合评分尚未进入仓库；machine_proxy_quality_score 不进入主终点。",

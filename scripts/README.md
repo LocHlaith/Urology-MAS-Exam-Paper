@@ -25,6 +25,7 @@
 - `scripts/generation/bank_to_new_bank.py`：读取 `data/banks/bank_*.json` 和 `prompts/generation/prompts_for_bank_to_new_bank_*.txt`，调用模型生成 MAS 题库。
 - `scripts/generation/add_answer_explanation.py`：为 MAS 题库补充或补齐“答案解析”字段。既有 JSON 字段名为 `analysis` / `analysis1` 等。
 - `scripts/generation/add_test_point.py`：为 MAS 题库补充“考点还原”字段。既有 JSON 字段名为 `test_point`。
+- `scripts/generation/measure_question_generation_time.py`：按题型统计 MAS 出题耗时。该脚本将临时题库写入 `timing_runs/`，并输出绘图用 `plot/agent_readable/derived_data/mas_question_generation_time.csv`。
 
 ## 题库评价
 

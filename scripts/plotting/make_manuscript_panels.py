@@ -95,25 +95,53 @@ def panel_1a(inventory: Dict[str, Any]) -> None:
     save_panel(fig, "Figure1A_workflow_inputs.pdf")
 
 
-def panel_1b() -> None:
-    fig, ax = new_panel((3.55, 3.55))
-    mf.panel_label(ax, "B", "AI safety gate")
-    ax.set_xlim(0, 6)
-    ax.set_ylim(0, 6.8)
-    ax.axis("off")
-    checks = [
-        ("Answer key", "key present and legal"),
-        ("Guideline fit", "CUA/EAU consistency"),
-        ("Single best answer", "no multiple plausible keys"),
-        ("Stem clarity", "no unsafe ambiguity"),
-        ("Defect flag", "major / critical proxy"),
+def panel_1b(safety_summary: List[Dict[str, str]]) -> None:
+    fig, ax = new_panel((4.25, 3.05))
+    mf.panel_label(ax, "B", "AI safety-screen statistics")
+    panel_domains = [
+        ("guideline_consistency", "Guideline\nconsistency"),
+        ("single_best_answer", "Single best\nanswer"),
+        ("answer_key_validation", "Answer-key\nvalidation"),
+        ("distractor_effectiveness", "Distractor\neffectiveness"),
+        ("stem_ambiguity_control", "Stem ambiguity\ncontrolled"),
+        ("no_critical_defect_flag", "No critical\ndefect flag"),
     ]
-    for idx, (title, body) in enumerate(checks):
-        y = 5.65 - idx * 1.02
-        mf.rounded_box(ax, (0.45, y), (5.1, 0.70), title, body, mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"], icon=str(idx + 1), radius=0.14, shadow=False, title_size=6.6, body_size=5.1)
-        if idx < len(checks) - 1:
-            mf.arrow(ax, (3.0, y - 0.03), (3.0, y - 0.30), color=mf.PALETTE["MAS"], scale=8)
-    mf.rounded_box(ax, (0.45, 0.12), (5.1, 0.92), "Expert intake review eligible", "safety-control gate;\nnot final blinded endpoint", mf.UROMAS_COLORS["neutral"], mf.UROMAS_COLORS["border"], icon="OK", radius=0.14, title_size=6.2, body_size=4.9)
+    y_positions = np.arange(len(panel_domains))[::-1]
+    offsets = {"Human": 0.13, "MAS": -0.13}
+    markers = {"Human": "o", "MAS": "s"}
+    for source in ["Human", "MAS"]:
+        source_rows = [row for row in safety_summary if row.get("source_true") == source]
+        for idx, (domain, _) in enumerate(panel_domains):
+            if domain == "no_critical_defect_flag":
+                values = [1.0 - (mf.to_float(row.get("critical_defect_rate")) or 0.0) for row in source_rows]
+            else:
+                values = mf.numeric(source_rows, f"{domain}_pass_rate")
+            point, lo, hi = mf.bootstrap_mean_ci(values)
+            if point is None:
+                continue
+            x = point * 100
+            y = y_positions[idx] + offsets[source]
+            ax.errorbar(
+                x,
+                y,
+                xerr=[[(point - lo) * 100], [(hi - point) * 100]],
+                fmt=markers[source],
+                color=mf.PALETTE[source],
+                markerfacecolor=mf.PALETTE_FILL[source],
+                markeredgecolor=mf.PALETTE[source],
+                capsize=2.5,
+                markersize=4.2,
+                linewidth=0.9,
+                label=source if idx == 0 else None,
+            )
+    ax.set_yticks(y_positions, [label for _, label in panel_domains])
+    ax.set_xlabel("Item-level pass / no-flag fraction (%)")
+    ax.set_xlim(0, 104)
+    ax.set_ylim(-0.65, len(panel_domains) - 0.35)
+    ax.legend(frameon=False, loc="lower right")
+    mf.style_axes(ax)
+    ax.xaxis.grid(True, color=mf.UROMAS_COLORS["grid"], linewidth=0.6)
+    ax.yaxis.grid(False)
     save_panel(fig, "Figure1B_safety_gate.pdf")
 
 
@@ -495,6 +523,7 @@ def panel_5e(paired_scores: List[Dict[str, str]]) -> None:
 def main() -> None:
     item_level = mf.read_csv_dicts(mf.DATA_DIR / "item_level_analysis.csv")
     machine_summary = mf.read_csv_dicts(mf.DATA_DIR / "machine_rating_summary.csv")
+    safety_summary = mf.read_csv_dicts(mf.DATA_DIR / "machine_safety_screening_summary.csv")
     source_detection = mf.read_csv_dicts(mf.DATA_DIR / "source_detection.csv")
     source_detection_confusion = mf.read_csv_dicts(mf.DATA_DIR / "source_detection_confusion_matrix.csv")
     source_detection_metrics = mf.read_csv_dicts(mf.DATA_DIR / "source_detection_metrics.csv")
@@ -503,7 +532,7 @@ def main() -> None:
     inventory = json.loads((mf.DATA_DIR / "data_inventory.json").read_text(encoding="utf-8"))
 
     panel_1a(inventory)
-    panel_1b()
+    panel_1b(safety_summary)
     panel_1c(assignments)
     panel_1d(assignments)
     panel_1e()

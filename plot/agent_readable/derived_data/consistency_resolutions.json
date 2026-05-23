@@ -4,6 +4,7 @@
   "training_setting": "原始院区 A/B 保留为 training_setting_code；绘图口径映射为 A=main, B=non_main。",
   "cognitive_level": "A1=recall, B=comprehension, A2=application, A3/A4/X=analysis; 论文三层映射为 recall/comprehension->knowledge, application->application, analysis->reasoning。",
   "score_phase": "解析标注版中的四轮 QGEval/LLM 写入 rater_phase=machine_annotation；原始细则经 machine_rating_domain_crosswalk.csv 归一化并映射为 machine_proxy_* 字段，仅作QC/探索性代理。",
+  "ai_safety_screening": "machine_safety_screening_by_run.csv 将23项 QGEval/LLM 评分归一化到1-5分，并加权转换为指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义控制和 critical defect flag；machine_safety_screening_crosswalk.csv 记录函数关系。",
   "source_detection": "17_source.csv 只记录成对来源判断是否成功；source_detection_confusion_matrix.csv 按 forced-pair 成功/失败反推，不能替代逐题 source_guess 原始表。",
   "workflow_efficiency": "当前仓库未包含 workflow_total_time_cost.csv；脚本保留输出位置和图面占位，不用考生考试时长冒充工作流人力时间。",
   "expert_scores": "最终盲法专家质量复合评分尚未进入仓库；machine_proxy_quality_score 不进入主终点。",

@@ -9,8 +9,9 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Optional
 
 
 # ===== 路径常量 =====
@@ -62,6 +63,14 @@ def mas_bank_files() -> Dict[str, str]:
     return {bank_type: str(mas_bank_path(bank_type)) for bank_type in BANK_TYPES}
 
 
+def mas_bank_files_in_dir(bank_dir: Path) -> Dict[str, str]:
+    bank_dir = Path(bank_dir)
+    return {
+        bank_type: str(bank_dir / f"new_bank_{BANK_FILE_STEMS[bank_type]}.json")
+        for bank_type in BANK_TYPES
+    }
+
+
 # ===== 兼容路径函数 =====
 
 def old_bank_path(bank_type: str) -> Path:
@@ -105,3 +114,24 @@ def answer_explanation_prompt_files() -> Dict[str, str]:
 def ensure_output_dirs(extra_dirs: Iterable[Path] = ()) -> None:
     for path in [OUTPUT_DIR, LOG_DIR, FIGURE_DIR, REPORT_DRAFTS_DIR, REPORT_EXPORTS_DIR, *extra_dirs]:
         path.mkdir(parents=True, exist_ok=True)
+
+
+def runtime_log_dir(env_var: str = "UROLOGY_MAS_LOG_DIR") -> Path:
+    """返回可写日志目录；统计脚本可用环境变量把日志导向临时目录。"""
+    candidates: List[Path] = []
+    if os.getenv(env_var):
+        candidates.append(Path(os.environ[env_var]))
+    candidates.extend([LOG_DIR, PROJECT_ROOT / "logs"])
+
+    last_error: Optional[OSError] = None
+    for path in candidates:
+        try:
+            path.mkdir(parents=True, exist_ok=True)
+            return path
+        except OSError as e:
+            last_error = e
+            continue
+
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("未能解析日志目录")

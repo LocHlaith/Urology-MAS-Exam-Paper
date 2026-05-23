@@ -10,3 +10,5 @@ __pycache__/
 
 # Runtime logs are reproducible and may contain API request payloads
 outputs/logs/
+logs/
+timing_runs/
