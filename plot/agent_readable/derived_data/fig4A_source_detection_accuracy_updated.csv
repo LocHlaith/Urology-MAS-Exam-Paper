@@ -1,2 +1,2 @@
 metric,estimate,ci_low,ci_high,n_judgments,n_raters,n_items
-balanced_accuracy,0.47,0.407375,0.525,200,2,94
+balanced_accuracy,0.47,0.425,0.52,200,2,94
