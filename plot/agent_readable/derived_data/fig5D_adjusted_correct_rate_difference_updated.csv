@@ -1,0 +1,4 @@
+contrast,estimate,ci_low,ci_high,n_students,n_responses,model_formula
+Overall,-1.4399999999999988,-3.919999999999999,1.2800000000000014,50,5000,participant-level paired MAS-Human correct-rate contrast
+Form A (Human→MAS),-2.24,-5.842,1.1200000000000003,25,2500,participant-level paired MAS-Human correct-rate contrast
+Form B (MAS→Human),-0.6399999999999979,-4.721999999999999,3.6820000000000004,25,2500,participant-level paired MAS-Human correct-rate contrast
