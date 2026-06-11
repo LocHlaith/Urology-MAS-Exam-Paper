@@ -198,6 +198,7 @@ def draw_figure(stats_rows: list[dict[str, object]], raw_rows: list[dict[str, ob
     ]
     fig.legend(handles=handles, loc="upper right", bbox_to_anchor=(0.98, 0.96), frameon=False, fontsize=12)
     fig.suptitle("Student overall correct rate by source", fontsize=17, color=TEXT, y=0.99)
+    fig.text(0.018, 0.965, "(B)", fontsize=24, fontweight="bold", color="#111111", ha="left", va="top")
     fig.subplots_adjust(left=0.08, right=0.90, top=0.82, bottom=0.22, wspace=0.34)
     fig.savefig(OUT / "Figure3B_defect_risk_by_cognitive_level.pdf", bbox_inches="tight", facecolor="white")
     plt.close(fig)
