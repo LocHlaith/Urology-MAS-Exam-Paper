@@ -19,3 +19,5 @@
 
 - 五、模拟考试
 为了消除考生疲劳的影响，我们将“P卷在前、M卷在后”的考试称为A卷，将“M卷在前、P卷在后”的考试称为B卷，得到了考生的作答数据，即plot\raw_data\exam_responses和plot\raw_data\exam_responses_2。其中，plot\raw_data\exam_responses未标注题型，而plot\raw_data\exam_responses_2标注了题型。
+
+注意：在绘图时，LLM统一改称为ULM。
