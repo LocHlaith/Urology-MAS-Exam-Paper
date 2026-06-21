@@ -1,0 +1,4 @@
+﻿contrast,estimate,ci_low,ci_high,n_students,n_responses,method
+Overall adjusted,-1.7244198212345598,-4.509406500761315,1.0605668582921957,50,5000,correct ~ is_mas + C(block_position) + C(form) + C(training_setting) + C(training_year) + C(cognitive_level) + C(topic)
+Form A (Human → MAS),-2.24,-5.599999999999999,1.2800000000000002,25,2500,Paired participant bootstrap
+Form B (MAS → Human),-0.6399999999999997,-4.559999999999999,3.76,25,2500,Paired participant bootstrap

@@ -1,0 +1,3221 @@
+﻿source,item_seq,family,dimension,score
+Human,1,QGval,Answer consistency,5.0
+Human,1,QGval,Answerability,5.0
+Human,1,QGval,Clarity,5.0
+Human,1,QGval,Conciseness,4.666666666666667
+Human,1,QGval,Consistency,5.0
+Human,1,QGval,Fluency,4.666666666666667
+Human,1,QGval,Relevance,4.666666666666667
+Human,1,ULM,Absoluteness,5.0
+Human,1,ULM,Completeness,5.0
+Human,1,ULM,Comprehensiveness,2.3333333333333335
+Human,1,ULM,Correctness,5.0
+Human,1,ULM,Exclusiveness,5.0
+Human,1,ULM,Explanation score,3.6666666666666665
+Human,1,ULM,Explicitness,3.6666666666666665
+Human,1,ULM,Fairness,3.0
+Human,1,ULM,Feedback,3.3333333333333335
+Human,1,ULM,Fluency,4.666666666666667
+Human,1,ULM,Focus,4.333333333333333
+Human,1,ULM,Goal alignment,5.0
+Human,1,ULM,Guess resistance,4.333333333333333
+Human,1,ULM,Plausibility,2.6666666666666665
+Human,1,ULM,Reasoning,2.0
+Human,1,ULM,Solvability,5.0
+Human,2,QGval,Answer consistency,5.0
+Human,2,QGval,Answerability,5.0
+Human,2,QGval,Clarity,5.0
+Human,2,QGval,Conciseness,5.0
+Human,2,QGval,Consistency,5.0
+Human,2,QGval,Fluency,4.666666666666667
+Human,2,QGval,Relevance,4.333333333333333
+Human,2,ULM,Absoluteness,5.0
+Human,2,ULM,Completeness,3.6666666666666665
+Human,2,ULM,Comprehensiveness,2.0
+Human,2,ULM,Correctness,5.0
+Human,2,ULM,Exclusiveness,4.333333333333333
+Human,2,ULM,Explanation score,3.0
+Human,2,ULM,Explicitness,3.3333333333333335
+Human,2,ULM,Fairness,3.0
+Human,2,ULM,Feedback,2.6666666666666665
+Human,2,ULM,Fluency,5.0
+Human,2,ULM,Focus,4.0
+Human,2,ULM,Goal alignment,4.666666666666667
+Human,2,ULM,Guess resistance,4.333333333333333
+Human,2,ULM,Plausibility,2.6666666666666665
+Human,2,ULM,Reasoning,1.3333333333333333
+Human,2,ULM,Solvability,5.0
+Human,3,QGval,Answer consistency,5.0
+Human,3,QGval,Answerability,5.0
+Human,3,QGval,Clarity,5.0
+Human,3,QGval,Conciseness,5.0
+Human,3,QGval,Consistency,5.0
+Human,3,QGval,Fluency,5.0
+Human,3,QGval,Relevance,4.333333333333333
+Human,3,ULM,Absoluteness,5.0
+Human,3,ULM,Completeness,5.0
+Human,3,ULM,Comprehensiveness,1.6666666666666667
+Human,3,ULM,Correctness,5.0
+Human,3,ULM,Exclusiveness,5.0
+Human,3,ULM,Explanation score,3.6666666666666665
+Human,3,ULM,Explicitness,3.3333333333333335
+Human,3,ULM,Fairness,3.0
+Human,3,ULM,Feedback,3.3333333333333335
+Human,3,ULM,Fluency,5.0
+Human,3,ULM,Focus,4.333333333333333
+Human,3,ULM,Goal alignment,5.0
+Human,3,ULM,Guess resistance,4.0
+Human,3,ULM,Plausibility,2.6666666666666665
+Human,3,ULM,Reasoning,1.3333333333333333
+Human,3,ULM,Solvability,5.0
+Human,4,QGval,Answer consistency,5.0
+Human,4,QGval,Answerability,5.0
+Human,4,QGval,Clarity,5.0
+Human,4,QGval,Conciseness,5.0
+Human,4,QGval,Consistency,5.0
+Human,4,QGval,Fluency,5.0
+Human,4,QGval,Relevance,4.333333333333333
+Human,4,ULM,Absoluteness,5.0
+Human,4,ULM,Completeness,5.0
+Human,4,ULM,Comprehensiveness,1.6666666666666667
+Human,4,ULM,Correctness,5.0
+Human,4,ULM,Exclusiveness,5.0
+Human,4,ULM,Explanation score,3.6666666666666665
+Human,4,ULM,Explicitness,3.3333333333333335
+Human,4,ULM,Fairness,3.0
+Human,4,ULM,Feedback,3.3333333333333335
+Human,4,ULM,Fluency,5.0
+Human,4,ULM,Focus,4.333333333333333
+Human,4,ULM,Goal alignment,5.0
+Human,4,ULM,Guess resistance,4.333333333333333
+Human,4,ULM,Plausibility,2.6666666666666665
+Human,4,ULM,Reasoning,1.3333333333333333
+Human,4,ULM,Solvability,5.0
+Human,5,QGval,Answer consistency,5.0
+Human,5,QGval,Answerability,5.0
+Human,5,QGval,Clarity,5.0
+Human,5,QGval,Conciseness,5.0
+Human,5,QGval,Consistency,5.0
+Human,5,QGval,Fluency,5.0
+Human,5,QGval,Relevance,4.333333333333333
+Human,5,ULM,Absoluteness,5.0
+Human,5,ULM,Completeness,5.0
+Human,5,ULM,Comprehensiveness,2.0
+Human,5,ULM,Correctness,5.0
+Human,5,ULM,Exclusiveness,5.0
+Human,5,ULM,Explanation score,3.6666666666666665
+Human,5,ULM,Explicitness,3.3333333333333335
+Human,5,ULM,Fairness,3.0
+Human,5,ULM,Feedback,3.3333333333333335
+Human,5,ULM,Fluency,5.0
+Human,5,ULM,Focus,4.333333333333333
+Human,5,ULM,Goal alignment,5.0
+Human,5,ULM,Guess resistance,4.333333333333333
+Human,5,ULM,Plausibility,2.6666666666666665
+Human,5,ULM,Reasoning,1.3333333333333333
+Human,5,ULM,Solvability,5.0
+Human,6,QGval,Answer consistency,4.333333333333333
+Human,6,QGval,Answerability,4.666666666666667
+Human,6,QGval,Clarity,4.333333333333333
+Human,6,QGval,Conciseness,5.0
+Human,6,QGval,Consistency,4.666666666666667
+Human,6,QGval,Fluency,5.0
+Human,6,QGval,Relevance,4.666666666666667
+Human,6,ULM,Absoluteness,5.0
+Human,6,ULM,Completeness,5.0
+Human,6,ULM,Comprehensiveness,1.3333333333333333
+Human,6,ULM,Correctness,5.0
+Human,6,ULM,Exclusiveness,4.333333333333333
+Human,6,ULM,Explanation score,3.0
+Human,6,ULM,Explicitness,3.0
+Human,6,ULM,Fairness,3.0
+Human,6,ULM,Feedback,2.3333333333333335
+Human,6,ULM,Fluency,5.0
+Human,6,ULM,Focus,4.0
+Human,6,ULM,Goal alignment,5.0
+Human,6,ULM,Guess resistance,4.0
+Human,6,ULM,Plausibility,2.0
+Human,6,ULM,Reasoning,1.3333333333333333
+Human,6,ULM,Solvability,5.0
+Human,7,QGval,Answer consistency,5.0
+Human,7,QGval,Answerability,5.0
+Human,7,QGval,Clarity,5.0
+Human,7,QGval,Conciseness,5.0
+Human,7,QGval,Consistency,5.0
+Human,7,QGval,Fluency,5.0
+Human,7,QGval,Relevance,4.666666666666667
+Human,7,ULM,Absoluteness,5.0
+Human,7,ULM,Completeness,5.0
+Human,7,ULM,Comprehensiveness,1.6666666666666667
+Human,7,ULM,Correctness,5.0
+Human,7,ULM,Exclusiveness,5.0
+Human,7,ULM,Explanation score,3.6666666666666665
+Human,7,ULM,Explicitness,3.3333333333333335
+Human,7,ULM,Fairness,3.0
+Human,7,ULM,Feedback,3.3333333333333335
+Human,7,ULM,Fluency,5.0
+Human,7,ULM,Focus,4.0
+Human,7,ULM,Goal alignment,5.0
+Human,7,ULM,Guess resistance,3.6666666666666665
+Human,7,ULM,Plausibility,2.6666666666666665
+Human,7,ULM,Reasoning,1.3333333333333333
+Human,7,ULM,Solvability,5.0
+Human,8,QGval,Answer consistency,4.666666666666667
+Human,8,QGval,Answerability,4.333333333333333
+Human,8,QGval,Clarity,3.3333333333333335
+Human,8,QGval,Conciseness,4.0
+Human,8,QGval,Consistency,4.0
+Human,8,QGval,Fluency,4.0
+Human,8,QGval,Relevance,4.333333333333333
+Human,8,ULM,Absoluteness,4.666666666666667
+Human,8,ULM,Completeness,4.333333333333333
+Human,8,ULM,Comprehensiveness,4.0
+Human,8,ULM,Correctness,4.0
+Human,8,ULM,Exclusiveness,3.6666666666666665
+Human,8,ULM,Explanation score,3.6666666666666665
+Human,8,ULM,Explicitness,3.3333333333333335
+Human,8,ULM,Fairness,3.0
+Human,8,ULM,Feedback,4.0
+Human,8,ULM,Fluency,4.0
+Human,8,ULM,Focus,4.0
+Human,8,ULM,Goal alignment,4.333333333333333
+Human,8,ULM,Guess resistance,3.3333333333333335
+Human,8,ULM,Plausibility,4.333333333333333
+Human,8,ULM,Reasoning,3.3333333333333335
+Human,8,ULM,Solvability,4.333333333333333
+Human,9,QGval,Answer consistency,5.0
+Human,9,QGval,Answerability,5.0
+Human,9,QGval,Clarity,5.0
+Human,9,QGval,Conciseness,5.0
+Human,9,QGval,Consistency,4.666666666666667
+Human,9,QGval,Fluency,5.0
+Human,9,QGval,Relevance,5.0
+Human,9,ULM,Absoluteness,5.0
+Human,9,ULM,Completeness,5.0
+Human,9,ULM,Comprehensiveness,2.0
+Human,9,ULM,Correctness,5.0
+Human,9,ULM,Exclusiveness,5.0
+Human,9,ULM,Explanation score,3.6666666666666665
+Human,9,ULM,Explicitness,3.6666666666666665
+Human,9,ULM,Fairness,3.0
+Human,9,ULM,Feedback,3.3333333333333335
+Human,9,ULM,Fluency,5.0
+Human,9,ULM,Focus,4.333333333333333
+Human,9,ULM,Goal alignment,5.0
+Human,9,ULM,Guess resistance,4.333333333333333
+Human,9,ULM,Plausibility,3.3333333333333335
+Human,9,ULM,Reasoning,1.3333333333333333
+Human,9,ULM,Solvability,5.0
+Human,10,QGval,Answer consistency,5.0
+Human,10,QGval,Answerability,5.0
+Human,10,QGval,Clarity,5.0
+Human,10,QGval,Conciseness,5.0
+Human,10,QGval,Consistency,5.0
+Human,10,QGval,Fluency,5.0
+Human,10,QGval,Relevance,5.0
+Human,10,ULM,Absoluteness,5.0
+Human,10,ULM,Completeness,5.0
+Human,10,ULM,Comprehensiveness,2.3333333333333335
+Human,10,ULM,Correctness,5.0
+Human,10,ULM,Exclusiveness,5.0
+Human,10,ULM,Explanation score,3.6666666666666665
+Human,10,ULM,Explicitness,3.3333333333333335
+Human,10,ULM,Fairness,3.0
+Human,10,ULM,Feedback,3.3333333333333335
+Human,10,ULM,Fluency,5.0
+Human,10,ULM,Focus,4.333333333333333
+Human,10,ULM,Goal alignment,5.0
+Human,10,ULM,Guess resistance,4.0
+Human,10,ULM,Plausibility,3.3333333333333335
+Human,10,ULM,Reasoning,1.6666666666666667
+Human,10,ULM,Solvability,5.0
+Human,11,QGval,Answer consistency,5.0
+Human,11,QGval,Answerability,5.0
+Human,11,QGval,Clarity,5.0
+Human,11,QGval,Conciseness,5.0
+Human,11,QGval,Consistency,5.0
+Human,11,QGval,Fluency,5.0
+Human,11,QGval,Relevance,5.0
+Human,11,ULM,Absoluteness,5.0
+Human,11,ULM,Completeness,5.0
+Human,11,ULM,Comprehensiveness,2.3333333333333335
+Human,11,ULM,Correctness,5.0
+Human,11,ULM,Exclusiveness,5.0
+Human,11,ULM,Explanation score,3.6666666666666665
+Human,11,ULM,Explicitness,3.3333333333333335
+Human,11,ULM,Fairness,3.0
+Human,11,ULM,Feedback,3.3333333333333335
+Human,11,ULM,Fluency,5.0
+Human,11,ULM,Focus,4.333333333333333
+Human,11,ULM,Goal alignment,5.0
+Human,11,ULM,Guess resistance,4.0
+Human,11,ULM,Plausibility,3.0
+Human,11,ULM,Reasoning,2.0
+Human,11,ULM,Solvability,5.0
+Human,12,QGval,Answer consistency,5.0
+Human,12,QGval,Answerability,4.666666666666667
+Human,12,QGval,Clarity,4.666666666666667
+Human,12,QGval,Conciseness,5.0
+Human,12,QGval,Consistency,4.666666666666667
+Human,12,QGval,Fluency,5.0
+Human,12,QGval,Relevance,5.0
+Human,12,ULM,Absoluteness,5.0
+Human,12,ULM,Completeness,5.0
+Human,12,ULM,Comprehensiveness,1.6666666666666667
+Human,12,ULM,Correctness,5.0
+Human,12,ULM,Exclusiveness,4.666666666666667
+Human,12,ULM,Explanation score,3.6666666666666665
+Human,12,ULM,Explicitness,3.3333333333333335
+Human,12,ULM,Fairness,3.0
+Human,12,ULM,Feedback,3.3333333333333335
+Human,12,ULM,Fluency,5.0
+Human,12,ULM,Focus,4.333333333333333
+Human,12,ULM,Goal alignment,5.0
+Human,12,ULM,Guess resistance,4.333333333333333
+Human,12,ULM,Plausibility,3.3333333333333335
+Human,12,ULM,Reasoning,2.0
+Human,12,ULM,Solvability,5.0
+Human,13,QGval,Answer consistency,4.333333333333333
+Human,13,QGval,Answerability,5.0
+Human,13,QGval,Clarity,5.0
+Human,13,QGval,Conciseness,4.333333333333333
+Human,13,QGval,Consistency,5.0
+Human,13,QGval,Fluency,4.333333333333333
+Human,13,QGval,Relevance,5.0
+Human,13,ULM,Absoluteness,5.0
+Human,13,ULM,Completeness,5.0
+Human,13,ULM,Comprehensiveness,1.6666666666666667
+Human,13,ULM,Correctness,5.0
+Human,13,ULM,Exclusiveness,5.0
+Human,13,ULM,Explanation score,4.333333333333333
+Human,13,ULM,Explicitness,3.3333333333333335
+Human,13,ULM,Fairness,3.0
+Human,13,ULM,Feedback,4.0
+Human,13,ULM,Fluency,5.0
+Human,13,ULM,Focus,4.333333333333333
+Human,13,ULM,Goal alignment,4.333333333333333
+Human,13,ULM,Guess resistance,4.333333333333333
+Human,13,ULM,Plausibility,3.3333333333333335
+Human,13,ULM,Reasoning,2.0
+Human,13,ULM,Solvability,5.0
+Human,14,QGval,Answer consistency,5.0
+Human,14,QGval,Answerability,5.0
+Human,14,QGval,Clarity,5.0
+Human,14,QGval,Conciseness,5.0
+Human,14,QGval,Consistency,5.0
+Human,14,QGval,Fluency,5.0
+Human,14,QGval,Relevance,5.0
+Human,14,ULM,Absoluteness,5.0
+Human,14,ULM,Completeness,5.0
+Human,14,ULM,Comprehensiveness,2.0
+Human,14,ULM,Correctness,5.0
+Human,14,ULM,Exclusiveness,5.0
+Human,14,ULM,Explanation score,3.6666666666666665
+Human,14,ULM,Explicitness,3.3333333333333335
+Human,14,ULM,Fairness,3.0
+Human,14,ULM,Feedback,3.3333333333333335
+Human,14,ULM,Fluency,5.0
+Human,14,ULM,Focus,4.333333333333333
+Human,14,ULM,Goal alignment,5.0
+Human,14,ULM,Guess resistance,4.333333333333333
+Human,14,ULM,Plausibility,3.3333333333333335
+Human,14,ULM,Reasoning,2.0
+Human,14,ULM,Solvability,5.0
+Human,15,QGval,Answer consistency,5.0
+Human,15,QGval,Answerability,5.0
+Human,15,QGval,Clarity,5.0
+Human,15,QGval,Conciseness,5.0
+Human,15,QGval,Consistency,5.0
+Human,15,QGval,Fluency,5.0
+Human,15,QGval,Relevance,5.0
+Human,15,ULM,Absoluteness,5.0
+Human,15,ULM,Completeness,5.0
+Human,15,ULM,Comprehensiveness,3.0
+Human,15,ULM,Correctness,5.0
+Human,15,ULM,Exclusiveness,5.0
+Human,15,ULM,Explanation score,4.333333333333333
+Human,15,ULM,Explicitness,3.3333333333333335
+Human,15,ULM,Fairness,3.0
+Human,15,ULM,Feedback,4.0
+Human,15,ULM,Fluency,5.0
+Human,15,ULM,Focus,4.333333333333333
+Human,15,ULM,Goal alignment,5.0
+Human,15,ULM,Guess resistance,4.333333333333333
+Human,15,ULM,Plausibility,4.0
+Human,15,ULM,Reasoning,3.0
+Human,15,ULM,Solvability,5.0
+Human,16,QGval,Answer consistency,5.0
+Human,16,QGval,Answerability,5.0
+Human,16,QGval,Clarity,5.0
+Human,16,QGval,Conciseness,5.0
+Human,16,QGval,Consistency,5.0
+Human,16,QGval,Fluency,5.0
+Human,16,QGval,Relevance,5.0
+Human,16,ULM,Absoluteness,5.0
+Human,16,ULM,Completeness,5.0
+Human,16,ULM,Comprehensiveness,2.3333333333333335
+Human,16,ULM,Correctness,5.0
+Human,16,ULM,Exclusiveness,5.0
+Human,16,ULM,Explanation score,3.6666666666666665
+Human,16,ULM,Explicitness,3.3333333333333335
+Human,16,ULM,Fairness,3.0
+Human,16,ULM,Feedback,3.3333333333333335
+Human,16,ULM,Fluency,5.0
+Human,16,ULM,Focus,4.333333333333333
+Human,16,ULM,Goal alignment,5.0
+Human,16,ULM,Guess resistance,4.333333333333333
+Human,16,ULM,Plausibility,3.3333333333333335
+Human,16,ULM,Reasoning,2.0
+Human,16,ULM,Solvability,5.0
+Human,17,QGval,Answer consistency,5.0
+Human,17,QGval,Answerability,5.0
+Human,17,QGval,Clarity,5.0
+Human,17,QGval,Conciseness,5.0
+Human,17,QGval,Consistency,5.0
+Human,17,QGval,Fluency,4.666666666666667
+Human,17,QGval,Relevance,5.0
+Human,17,ULM,Absoluteness,5.0
+Human,17,ULM,Completeness,5.0
+Human,17,ULM,Comprehensiveness,3.6666666666666665
+Human,17,ULM,Correctness,5.0
+Human,17,ULM,Exclusiveness,5.0
+Human,17,ULM,Explanation score,4.333333333333333
+Human,17,ULM,Explicitness,3.3333333333333335
+Human,17,ULM,Fairness,3.0
+Human,17,ULM,Feedback,4.333333333333333
+Human,17,ULM,Fluency,4.666666666666667
+Human,17,ULM,Focus,4.333333333333333
+Human,17,ULM,Goal alignment,5.0
+Human,17,ULM,Guess resistance,4.333333333333333
+Human,17,ULM,Plausibility,4.333333333333333
+Human,17,ULM,Reasoning,3.3333333333333335
+Human,17,ULM,Solvability,5.0
+Human,18,QGval,Answer consistency,5.0
+Human,18,QGval,Answerability,5.0
+Human,18,QGval,Clarity,5.0
+Human,18,QGval,Conciseness,5.0
+Human,18,QGval,Consistency,5.0
+Human,18,QGval,Fluency,5.0
+Human,18,QGval,Relevance,5.0
+Human,18,ULM,Absoluteness,5.0
+Human,18,ULM,Completeness,5.0
+Human,18,ULM,Comprehensiveness,2.0
+Human,18,ULM,Correctness,5.0
+Human,18,ULM,Exclusiveness,5.0
+Human,18,ULM,Explanation score,3.6666666666666665
+Human,18,ULM,Explicitness,3.3333333333333335
+Human,18,ULM,Fairness,3.0
+Human,18,ULM,Feedback,3.3333333333333335
+Human,18,ULM,Fluency,5.0
+Human,18,ULM,Focus,4.333333333333333
+Human,18,ULM,Goal alignment,5.0
+Human,18,ULM,Guess resistance,4.333333333333333
+Human,18,ULM,Plausibility,3.3333333333333335
+Human,18,ULM,Reasoning,2.3333333333333335
+Human,18,ULM,Solvability,5.0
+Human,19,QGval,Answer consistency,5.0
+Human,19,QGval,Answerability,5.0
+Human,19,QGval,Clarity,5.0
+Human,19,QGval,Conciseness,5.0
+Human,19,QGval,Consistency,5.0
+Human,19,QGval,Fluency,4.666666666666667
+Human,19,QGval,Relevance,5.0
+Human,19,ULM,Absoluteness,5.0
+Human,19,ULM,Completeness,5.0
+Human,19,ULM,Comprehensiveness,3.3333333333333335
+Human,19,ULM,Correctness,5.0
+Human,19,ULM,Exclusiveness,5.0
+Human,19,ULM,Explanation score,4.333333333333333
+Human,19,ULM,Explicitness,3.3333333333333335
+Human,19,ULM,Fairness,3.0
+Human,19,ULM,Feedback,4.0
+Human,19,ULM,Fluency,5.0
+Human,19,ULM,Focus,4.333333333333333
+Human,19,ULM,Goal alignment,5.0
+Human,19,ULM,Guess resistance,4.333333333333333
+Human,19,ULM,Plausibility,4.0
+Human,19,ULM,Reasoning,3.0
+Human,19,ULM,Solvability,5.0
+Human,20,QGval,Answer consistency,5.0
+Human,20,QGval,Answerability,5.0
+Human,20,QGval,Clarity,5.0
+Human,20,QGval,Conciseness,5.0
+Human,20,QGval,Consistency,5.0
+Human,20,QGval,Fluency,5.0
+Human,20,QGval,Relevance,5.0
+Human,20,ULM,Absoluteness,5.0
+Human,20,ULM,Completeness,5.0
+Human,20,ULM,Comprehensiveness,1.6666666666666667
+Human,20,ULM,Correctness,5.0
+Human,20,ULM,Exclusiveness,5.0
+Human,20,ULM,Explanation score,3.6666666666666665
+Human,20,ULM,Explicitness,3.3333333333333335
+Human,20,ULM,Fairness,3.0
+Human,20,ULM,Feedback,3.3333333333333335
+Human,20,ULM,Fluency,5.0
+Human,20,ULM,Focus,4.333333333333333
+Human,20,ULM,Goal alignment,5.0
+Human,20,ULM,Guess resistance,4.333333333333333
+Human,20,ULM,Plausibility,3.0
+Human,20,ULM,Reasoning,2.0
+Human,20,ULM,Solvability,5.0
+Human,21,QGval,Answer consistency,4.333333333333333
+Human,21,QGval,Answerability,5.0
+Human,21,QGval,Clarity,5.0
+Human,21,QGval,Conciseness,5.0
+Human,21,QGval,Consistency,5.0
+Human,21,QGval,Fluency,5.0
+Human,21,QGval,Relevance,5.0
+Human,21,ULM,Absoluteness,5.0
+Human,21,ULM,Completeness,5.0
+Human,21,ULM,Comprehensiveness,1.6666666666666667
+Human,21,ULM,Correctness,5.0
+Human,21,ULM,Exclusiveness,5.0
+Human,21,ULM,Explanation score,3.6666666666666665
+Human,21,ULM,Explicitness,3.3333333333333335
+Human,21,ULM,Fairness,3.0
+Human,21,ULM,Feedback,3.3333333333333335
+Human,21,ULM,Fluency,5.0
+Human,21,ULM,Focus,4.333333333333333
+Human,21,ULM,Goal alignment,5.0
+Human,21,ULM,Guess resistance,4.333333333333333
+Human,21,ULM,Plausibility,3.0
+Human,21,ULM,Reasoning,2.0
+Human,21,ULM,Solvability,5.0
+Human,22,QGval,Answer consistency,5.0
+Human,22,QGval,Answerability,5.0
+Human,22,QGval,Clarity,5.0
+Human,22,QGval,Conciseness,5.0
+Human,22,QGval,Consistency,5.0
+Human,22,QGval,Fluency,5.0
+Human,22,QGval,Relevance,5.0
+Human,22,ULM,Absoluteness,5.0
+Human,22,ULM,Completeness,5.0
+Human,22,ULM,Comprehensiveness,3.0
+Human,22,ULM,Correctness,5.0
+Human,22,ULM,Exclusiveness,5.0
+Human,22,ULM,Explanation score,4.333333333333333
+Human,22,ULM,Explicitness,3.3333333333333335
+Human,22,ULM,Fairness,3.0
+Human,22,ULM,Feedback,4.0
+Human,22,ULM,Fluency,5.0
+Human,22,ULM,Focus,5.0
+Human,22,ULM,Goal alignment,5.0
+Human,22,ULM,Guess resistance,4.333333333333333
+Human,22,ULM,Plausibility,3.3333333333333335
+Human,22,ULM,Reasoning,2.0
+Human,22,ULM,Solvability,5.0
+Human,23,QGval,Answer consistency,4.333333333333333
+Human,23,QGval,Answerability,5.0
+Human,23,QGval,Clarity,5.0
+Human,23,QGval,Conciseness,5.0
+Human,23,QGval,Consistency,5.0
+Human,23,QGval,Fluency,5.0
+Human,23,QGval,Relevance,5.0
+Human,23,ULM,Absoluteness,5.0
+Human,23,ULM,Completeness,5.0
+Human,23,ULM,Comprehensiveness,2.3333333333333335
+Human,23,ULM,Correctness,5.0
+Human,23,ULM,Exclusiveness,5.0
+Human,23,ULM,Explanation score,3.6666666666666665
+Human,23,ULM,Explicitness,3.3333333333333335
+Human,23,ULM,Fairness,3.0
+Human,23,ULM,Feedback,3.3333333333333335
+Human,23,ULM,Fluency,5.0
+Human,23,ULM,Focus,5.0
+Human,23,ULM,Goal alignment,5.0
+Human,23,ULM,Guess resistance,4.333333333333333
+Human,23,ULM,Plausibility,3.6666666666666665
+Human,23,ULM,Reasoning,2.0
+Human,23,ULM,Solvability,5.0
+Human,24,QGval,Answer consistency,4.333333333333333
+Human,24,QGval,Answerability,5.0
+Human,24,QGval,Clarity,5.0
+Human,24,QGval,Conciseness,5.0
+Human,24,QGval,Consistency,5.0
+Human,24,QGval,Fluency,5.0
+Human,24,QGval,Relevance,5.0
+Human,24,ULM,Absoluteness,5.0
+Human,24,ULM,Completeness,5.0
+Human,24,ULM,Comprehensiveness,3.3333333333333335
+Human,24,ULM,Correctness,5.0
+Human,24,ULM,Exclusiveness,5.0
+Human,24,ULM,Explanation score,4.333333333333333
+Human,24,ULM,Explicitness,3.3333333333333335
+Human,24,ULM,Fairness,3.0
+Human,24,ULM,Feedback,4.0
+Human,24,ULM,Fluency,5.0
+Human,24,ULM,Focus,5.0
+Human,24,ULM,Goal alignment,5.0
+Human,24,ULM,Guess resistance,4.333333333333333
+Human,24,ULM,Plausibility,3.6666666666666665
+Human,24,ULM,Reasoning,3.0
+Human,24,ULM,Solvability,5.0
+Human,25,QGval,Answer consistency,5.0
+Human,25,QGval,Answerability,5.0
+Human,25,QGval,Clarity,5.0
+Human,25,QGval,Conciseness,5.0
+Human,25,QGval,Consistency,5.0
+Human,25,QGval,Fluency,5.0
+Human,25,QGval,Relevance,5.0
+Human,25,ULM,Absoluteness,5.0
+Human,25,ULM,Completeness,5.0
+Human,25,ULM,Comprehensiveness,2.0
+Human,25,ULM,Correctness,5.0
+Human,25,ULM,Exclusiveness,5.0
+Human,25,ULM,Explanation score,3.6666666666666665
+Human,25,ULM,Explicitness,3.0
+Human,25,ULM,Fairness,3.0
+Human,25,ULM,Feedback,3.3333333333333335
+Human,25,ULM,Fluency,5.0
+Human,25,ULM,Focus,5.0
+Human,25,ULM,Goal alignment,5.0
+Human,25,ULM,Guess resistance,4.333333333333333
+Human,25,ULM,Plausibility,4.0
+Human,25,ULM,Reasoning,2.0
+Human,25,ULM,Solvability,5.0
+Human,26,QGval,Answer consistency,5.0
+Human,26,QGval,Answerability,5.0
+Human,26,QGval,Clarity,5.0
+Human,26,QGval,Conciseness,5.0
+Human,26,QGval,Consistency,5.0
+Human,26,QGval,Fluency,5.0
+Human,26,QGval,Relevance,5.0
+Human,26,ULM,Absoluteness,5.0
+Human,26,ULM,Completeness,5.0
+Human,26,ULM,Comprehensiveness,2.6666666666666665
+Human,26,ULM,Correctness,5.0
+Human,26,ULM,Exclusiveness,5.0
+Human,26,ULM,Explanation score,4.333333333333333
+Human,26,ULM,Explicitness,3.0
+Human,26,ULM,Fairness,3.0
+Human,26,ULM,Feedback,4.0
+Human,26,ULM,Fluency,5.0
+Human,26,ULM,Focus,5.0
+Human,26,ULM,Goal alignment,5.0
+Human,26,ULM,Guess resistance,4.333333333333333
+Human,26,ULM,Plausibility,4.0
+Human,26,ULM,Reasoning,2.6666666666666665
+Human,26,ULM,Solvability,5.0
+Human,27,QGval,Answer consistency,4.333333333333333
+Human,27,QGval,Answerability,5.0
+Human,27,QGval,Clarity,5.0
+Human,27,QGval,Conciseness,5.0
+Human,27,QGval,Consistency,5.0
+Human,27,QGval,Fluency,5.0
+Human,27,QGval,Relevance,5.0
+Human,27,ULM,Absoluteness,5.0
+Human,27,ULM,Completeness,5.0
+Human,27,ULM,Comprehensiveness,3.0
+Human,27,ULM,Correctness,5.0
+Human,27,ULM,Exclusiveness,5.0
+Human,27,ULM,Explanation score,4.333333333333333
+Human,27,ULM,Explicitness,3.3333333333333335
+Human,27,ULM,Fairness,3.0
+Human,27,ULM,Feedback,4.0
+Human,27,ULM,Fluency,5.0
+Human,27,ULM,Focus,5.0
+Human,27,ULM,Goal alignment,5.0
+Human,27,ULM,Guess resistance,4.333333333333333
+Human,27,ULM,Plausibility,4.0
+Human,27,ULM,Reasoning,2.6666666666666665
+Human,27,ULM,Solvability,5.0
+Human,28,QGval,Answer consistency,5.0
+Human,28,QGval,Answerability,5.0
+Human,28,QGval,Clarity,4.666666666666667
+Human,28,QGval,Conciseness,5.0
+Human,28,QGval,Consistency,5.0
+Human,28,QGval,Fluency,5.0
+Human,28,QGval,Relevance,5.0
+Human,28,ULM,Absoluteness,5.0
+Human,28,ULM,Completeness,5.0
+Human,28,ULM,Comprehensiveness,3.3333333333333335
+Human,28,ULM,Correctness,5.0
+Human,28,ULM,Exclusiveness,5.0
+Human,28,ULM,Explanation score,4.333333333333333
+Human,28,ULM,Explicitness,3.3333333333333335
+Human,28,ULM,Fairness,3.0
+Human,28,ULM,Feedback,4.0
+Human,28,ULM,Fluency,5.0
+Human,28,ULM,Focus,5.0
+Human,28,ULM,Goal alignment,5.0
+Human,28,ULM,Guess resistance,4.333333333333333
+Human,28,ULM,Plausibility,4.0
+Human,28,ULM,Reasoning,3.0
+Human,28,ULM,Solvability,5.0
+Human,29,QGval,Answer consistency,4.333333333333333
+Human,29,QGval,Answerability,5.0
+Human,29,QGval,Clarity,4.0
+Human,29,QGval,Conciseness,4.333333333333333
+Human,29,QGval,Consistency,5.0
+Human,29,QGval,Fluency,4.666666666666667
+Human,29,QGval,Relevance,5.0
+Human,29,ULM,Absoluteness,4.666666666666667
+Human,29,ULM,Completeness,5.0
+Human,29,ULM,Comprehensiveness,3.3333333333333335
+Human,29,ULM,Correctness,5.0
+Human,29,ULM,Exclusiveness,4.333333333333333
+Human,29,ULM,Explanation score,4.0
+Human,29,ULM,Explicitness,3.0
+Human,29,ULM,Fairness,3.0
+Human,29,ULM,Feedback,3.6666666666666665
+Human,29,ULM,Fluency,4.666666666666667
+Human,29,ULM,Focus,4.666666666666667
+Human,29,ULM,Goal alignment,5.0
+Human,29,ULM,Guess resistance,4.0
+Human,29,ULM,Plausibility,3.3333333333333335
+Human,29,ULM,Reasoning,3.0
+Human,29,ULM,Solvability,5.0
+Human,30,QGval,Answer consistency,5.0
+Human,30,QGval,Answerability,5.0
+Human,30,QGval,Clarity,5.0
+Human,30,QGval,Conciseness,5.0
+Human,30,QGval,Consistency,5.0
+Human,30,QGval,Fluency,5.0
+Human,30,QGval,Relevance,5.0
+Human,30,ULM,Absoluteness,5.0
+Human,30,ULM,Completeness,5.0
+Human,30,ULM,Comprehensiveness,3.0
+Human,30,ULM,Correctness,5.0
+Human,30,ULM,Exclusiveness,5.0
+Human,30,ULM,Explanation score,4.333333333333333
+Human,30,ULM,Explicitness,3.0
+Human,30,ULM,Fairness,3.0
+Human,30,ULM,Feedback,4.0
+Human,30,ULM,Fluency,5.0
+Human,30,ULM,Focus,5.0
+Human,30,ULM,Goal alignment,5.0
+Human,30,ULM,Guess resistance,4.333333333333333
+Human,30,ULM,Plausibility,3.6666666666666665
+Human,30,ULM,Reasoning,3.0
+Human,30,ULM,Solvability,5.0
+Human,31,QGval,Answer consistency,5.0
+Human,31,QGval,Answerability,5.0
+Human,31,QGval,Clarity,5.0
+Human,31,QGval,Conciseness,5.0
+Human,31,QGval,Consistency,5.0
+Human,31,QGval,Fluency,5.0
+Human,31,QGval,Relevance,5.0
+Human,31,ULM,Absoluteness,5.0
+Human,31,ULM,Completeness,5.0
+Human,31,ULM,Comprehensiveness,3.0
+Human,31,ULM,Correctness,5.0
+Human,31,ULM,Exclusiveness,5.0
+Human,31,ULM,Explanation score,4.333333333333333
+Human,31,ULM,Explicitness,3.0
+Human,31,ULM,Fairness,3.0
+Human,31,ULM,Feedback,4.0
+Human,31,ULM,Fluency,5.0
+Human,31,ULM,Focus,5.0
+Human,31,ULM,Goal alignment,5.0
+Human,31,ULM,Guess resistance,4.333333333333333
+Human,31,ULM,Plausibility,3.3333333333333335
+Human,31,ULM,Reasoning,2.6666666666666665
+Human,31,ULM,Solvability,5.0
+Human,32,QGval,Answer consistency,5.0
+Human,32,QGval,Answerability,5.0
+Human,32,QGval,Clarity,5.0
+Human,32,QGval,Conciseness,5.0
+Human,32,QGval,Consistency,5.0
+Human,32,QGval,Fluency,5.0
+Human,32,QGval,Relevance,5.0
+Human,32,ULM,Absoluteness,5.0
+Human,32,ULM,Completeness,5.0
+Human,32,ULM,Comprehensiveness,3.3333333333333335
+Human,32,ULM,Correctness,5.0
+Human,32,ULM,Exclusiveness,5.0
+Human,32,ULM,Explanation score,4.333333333333333
+Human,32,ULM,Explicitness,3.0
+Human,32,ULM,Fairness,3.0
+Human,32,ULM,Feedback,4.0
+Human,32,ULM,Fluency,5.0
+Human,32,ULM,Focus,5.0
+Human,32,ULM,Goal alignment,5.0
+Human,32,ULM,Guess resistance,4.333333333333333
+Human,32,ULM,Plausibility,3.3333333333333335
+Human,32,ULM,Reasoning,3.0
+Human,32,ULM,Solvability,5.0
+Human,33,QGval,Answer consistency,5.0
+Human,33,QGval,Answerability,5.0
+Human,33,QGval,Clarity,5.0
+Human,33,QGval,Conciseness,5.0
+Human,33,QGval,Consistency,5.0
+Human,33,QGval,Fluency,5.0
+Human,33,QGval,Relevance,5.0
+Human,33,ULM,Absoluteness,5.0
+Human,33,ULM,Completeness,5.0
+Human,33,ULM,Comprehensiveness,3.0
+Human,33,ULM,Correctness,5.0
+Human,33,ULM,Exclusiveness,5.0
+Human,33,ULM,Explanation score,4.333333333333333
+Human,33,ULM,Explicitness,3.0
+Human,33,ULM,Fairness,3.0
+Human,33,ULM,Feedback,4.0
+Human,33,ULM,Fluency,5.0
+Human,33,ULM,Focus,5.0
+Human,33,ULM,Goal alignment,5.0
+Human,33,ULM,Guess resistance,4.333333333333333
+Human,33,ULM,Plausibility,3.3333333333333335
+Human,33,ULM,Reasoning,2.6666666666666665
+Human,33,ULM,Solvability,5.0
+Human,34,QGval,Answer consistency,5.0
+Human,34,QGval,Answerability,5.0
+Human,34,QGval,Clarity,5.0
+Human,34,QGval,Conciseness,5.0
+Human,34,QGval,Consistency,5.0
+Human,34,QGval,Fluency,5.0
+Human,34,QGval,Relevance,5.0
+Human,34,ULM,Absoluteness,5.0
+Human,34,ULM,Completeness,5.0
+Human,34,ULM,Comprehensiveness,3.3333333333333335
+Human,34,ULM,Correctness,5.0
+Human,34,ULM,Exclusiveness,5.0
+Human,34,ULM,Explanation score,4.333333333333333
+Human,34,ULM,Explicitness,3.0
+Human,34,ULM,Fairness,3.0
+Human,34,ULM,Feedback,4.0
+Human,34,ULM,Fluency,5.0
+Human,34,ULM,Focus,5.0
+Human,34,ULM,Goal alignment,5.0
+Human,34,ULM,Guess resistance,4.333333333333333
+Human,34,ULM,Plausibility,3.3333333333333335
+Human,34,ULM,Reasoning,2.6666666666666665
+Human,34,ULM,Solvability,5.0
+Human,35,QGval,Answer consistency,5.0
+Human,35,QGval,Answerability,5.0
+Human,35,QGval,Clarity,5.0
+Human,35,QGval,Conciseness,5.0
+Human,35,QGval,Consistency,5.0
+Human,35,QGval,Fluency,5.0
+Human,35,QGval,Relevance,5.0
+Human,35,ULM,Absoluteness,5.0
+Human,35,ULM,Completeness,5.0
+Human,35,ULM,Comprehensiveness,3.0
+Human,35,ULM,Correctness,5.0
+Human,35,ULM,Exclusiveness,5.0
+Human,35,ULM,Explanation score,4.333333333333333
+Human,35,ULM,Explicitness,3.0
+Human,35,ULM,Fairness,3.0
+Human,35,ULM,Feedback,4.0
+Human,35,ULM,Fluency,5.0
+Human,35,ULM,Focus,5.0
+Human,35,ULM,Goal alignment,5.0
+Human,35,ULM,Guess resistance,4.333333333333333
+Human,35,ULM,Plausibility,3.3333333333333335
+Human,35,ULM,Reasoning,2.6666666666666665
+Human,35,ULM,Solvability,5.0
+Human,36,QGval,Answer consistency,5.0
+Human,36,QGval,Answerability,5.0
+Human,36,QGval,Clarity,5.0
+Human,36,QGval,Conciseness,5.0
+Human,36,QGval,Consistency,5.0
+Human,36,QGval,Fluency,5.0
+Human,36,QGval,Relevance,5.0
+Human,36,ULM,Absoluteness,5.0
+Human,36,ULM,Completeness,5.0
+Human,36,ULM,Comprehensiveness,3.0
+Human,36,ULM,Correctness,5.0
+Human,36,ULM,Exclusiveness,5.0
+Human,36,ULM,Explanation score,4.333333333333333
+Human,36,ULM,Explicitness,3.3333333333333335
+Human,36,ULM,Fairness,3.0
+Human,36,ULM,Feedback,4.0
+Human,36,ULM,Fluency,5.0
+Human,36,ULM,Focus,5.0
+Human,36,ULM,Goal alignment,5.0
+Human,36,ULM,Guess resistance,4.333333333333333
+Human,36,ULM,Plausibility,4.0
+Human,36,ULM,Reasoning,2.6666666666666665
+Human,36,ULM,Solvability,5.0
+Human,37,QGval,Answer consistency,5.0
+Human,37,QGval,Answerability,5.0
+Human,37,QGval,Clarity,5.0
+Human,37,QGval,Conciseness,5.0
+Human,37,QGval,Consistency,5.0
+Human,37,QGval,Fluency,5.0
+Human,37,QGval,Relevance,5.0
+Human,37,ULM,Absoluteness,5.0
+Human,37,ULM,Completeness,5.0
+Human,37,ULM,Comprehensiveness,3.0
+Human,37,ULM,Correctness,5.0
+Human,37,ULM,Exclusiveness,5.0
+Human,37,ULM,Explanation score,5.0
+Human,37,ULM,Explicitness,3.3333333333333335
+Human,37,ULM,Fairness,3.0
+Human,37,ULM,Feedback,4.0
+Human,37,ULM,Fluency,5.0
+Human,37,ULM,Focus,5.0
+Human,37,ULM,Goal alignment,5.0
+Human,37,ULM,Guess resistance,4.333333333333333
+Human,37,ULM,Plausibility,4.0
+Human,37,ULM,Reasoning,2.6666666666666665
+Human,37,ULM,Solvability,5.0
+Human,38,QGval,Answer consistency,5.0
+Human,38,QGval,Answerability,5.0
+Human,38,QGval,Clarity,5.0
+Human,38,QGval,Conciseness,5.0
+Human,38,QGval,Consistency,5.0
+Human,38,QGval,Fluency,5.0
+Human,38,QGval,Relevance,5.0
+Human,38,ULM,Absoluteness,5.0
+Human,38,ULM,Completeness,5.0
+Human,38,ULM,Comprehensiveness,3.3333333333333335
+Human,38,ULM,Correctness,5.0
+Human,38,ULM,Exclusiveness,5.0
+Human,38,ULM,Explanation score,4.333333333333333
+Human,38,ULM,Explicitness,3.3333333333333335
+Human,38,ULM,Fairness,3.0
+Human,38,ULM,Feedback,4.0
+Human,38,ULM,Fluency,5.0
+Human,38,ULM,Focus,5.0
+Human,38,ULM,Goal alignment,5.0
+Human,38,ULM,Guess resistance,4.333333333333333
+Human,38,ULM,Plausibility,4.0
+Human,38,ULM,Reasoning,3.0
+Human,38,ULM,Solvability,5.0
+Human,39,QGval,Answer consistency,5.0
+Human,39,QGval,Answerability,5.0
+Human,39,QGval,Clarity,5.0
+Human,39,QGval,Conciseness,5.0
+Human,39,QGval,Consistency,5.0
+Human,39,QGval,Fluency,5.0
+Human,39,QGval,Relevance,5.0
+Human,39,ULM,Absoluteness,5.0
+Human,39,ULM,Completeness,5.0
+Human,39,ULM,Comprehensiveness,3.3333333333333335
+Human,39,ULM,Correctness,5.0
+Human,39,ULM,Exclusiveness,5.0
+Human,39,ULM,Explanation score,4.333333333333333
+Human,39,ULM,Explicitness,3.3333333333333335
+Human,39,ULM,Fairness,3.0
+Human,39,ULM,Feedback,4.0
+Human,39,ULM,Fluency,5.0
+Human,39,ULM,Focus,5.0
+Human,39,ULM,Goal alignment,5.0
+Human,39,ULM,Guess resistance,4.333333333333333
+Human,39,ULM,Plausibility,4.0
+Human,39,ULM,Reasoning,3.0
+Human,39,ULM,Solvability,5.0
+Human,40,QGval,Answer consistency,4.333333333333333
+Human,40,QGval,Answerability,5.0
+Human,40,QGval,Clarity,5.0
+Human,40,QGval,Conciseness,5.0
+Human,40,QGval,Consistency,5.0
+Human,40,QGval,Fluency,5.0
+Human,40,QGval,Relevance,5.0
+Human,40,ULM,Absoluteness,5.0
+Human,40,ULM,Completeness,5.0
+Human,40,ULM,Comprehensiveness,2.3333333333333335
+Human,40,ULM,Correctness,5.0
+Human,40,ULM,Exclusiveness,5.0
+Human,40,ULM,Explanation score,5.0
+Human,40,ULM,Explicitness,3.0
+Human,40,ULM,Fairness,3.0
+Human,40,ULM,Feedback,3.3333333333333335
+Human,40,ULM,Fluency,5.0
+Human,40,ULM,Focus,5.0
+Human,40,ULM,Goal alignment,5.0
+Human,40,ULM,Guess resistance,4.333333333333333
+Human,40,ULM,Plausibility,4.0
+Human,40,ULM,Reasoning,1.6666666666666667
+Human,40,ULM,Solvability,5.0
+Human,41,QGval,Answer consistency,5.0
+Human,41,QGval,Answerability,5.0
+Human,41,QGval,Clarity,5.0
+Human,41,QGval,Conciseness,5.0
+Human,41,QGval,Consistency,5.0
+Human,41,QGval,Fluency,5.0
+Human,41,QGval,Relevance,5.0
+Human,41,ULM,Absoluteness,5.0
+Human,41,ULM,Completeness,5.0
+Human,41,ULM,Comprehensiveness,2.6666666666666665
+Human,41,ULM,Correctness,5.0
+Human,41,ULM,Exclusiveness,5.0
+Human,41,ULM,Explanation score,5.0
+Human,41,ULM,Explicitness,3.0
+Human,41,ULM,Fairness,3.0
+Human,41,ULM,Feedback,3.3333333333333335
+Human,41,ULM,Fluency,5.0
+Human,41,ULM,Focus,5.0
+Human,41,ULM,Goal alignment,5.0
+Human,41,ULM,Guess resistance,4.333333333333333
+Human,41,ULM,Plausibility,4.0
+Human,41,ULM,Reasoning,2.0
+Human,41,ULM,Solvability,5.0
+Human,42,QGval,Answer consistency,5.0
+Human,42,QGval,Answerability,5.0
+Human,42,QGval,Clarity,5.0
+Human,42,QGval,Conciseness,5.0
+Human,42,QGval,Consistency,5.0
+Human,42,QGval,Fluency,5.0
+Human,42,QGval,Relevance,5.0
+Human,42,ULM,Absoluteness,5.0
+Human,42,ULM,Completeness,5.0
+Human,42,ULM,Comprehensiveness,2.6666666666666665
+Human,42,ULM,Correctness,5.0
+Human,42,ULM,Exclusiveness,5.0
+Human,42,ULM,Explanation score,5.0
+Human,42,ULM,Explicitness,3.0
+Human,42,ULM,Fairness,3.0
+Human,42,ULM,Feedback,3.3333333333333335
+Human,42,ULM,Fluency,5.0
+Human,42,ULM,Focus,5.0
+Human,42,ULM,Goal alignment,5.0
+Human,42,ULM,Guess resistance,4.333333333333333
+Human,42,ULM,Plausibility,4.0
+Human,42,ULM,Reasoning,2.3333333333333335
+Human,42,ULM,Solvability,5.0
+Human,43,QGval,Answer consistency,5.0
+Human,43,QGval,Answerability,5.0
+Human,43,QGval,Clarity,5.0
+Human,43,QGval,Conciseness,5.0
+Human,43,QGval,Consistency,5.0
+Human,43,QGval,Fluency,5.0
+Human,43,QGval,Relevance,5.0
+Human,43,ULM,Absoluteness,5.0
+Human,43,ULM,Completeness,5.0
+Human,43,ULM,Comprehensiveness,2.3333333333333335
+Human,43,ULM,Correctness,5.0
+Human,43,ULM,Exclusiveness,5.0
+Human,43,ULM,Explanation score,4.333333333333333
+Human,43,ULM,Explicitness,3.3333333333333335
+Human,43,ULM,Fairness,3.0
+Human,43,ULM,Feedback,4.333333333333333
+Human,43,ULM,Fluency,5.0
+Human,43,ULM,Focus,4.333333333333333
+Human,43,ULM,Goal alignment,5.0
+Human,43,ULM,Guess resistance,4.333333333333333
+Human,43,ULM,Plausibility,4.0
+Human,43,ULM,Reasoning,2.0
+Human,43,ULM,Solvability,5.0
+Human,44,QGval,Answer consistency,5.0
+Human,44,QGval,Answerability,5.0
+Human,44,QGval,Clarity,5.0
+Human,44,QGval,Conciseness,5.0
+Human,44,QGval,Consistency,5.0
+Human,44,QGval,Fluency,5.0
+Human,44,QGval,Relevance,5.0
+Human,44,ULM,Absoluteness,5.0
+Human,44,ULM,Completeness,5.0
+Human,44,ULM,Comprehensiveness,2.6666666666666665
+Human,44,ULM,Correctness,5.0
+Human,44,ULM,Exclusiveness,5.0
+Human,44,ULM,Explanation score,4.333333333333333
+Human,44,ULM,Explicitness,3.3333333333333335
+Human,44,ULM,Fairness,3.0
+Human,44,ULM,Feedback,4.0
+Human,44,ULM,Fluency,5.0
+Human,44,ULM,Focus,4.333333333333333
+Human,44,ULM,Goal alignment,5.0
+Human,44,ULM,Guess resistance,4.333333333333333
+Human,44,ULM,Plausibility,4.333333333333333
+Human,44,ULM,Reasoning,2.3333333333333335
+Human,44,ULM,Solvability,5.0
+Human,45,QGval,Answer consistency,5.0
+Human,45,QGval,Answerability,5.0
+Human,45,QGval,Clarity,5.0
+Human,45,QGval,Conciseness,5.0
+Human,45,QGval,Consistency,5.0
+Human,45,QGval,Fluency,5.0
+Human,45,QGval,Relevance,5.0
+Human,45,ULM,Absoluteness,5.0
+Human,45,ULM,Completeness,5.0
+Human,45,ULM,Comprehensiveness,3.0
+Human,45,ULM,Correctness,5.0
+Human,45,ULM,Exclusiveness,5.0
+Human,45,ULM,Explanation score,4.333333333333333
+Human,45,ULM,Explicitness,3.3333333333333335
+Human,45,ULM,Fairness,3.0
+Human,45,ULM,Feedback,4.0
+Human,45,ULM,Fluency,5.0
+Human,45,ULM,Focus,4.333333333333333
+Human,45,ULM,Goal alignment,5.0
+Human,45,ULM,Guess resistance,4.333333333333333
+Human,45,ULM,Plausibility,4.0
+Human,45,ULM,Reasoning,2.6666666666666665
+Human,45,ULM,Solvability,5.0
+Human,46,QGval,Answer consistency,5.0
+Human,46,QGval,Answerability,5.0
+Human,46,QGval,Clarity,5.0
+Human,46,QGval,Conciseness,5.0
+Human,46,QGval,Consistency,5.0
+Human,46,QGval,Fluency,5.0
+Human,46,QGval,Relevance,5.0
+Human,46,ULM,Absoluteness,4.666666666666667
+Human,46,ULM,Completeness,5.0
+Human,46,ULM,Comprehensiveness,2.6666666666666665
+Human,46,ULM,Correctness,5.0
+Human,46,ULM,Exclusiveness,5.0
+Human,46,ULM,Explanation score,4.0
+Human,46,ULM,Explicitness,3.3333333333333335
+Human,46,ULM,Fairness,3.6666666666666665
+Human,46,ULM,Feedback,3.3333333333333335
+Human,46,ULM,Fluency,5.0
+Human,46,ULM,Focus,4.333333333333333
+Human,46,ULM,Goal alignment,5.0
+Human,46,ULM,Guess resistance,4.333333333333333
+Human,46,ULM,Plausibility,3.3333333333333335
+Human,46,ULM,Reasoning,3.0
+Human,46,ULM,Solvability,5.0
+Human,47,QGval,Answer consistency,4.666666666666667
+Human,47,QGval,Answerability,5.0
+Human,47,QGval,Clarity,5.0
+Human,47,QGval,Conciseness,5.0
+Human,47,QGval,Consistency,5.0
+Human,47,QGval,Fluency,5.0
+Human,47,QGval,Relevance,5.0
+Human,47,ULM,Absoluteness,4.666666666666667
+Human,47,ULM,Completeness,5.0
+Human,47,ULM,Comprehensiveness,2.0
+Human,47,ULM,Correctness,5.0
+Human,47,ULM,Exclusiveness,4.0
+Human,47,ULM,Explanation score,3.3333333333333335
+Human,47,ULM,Explicitness,2.6666666666666665
+Human,47,ULM,Fairness,3.0
+Human,47,ULM,Feedback,3.0
+Human,47,ULM,Fluency,5.0
+Human,47,ULM,Focus,4.333333333333333
+Human,47,ULM,Goal alignment,5.0
+Human,47,ULM,Guess resistance,4.0
+Human,47,ULM,Plausibility,3.6666666666666665
+Human,47,ULM,Reasoning,2.3333333333333335
+Human,47,ULM,Solvability,5.0
+Human,48,QGval,Answer consistency,5.0
+Human,48,QGval,Answerability,5.0
+Human,48,QGval,Clarity,5.0
+Human,48,QGval,Conciseness,5.0
+Human,48,QGval,Consistency,5.0
+Human,48,QGval,Fluency,5.0
+Human,48,QGval,Relevance,5.0
+Human,48,ULM,Absoluteness,5.0
+Human,48,ULM,Completeness,5.0
+Human,48,ULM,Comprehensiveness,2.0
+Human,48,ULM,Correctness,5.0
+Human,48,ULM,Exclusiveness,4.333333333333333
+Human,48,ULM,Explanation score,3.6666666666666665
+Human,48,ULM,Explicitness,3.3333333333333335
+Human,48,ULM,Fairness,3.0
+Human,48,ULM,Feedback,3.3333333333333335
+Human,48,ULM,Fluency,5.0
+Human,48,ULM,Focus,4.333333333333333
+Human,48,ULM,Goal alignment,5.0
+Human,48,ULM,Guess resistance,4.333333333333333
+Human,48,ULM,Plausibility,4.0
+Human,48,ULM,Reasoning,2.3333333333333335
+Human,48,ULM,Solvability,5.0
+Human,49,QGval,Answer consistency,4.666666666666667
+Human,49,QGval,Answerability,5.0
+Human,49,QGval,Clarity,5.0
+Human,49,QGval,Conciseness,5.0
+Human,49,QGval,Consistency,5.0
+Human,49,QGval,Fluency,5.0
+Human,49,QGval,Relevance,5.0
+Human,49,ULM,Absoluteness,4.666666666666667
+Human,49,ULM,Completeness,5.0
+Human,49,ULM,Comprehensiveness,2.3333333333333335
+Human,49,ULM,Correctness,5.0
+Human,49,ULM,Exclusiveness,4.666666666666667
+Human,49,ULM,Explanation score,3.3333333333333335
+Human,49,ULM,Explicitness,2.6666666666666665
+Human,49,ULM,Fairness,3.0
+Human,49,ULM,Feedback,3.0
+Human,49,ULM,Fluency,5.0
+Human,49,ULM,Focus,4.333333333333333
+Human,49,ULM,Goal alignment,5.0
+Human,49,ULM,Guess resistance,4.0
+Human,49,ULM,Plausibility,3.6666666666666665
+Human,49,ULM,Reasoning,1.6666666666666667
+Human,49,ULM,Solvability,5.0
+Human,50,QGval,Answer consistency,5.0
+Human,50,QGval,Answerability,5.0
+Human,50,QGval,Clarity,5.0
+Human,50,QGval,Conciseness,5.0
+Human,50,QGval,Consistency,5.0
+Human,50,QGval,Fluency,5.0
+Human,50,QGval,Relevance,5.0
+Human,50,ULM,Absoluteness,5.0
+Human,50,ULM,Completeness,5.0
+Human,50,ULM,Comprehensiveness,2.3333333333333335
+Human,50,ULM,Correctness,5.0
+Human,50,ULM,Exclusiveness,5.0
+Human,50,ULM,Explanation score,4.0
+Human,50,ULM,Explicitness,3.0
+Human,50,ULM,Fairness,3.0
+Human,50,ULM,Feedback,4.0
+Human,50,ULM,Fluency,5.0
+Human,50,ULM,Focus,4.333333333333333
+Human,50,ULM,Goal alignment,5.0
+Human,50,ULM,Guess resistance,4.333333333333333
+Human,50,ULM,Plausibility,4.0
+Human,50,ULM,Reasoning,1.6666666666666667
+Human,50,ULM,Solvability,5.0
+Human,51,QGval,Answer consistency,5.0
+Human,51,QGval,Answerability,5.0
+Human,51,QGval,Clarity,5.0
+Human,51,QGval,Conciseness,5.0
+Human,51,QGval,Consistency,5.0
+Human,51,QGval,Fluency,5.0
+Human,51,QGval,Relevance,5.0
+Human,51,ULM,Absoluteness,5.0
+Human,51,ULM,Completeness,5.0
+Human,51,ULM,Comprehensiveness,2.3333333333333335
+Human,51,ULM,Correctness,5.0
+Human,51,ULM,Exclusiveness,5.0
+Human,51,ULM,Explanation score,3.6666666666666665
+Human,51,ULM,Explicitness,4.0
+Human,51,ULM,Fairness,3.0
+Human,51,ULM,Feedback,3.0
+Human,51,ULM,Fluency,5.0
+Human,51,ULM,Focus,4.0
+Human,51,ULM,Goal alignment,5.0
+Human,51,ULM,Guess resistance,4.0
+Human,51,ULM,Plausibility,3.3333333333333335
+Human,51,ULM,Reasoning,2.0
+Human,51,ULM,Solvability,5.0
+Human,52,QGval,Answer consistency,5.0
+Human,52,QGval,Answerability,5.0
+Human,52,QGval,Clarity,5.0
+Human,52,QGval,Conciseness,5.0
+Human,52,QGval,Consistency,5.0
+Human,52,QGval,Fluency,5.0
+Human,52,QGval,Relevance,4.666666666666667
+Human,52,ULM,Absoluteness,5.0
+Human,52,ULM,Completeness,5.0
+Human,52,ULM,Comprehensiveness,1.3333333333333333
+Human,52,ULM,Correctness,5.0
+Human,52,ULM,Exclusiveness,5.0
+Human,52,ULM,Explanation score,3.6666666666666665
+Human,52,ULM,Explicitness,3.6666666666666665
+Human,52,ULM,Fairness,3.0
+Human,52,ULM,Feedback,3.0
+Human,52,ULM,Fluency,5.0
+Human,52,ULM,Focus,4.0
+Human,52,ULM,Goal alignment,4.666666666666667
+Human,52,ULM,Guess resistance,4.0
+Human,52,ULM,Plausibility,3.6666666666666665
+Human,52,ULM,Reasoning,1.3333333333333333
+Human,52,ULM,Solvability,5.0
+Human,53,QGval,Answer consistency,5.0
+Human,53,QGval,Answerability,5.0
+Human,53,QGval,Clarity,5.0
+Human,53,QGval,Conciseness,5.0
+Human,53,QGval,Consistency,5.0
+Human,53,QGval,Fluency,5.0
+Human,53,QGval,Relevance,4.666666666666667
+Human,53,ULM,Absoluteness,5.0
+Human,53,ULM,Completeness,5.0
+Human,53,ULM,Comprehensiveness,1.6666666666666667
+Human,53,ULM,Correctness,5.0
+Human,53,ULM,Exclusiveness,5.0
+Human,53,ULM,Explanation score,3.6666666666666665
+Human,53,ULM,Explicitness,3.6666666666666665
+Human,53,ULM,Fairness,3.0
+Human,53,ULM,Feedback,3.0
+Human,53,ULM,Fluency,5.0
+Human,53,ULM,Focus,4.0
+Human,53,ULM,Goal alignment,5.0
+Human,53,ULM,Guess resistance,4.0
+Human,53,ULM,Plausibility,3.6666666666666665
+Human,53,ULM,Reasoning,1.3333333333333333
+Human,53,ULM,Solvability,5.0
+Human,54,QGval,Answer consistency,5.0
+Human,54,QGval,Answerability,5.0
+Human,54,QGval,Clarity,5.0
+Human,54,QGval,Conciseness,4.666666666666667
+Human,54,QGval,Consistency,5.0
+Human,54,QGval,Fluency,4.666666666666667
+Human,54,QGval,Relevance,5.0
+Human,54,ULM,Absoluteness,5.0
+Human,54,ULM,Completeness,5.0
+Human,54,ULM,Comprehensiveness,2.3333333333333335
+Human,54,ULM,Correctness,5.0
+Human,54,ULM,Exclusiveness,5.0
+Human,54,ULM,Explanation score,4.0
+Human,54,ULM,Explicitness,3.6666666666666665
+Human,54,ULM,Fairness,3.0
+Human,54,ULM,Feedback,3.0
+Human,54,ULM,Fluency,4.333333333333333
+Human,54,ULM,Focus,4.0
+Human,54,ULM,Goal alignment,5.0
+Human,54,ULM,Guess resistance,4.0
+Human,54,ULM,Plausibility,3.6666666666666665
+Human,54,ULM,Reasoning,3.0
+Human,54,ULM,Solvability,5.0
+Human,55,QGval,Answer consistency,5.0
+Human,55,QGval,Answerability,5.0
+Human,55,QGval,Clarity,5.0
+Human,55,QGval,Conciseness,4.666666666666667
+Human,55,QGval,Consistency,5.0
+Human,55,QGval,Fluency,5.0
+Human,55,QGval,Relevance,5.0
+Human,55,ULM,Absoluteness,5.0
+Human,55,ULM,Completeness,5.0
+Human,55,ULM,Comprehensiveness,2.6666666666666665
+Human,55,ULM,Correctness,5.0
+Human,55,ULM,Exclusiveness,5.0
+Human,55,ULM,Explanation score,4.333333333333333
+Human,55,ULM,Explicitness,3.6666666666666665
+Human,55,ULM,Fairness,3.0
+Human,55,ULM,Feedback,3.6666666666666665
+Human,55,ULM,Fluency,5.0
+Human,55,ULM,Focus,4.0
+Human,55,ULM,Goal alignment,5.0
+Human,55,ULM,Guess resistance,4.0
+Human,55,ULM,Plausibility,4.0
+Human,55,ULM,Reasoning,2.6666666666666665
+Human,55,ULM,Solvability,5.0
+Human,56,QGval,Answer consistency,5.0
+Human,56,QGval,Answerability,5.0
+Human,56,QGval,Clarity,4.666666666666667
+Human,56,QGval,Conciseness,5.0
+Human,56,QGval,Consistency,5.0
+Human,56,QGval,Fluency,4.666666666666667
+Human,56,QGval,Relevance,4.666666666666667
+Human,56,ULM,Absoluteness,5.0
+Human,56,ULM,Completeness,5.0
+Human,56,ULM,Comprehensiveness,2.3333333333333335
+Human,56,ULM,Correctness,5.0
+Human,56,ULM,Exclusiveness,5.0
+Human,56,ULM,Explanation score,4.333333333333333
+Human,56,ULM,Explicitness,3.6666666666666665
+Human,56,ULM,Fairness,3.0
+Human,56,ULM,Feedback,3.6666666666666665
+Human,56,ULM,Fluency,4.666666666666667
+Human,56,ULM,Focus,4.0
+Human,56,ULM,Goal alignment,4.666666666666667
+Human,56,ULM,Guess resistance,3.6666666666666665
+Human,56,ULM,Plausibility,3.6666666666666665
+Human,56,ULM,Reasoning,2.6666666666666665
+Human,56,ULM,Solvability,5.0
+Human,57,QGval,Answer consistency,5.0
+Human,57,QGval,Answerability,5.0
+Human,57,QGval,Clarity,5.0
+Human,57,QGval,Conciseness,5.0
+Human,57,QGval,Consistency,5.0
+Human,57,QGval,Fluency,5.0
+Human,57,QGval,Relevance,5.0
+Human,57,ULM,Absoluteness,5.0
+Human,57,ULM,Completeness,5.0
+Human,57,ULM,Comprehensiveness,2.6666666666666665
+Human,57,ULM,Correctness,5.0
+Human,57,ULM,Exclusiveness,5.0
+Human,57,ULM,Explanation score,4.333333333333333
+Human,57,ULM,Explicitness,3.6666666666666665
+Human,57,ULM,Fairness,3.0
+Human,57,ULM,Feedback,3.6666666666666665
+Human,57,ULM,Fluency,5.0
+Human,57,ULM,Focus,4.0
+Human,57,ULM,Goal alignment,5.0
+Human,57,ULM,Guess resistance,4.0
+Human,57,ULM,Plausibility,4.0
+Human,57,ULM,Reasoning,2.6666666666666665
+Human,57,ULM,Solvability,5.0
+Human,58,QGval,Answer consistency,5.0
+Human,58,QGval,Answerability,5.0
+Human,58,QGval,Clarity,4.666666666666667
+Human,58,QGval,Conciseness,4.666666666666667
+Human,58,QGval,Consistency,5.0
+Human,58,QGval,Fluency,4.666666666666667
+Human,58,QGval,Relevance,5.0
+Human,58,ULM,Absoluteness,5.0
+Human,58,ULM,Completeness,5.0
+Human,58,ULM,Comprehensiveness,2.6666666666666665
+Human,58,ULM,Correctness,5.0
+Human,58,ULM,Exclusiveness,5.0
+Human,58,ULM,Explanation score,4.333333333333333
+Human,58,ULM,Explicitness,3.6666666666666665
+Human,58,ULM,Fairness,3.0
+Human,58,ULM,Feedback,3.6666666666666665
+Human,58,ULM,Fluency,4.666666666666667
+Human,58,ULM,Focus,4.0
+Human,58,ULM,Goal alignment,5.0
+Human,58,ULM,Guess resistance,3.6666666666666665
+Human,58,ULM,Plausibility,3.6666666666666665
+Human,58,ULM,Reasoning,3.0
+Human,58,ULM,Solvability,5.0
+Human,59,QGval,Answer consistency,5.0
+Human,59,QGval,Answerability,5.0
+Human,59,QGval,Clarity,5.0
+Human,59,QGval,Conciseness,5.0
+Human,59,QGval,Consistency,5.0
+Human,59,QGval,Fluency,5.0
+Human,59,QGval,Relevance,5.0
+Human,59,ULM,Absoluteness,5.0
+Human,59,ULM,Completeness,5.0
+Human,59,ULM,Comprehensiveness,2.6666666666666665
+Human,59,ULM,Correctness,5.0
+Human,59,ULM,Exclusiveness,5.0
+Human,59,ULM,Explanation score,4.0
+Human,59,ULM,Explicitness,3.6666666666666665
+Human,59,ULM,Fairness,3.0
+Human,59,ULM,Feedback,3.3333333333333335
+Human,59,ULM,Fluency,5.0
+Human,59,ULM,Focus,4.0
+Human,59,ULM,Goal alignment,5.0
+Human,59,ULM,Guess resistance,4.0
+Human,59,ULM,Plausibility,4.0
+Human,59,ULM,Reasoning,2.6666666666666665
+Human,59,ULM,Solvability,5.0
+Human,60,QGval,Answer consistency,5.0
+Human,60,QGval,Answerability,5.0
+Human,60,QGval,Clarity,5.0
+Human,60,QGval,Conciseness,5.0
+Human,60,QGval,Consistency,5.0
+Human,60,QGval,Fluency,5.0
+Human,60,QGval,Relevance,5.0
+Human,60,ULM,Absoluteness,4.666666666666667
+Human,60,ULM,Completeness,5.0
+Human,60,ULM,Comprehensiveness,2.6666666666666665
+Human,60,ULM,Correctness,5.0
+Human,60,ULM,Exclusiveness,5.0
+Human,60,ULM,Explanation score,4.0
+Human,60,ULM,Explicitness,3.6666666666666665
+Human,60,ULM,Fairness,3.0
+Human,60,ULM,Feedback,3.3333333333333335
+Human,60,ULM,Fluency,5.0
+Human,60,ULM,Focus,4.0
+Human,60,ULM,Goal alignment,5.0
+Human,60,ULM,Guess resistance,4.0
+Human,60,ULM,Plausibility,3.6666666666666665
+Human,60,ULM,Reasoning,3.0
+Human,60,ULM,Solvability,5.0
+Human,61,QGval,Answer consistency,5.0
+Human,61,QGval,Answerability,5.0
+Human,61,QGval,Clarity,5.0
+Human,61,QGval,Conciseness,4.666666666666667
+Human,61,QGval,Consistency,5.0
+Human,61,QGval,Fluency,5.0
+Human,61,QGval,Relevance,5.0
+Human,61,ULM,Absoluteness,5.0
+Human,61,ULM,Completeness,5.0
+Human,61,ULM,Comprehensiveness,3.0
+Human,61,ULM,Correctness,5.0
+Human,61,ULM,Exclusiveness,5.0
+Human,61,ULM,Explanation score,4.333333333333333
+Human,61,ULM,Explicitness,3.6666666666666665
+Human,61,ULM,Fairness,3.0
+Human,61,ULM,Feedback,3.6666666666666665
+Human,61,ULM,Fluency,5.0
+Human,61,ULM,Focus,4.333333333333333
+Human,61,ULM,Goal alignment,5.0
+Human,61,ULM,Guess resistance,4.0
+Human,61,ULM,Plausibility,4.0
+Human,61,ULM,Reasoning,3.0
+Human,61,ULM,Solvability,5.0
+Human,62,QGval,Answer consistency,5.0
+Human,62,QGval,Answerability,5.0
+Human,62,QGval,Clarity,5.0
+Human,62,QGval,Conciseness,5.0
+Human,62,QGval,Consistency,5.0
+Human,62,QGval,Fluency,5.0
+Human,62,QGval,Relevance,5.0
+Human,62,ULM,Absoluteness,5.0
+Human,62,ULM,Completeness,5.0
+Human,62,ULM,Comprehensiveness,3.0
+Human,62,ULM,Correctness,5.0
+Human,62,ULM,Exclusiveness,5.0
+Human,62,ULM,Explanation score,4.333333333333333
+Human,62,ULM,Explicitness,3.6666666666666665
+Human,62,ULM,Fairness,3.0
+Human,62,ULM,Feedback,3.6666666666666665
+Human,62,ULM,Fluency,5.0
+Human,62,ULM,Focus,4.333333333333333
+Human,62,ULM,Goal alignment,5.0
+Human,62,ULM,Guess resistance,4.0
+Human,62,ULM,Plausibility,4.0
+Human,62,ULM,Reasoning,3.0
+Human,62,ULM,Solvability,5.0
+Human,63,QGval,Answer consistency,5.0
+Human,63,QGval,Answerability,5.0
+Human,63,QGval,Clarity,5.0
+Human,63,QGval,Conciseness,4.666666666666667
+Human,63,QGval,Consistency,5.0
+Human,63,QGval,Fluency,5.0
+Human,63,QGval,Relevance,5.0
+Human,63,ULM,Absoluteness,5.0
+Human,63,ULM,Completeness,5.0
+Human,63,ULM,Comprehensiveness,3.0
+Human,63,ULM,Correctness,5.0
+Human,63,ULM,Exclusiveness,5.0
+Human,63,ULM,Explanation score,4.666666666666667
+Human,63,ULM,Explicitness,3.6666666666666665
+Human,63,ULM,Fairness,3.0
+Human,63,ULM,Feedback,3.6666666666666665
+Human,63,ULM,Fluency,5.0
+Human,63,ULM,Focus,4.333333333333333
+Human,63,ULM,Goal alignment,5.0
+Human,63,ULM,Guess resistance,4.0
+Human,63,ULM,Plausibility,4.0
+Human,63,ULM,Reasoning,3.0
+Human,63,ULM,Solvability,5.0
+Human,64,QGval,Answer consistency,5.0
+Human,64,QGval,Answerability,5.0
+Human,64,QGval,Clarity,5.0
+Human,64,QGval,Conciseness,4.666666666666667
+Human,64,QGval,Consistency,5.0
+Human,64,QGval,Fluency,4.666666666666667
+Human,64,QGval,Relevance,5.0
+Human,64,ULM,Absoluteness,5.0
+Human,64,ULM,Completeness,5.0
+Human,64,ULM,Comprehensiveness,3.0
+Human,64,ULM,Correctness,5.0
+Human,64,ULM,Exclusiveness,5.0
+Human,64,ULM,Explanation score,4.333333333333333
+Human,64,ULM,Explicitness,3.6666666666666665
+Human,64,ULM,Fairness,3.0
+Human,64,ULM,Feedback,3.6666666666666665
+Human,64,ULM,Fluency,4.666666666666667
+Human,64,ULM,Focus,4.333333333333333
+Human,64,ULM,Goal alignment,5.0
+Human,64,ULM,Guess resistance,4.0
+Human,64,ULM,Plausibility,4.0
+Human,64,ULM,Reasoning,3.0
+Human,64,ULM,Solvability,5.0
+Human,65,QGval,Answer consistency,4.666666666666667
+Human,65,QGval,Answerability,5.0
+Human,65,QGval,Clarity,5.0
+Human,65,QGval,Conciseness,5.0
+Human,65,QGval,Consistency,5.0
+Human,65,QGval,Fluency,5.0
+Human,65,QGval,Relevance,5.0
+Human,65,ULM,Absoluteness,5.0
+Human,65,ULM,Completeness,5.0
+Human,65,ULM,Comprehensiveness,1.6666666666666667
+Human,65,ULM,Correctness,5.0
+Human,65,ULM,Exclusiveness,5.0
+Human,65,ULM,Explanation score,4.0
+Human,65,ULM,Explicitness,3.6666666666666665
+Human,65,ULM,Fairness,3.0
+Human,65,ULM,Feedback,3.0
+Human,65,ULM,Fluency,5.0
+Human,65,ULM,Focus,4.333333333333333
+Human,65,ULM,Goal alignment,5.0
+Human,65,ULM,Guess resistance,4.0
+Human,65,ULM,Plausibility,4.0
+Human,65,ULM,Reasoning,1.6666666666666667
+Human,65,ULM,Solvability,5.0
+Human,66,QGval,Answer consistency,5.0
+Human,66,QGval,Answerability,5.0
+Human,66,QGval,Clarity,5.0
+Human,66,QGval,Conciseness,5.0
+Human,66,QGval,Consistency,5.0
+Human,66,QGval,Fluency,5.0
+Human,66,QGval,Relevance,5.0
+Human,66,ULM,Absoluteness,5.0
+Human,66,ULM,Completeness,5.0
+Human,66,ULM,Comprehensiveness,1.6666666666666667
+Human,66,ULM,Correctness,5.0
+Human,66,ULM,Exclusiveness,5.0
+Human,66,ULM,Explanation score,4.0
+Human,66,ULM,Explicitness,3.6666666666666665
+Human,66,ULM,Fairness,3.0
+Human,66,ULM,Feedback,3.0
+Human,66,ULM,Fluency,5.0
+Human,66,ULM,Focus,4.333333333333333
+Human,66,ULM,Goal alignment,5.0
+Human,66,ULM,Guess resistance,4.0
+Human,66,ULM,Plausibility,4.0
+Human,66,ULM,Reasoning,1.6666666666666667
+Human,66,ULM,Solvability,5.0
+Human,67,QGval,Answer consistency,5.0
+Human,67,QGval,Answerability,5.0
+Human,67,QGval,Clarity,5.0
+Human,67,QGval,Conciseness,5.0
+Human,67,QGval,Consistency,5.0
+Human,67,QGval,Fluency,5.0
+Human,67,QGval,Relevance,5.0
+Human,67,ULM,Absoluteness,5.0
+Human,67,ULM,Completeness,5.0
+Human,67,ULM,Comprehensiveness,1.6666666666666667
+Human,67,ULM,Correctness,5.0
+Human,67,ULM,Exclusiveness,5.0
+Human,67,ULM,Explanation score,4.0
+Human,67,ULM,Explicitness,3.6666666666666665
+Human,67,ULM,Fairness,3.0
+Human,67,ULM,Feedback,3.0
+Human,67,ULM,Fluency,5.0
+Human,67,ULM,Focus,4.333333333333333
+Human,67,ULM,Goal alignment,5.0
+Human,67,ULM,Guess resistance,4.0
+Human,67,ULM,Plausibility,4.0
+Human,67,ULM,Reasoning,1.6666666666666667
+Human,67,ULM,Solvability,5.0
+Human,68,QGval,Answer consistency,4.666666666666667
+Human,68,QGval,Answerability,5.0
+Human,68,QGval,Clarity,5.0
+Human,68,QGval,Conciseness,4.666666666666667
+Human,68,QGval,Consistency,5.0
+Human,68,QGval,Fluency,5.0
+Human,68,QGval,Relevance,5.0
+Human,68,ULM,Absoluteness,4.666666666666667
+Human,68,ULM,Completeness,5.0
+Human,68,ULM,Comprehensiveness,2.3333333333333335
+Human,68,ULM,Correctness,5.0
+Human,68,ULM,Exclusiveness,5.0
+Human,68,ULM,Explanation score,4.0
+Human,68,ULM,Explicitness,3.3333333333333335
+Human,68,ULM,Fairness,3.0
+Human,68,ULM,Feedback,3.3333333333333335
+Human,68,ULM,Fluency,5.0
+Human,68,ULM,Focus,4.0
+Human,68,ULM,Goal alignment,5.0
+Human,68,ULM,Guess resistance,3.6666666666666665
+Human,68,ULM,Plausibility,4.333333333333333
+Human,68,ULM,Reasoning,2.0
+Human,68,ULM,Solvability,5.0
+Human,69,QGval,Answer consistency,4.666666666666667
+Human,69,QGval,Answerability,5.0
+Human,69,QGval,Clarity,5.0
+Human,69,QGval,Conciseness,5.0
+Human,69,QGval,Consistency,5.0
+Human,69,QGval,Fluency,4.666666666666667
+Human,69,QGval,Relevance,5.0
+Human,69,ULM,Absoluteness,4.666666666666667
+Human,69,ULM,Completeness,5.0
+Human,69,ULM,Comprehensiveness,2.3333333333333335
+Human,69,ULM,Correctness,5.0
+Human,69,ULM,Exclusiveness,5.0
+Human,69,ULM,Explanation score,4.0
+Human,69,ULM,Explicitness,3.3333333333333335
+Human,69,ULM,Fairness,3.0
+Human,69,ULM,Feedback,3.3333333333333335
+Human,69,ULM,Fluency,4.666666666666667
+Human,69,ULM,Focus,4.0
+Human,69,ULM,Goal alignment,5.0
+Human,69,ULM,Guess resistance,3.6666666666666665
+Human,69,ULM,Plausibility,4.333333333333333
+Human,69,ULM,Reasoning,2.0
+Human,69,ULM,Solvability,5.0
+Human,70,QGval,Answer consistency,4.666666666666667
+Human,70,QGval,Answerability,5.0
+Human,70,QGval,Clarity,5.0
+Human,70,QGval,Conciseness,5.0
+Human,70,QGval,Consistency,5.0
+Human,70,QGval,Fluency,5.0
+Human,70,QGval,Relevance,5.0
+Human,70,ULM,Absoluteness,4.666666666666667
+Human,70,ULM,Completeness,5.0
+Human,70,ULM,Comprehensiveness,2.6666666666666665
+Human,70,ULM,Correctness,5.0
+Human,70,ULM,Exclusiveness,5.0
+Human,70,ULM,Explanation score,4.333333333333333
+Human,70,ULM,Explicitness,3.3333333333333335
+Human,70,ULM,Fairness,3.0
+Human,70,ULM,Feedback,3.6666666666666665
+Human,70,ULM,Fluency,5.0
+Human,70,ULM,Focus,4.0
+Human,70,ULM,Goal alignment,5.0
+Human,70,ULM,Guess resistance,3.6666666666666665
+Human,70,ULM,Plausibility,4.333333333333333
+Human,70,ULM,Reasoning,2.3333333333333335
+Human,70,ULM,Solvability,5.0
+MAS,1,QGval,Answer consistency,5.0
+MAS,1,QGval,Answerability,5.0
+MAS,1,QGval,Clarity,5.0
+MAS,1,QGval,Conciseness,5.0
+MAS,1,QGval,Consistency,5.0
+MAS,1,QGval,Fluency,5.0
+MAS,1,QGval,Relevance,5.0
+MAS,1,ULM,Absoluteness,5.0
+MAS,1,ULM,Completeness,5.0
+MAS,1,ULM,Comprehensiveness,1.6666666666666667
+MAS,1,ULM,Correctness,5.0
+MAS,1,ULM,Exclusiveness,5.0
+MAS,1,ULM,Explanation score,4.333333333333333
+MAS,1,ULM,Explicitness,3.3333333333333335
+MAS,1,ULM,Fairness,3.0
+MAS,1,ULM,Feedback,4.0
+MAS,1,ULM,Fluency,5.0
+MAS,1,ULM,Focus,4.333333333333333
+MAS,1,ULM,Goal alignment,5.0
+MAS,1,ULM,Guess resistance,4.333333333333333
+MAS,1,ULM,Plausibility,3.6666666666666665
+MAS,1,ULM,Reasoning,1.3333333333333333
+MAS,1,ULM,Solvability,5.0
+MAS,2,QGval,Answer consistency,5.0
+MAS,2,QGval,Answerability,5.0
+MAS,2,QGval,Clarity,5.0
+MAS,2,QGval,Conciseness,5.0
+MAS,2,QGval,Consistency,5.0
+MAS,2,QGval,Fluency,5.0
+MAS,2,QGval,Relevance,5.0
+MAS,2,ULM,Absoluteness,5.0
+MAS,2,ULM,Completeness,3.6666666666666665
+MAS,2,ULM,Comprehensiveness,1.6666666666666667
+MAS,2,ULM,Correctness,5.0
+MAS,2,ULM,Exclusiveness,5.0
+MAS,2,ULM,Explanation score,3.6666666666666665
+MAS,2,ULM,Explicitness,3.3333333333333335
+MAS,2,ULM,Fairness,3.0
+MAS,2,ULM,Feedback,3.3333333333333335
+MAS,2,ULM,Fluency,5.0
+MAS,2,ULM,Focus,4.333333333333333
+MAS,2,ULM,Goal alignment,4.333333333333333
+MAS,2,ULM,Guess resistance,4.333333333333333
+MAS,2,ULM,Plausibility,3.3333333333333335
+MAS,2,ULM,Reasoning,1.3333333333333333
+MAS,2,ULM,Solvability,5.0
+MAS,3,QGval,Answer consistency,5.0
+MAS,3,QGval,Answerability,5.0
+MAS,3,QGval,Clarity,5.0
+MAS,3,QGval,Conciseness,5.0
+MAS,3,QGval,Consistency,5.0
+MAS,3,QGval,Fluency,5.0
+MAS,3,QGval,Relevance,5.0
+MAS,3,ULM,Absoluteness,5.0
+MAS,3,ULM,Completeness,3.6666666666666665
+MAS,3,ULM,Comprehensiveness,3.0
+MAS,3,ULM,Correctness,5.0
+MAS,3,ULM,Exclusiveness,5.0
+MAS,3,ULM,Explanation score,4.333333333333333
+MAS,3,ULM,Explicitness,3.3333333333333335
+MAS,3,ULM,Fairness,3.0
+MAS,3,ULM,Feedback,4.0
+MAS,3,ULM,Fluency,5.0
+MAS,3,ULM,Focus,4.333333333333333
+MAS,3,ULM,Goal alignment,4.333333333333333
+MAS,3,ULM,Guess resistance,4.333333333333333
+MAS,3,ULM,Plausibility,4.333333333333333
+MAS,3,ULM,Reasoning,2.3333333333333335
+MAS,3,ULM,Solvability,5.0
+MAS,4,QGval,Answer consistency,5.0
+MAS,4,QGval,Answerability,5.0
+MAS,4,QGval,Clarity,5.0
+MAS,4,QGval,Conciseness,5.0
+MAS,4,QGval,Consistency,5.0
+MAS,4,QGval,Fluency,5.0
+MAS,4,QGval,Relevance,5.0
+MAS,4,ULM,Absoluteness,5.0
+MAS,4,ULM,Completeness,5.0
+MAS,4,ULM,Comprehensiveness,2.0
+MAS,4,ULM,Correctness,5.0
+MAS,4,ULM,Exclusiveness,4.333333333333333
+MAS,4,ULM,Explanation score,4.333333333333333
+MAS,4,ULM,Explicitness,3.3333333333333335
+MAS,4,ULM,Fairness,3.0
+MAS,4,ULM,Feedback,4.0
+MAS,4,ULM,Fluency,5.0
+MAS,4,ULM,Focus,4.333333333333333
+MAS,4,ULM,Goal alignment,5.0
+MAS,4,ULM,Guess resistance,4.333333333333333
+MAS,4,ULM,Plausibility,3.3333333333333335
+MAS,4,ULM,Reasoning,1.3333333333333333
+MAS,4,ULM,Solvability,5.0
+MAS,5,QGval,Answer consistency,5.0
+MAS,5,QGval,Answerability,5.0
+MAS,5,QGval,Clarity,5.0
+MAS,5,QGval,Conciseness,5.0
+MAS,5,QGval,Consistency,5.0
+MAS,5,QGval,Fluency,5.0
+MAS,5,QGval,Relevance,5.0
+MAS,5,ULM,Absoluteness,5.0
+MAS,5,ULM,Completeness,3.6666666666666665
+MAS,5,ULM,Comprehensiveness,2.0
+MAS,5,ULM,Correctness,5.0
+MAS,5,ULM,Exclusiveness,5.0
+MAS,5,ULM,Explanation score,3.6666666666666665
+MAS,5,ULM,Explicitness,3.3333333333333335
+MAS,5,ULM,Fairness,3.0
+MAS,5,ULM,Feedback,3.3333333333333335
+MAS,5,ULM,Fluency,5.0
+MAS,5,ULM,Focus,4.333333333333333
+MAS,5,ULM,Goal alignment,4.333333333333333
+MAS,5,ULM,Guess resistance,4.333333333333333
+MAS,5,ULM,Plausibility,4.0
+MAS,5,ULM,Reasoning,1.3333333333333333
+MAS,5,ULM,Solvability,5.0
+MAS,6,QGval,Answer consistency,5.0
+MAS,6,QGval,Answerability,5.0
+MAS,6,QGval,Clarity,5.0
+MAS,6,QGval,Conciseness,5.0
+MAS,6,QGval,Consistency,5.0
+MAS,6,QGval,Fluency,5.0
+MAS,6,QGval,Relevance,5.0
+MAS,6,ULM,Absoluteness,5.0
+MAS,6,ULM,Completeness,3.6666666666666665
+MAS,6,ULM,Comprehensiveness,2.3333333333333335
+MAS,6,ULM,Correctness,5.0
+MAS,6,ULM,Exclusiveness,5.0
+MAS,6,ULM,Explanation score,4.333333333333333
+MAS,6,ULM,Explicitness,3.3333333333333335
+MAS,6,ULM,Fairness,3.0
+MAS,6,ULM,Feedback,4.0
+MAS,6,ULM,Fluency,5.0
+MAS,6,ULM,Focus,4.333333333333333
+MAS,6,ULM,Goal alignment,4.333333333333333
+MAS,6,ULM,Guess resistance,4.333333333333333
+MAS,6,ULM,Plausibility,4.0
+MAS,6,ULM,Reasoning,2.0
+MAS,6,ULM,Solvability,5.0
+MAS,7,QGval,Answer consistency,5.0
+MAS,7,QGval,Answerability,5.0
+MAS,7,QGval,Clarity,5.0
+MAS,7,QGval,Conciseness,4.666666666666667
+MAS,7,QGval,Consistency,5.0
+MAS,7,QGval,Fluency,5.0
+MAS,7,QGval,Relevance,5.0
+MAS,7,ULM,Absoluteness,5.0
+MAS,7,ULM,Completeness,5.0
+MAS,7,ULM,Comprehensiveness,1.6666666666666667
+MAS,7,ULM,Correctness,5.0
+MAS,7,ULM,Exclusiveness,4.333333333333333
+MAS,7,ULM,Explanation score,4.333333333333333
+MAS,7,ULM,Explicitness,3.0
+MAS,7,ULM,Fairness,3.0
+MAS,7,ULM,Feedback,4.0
+MAS,7,ULM,Fluency,5.0
+MAS,7,ULM,Focus,4.333333333333333
+MAS,7,ULM,Goal alignment,5.0
+MAS,7,ULM,Guess resistance,4.333333333333333
+MAS,7,ULM,Plausibility,4.0
+MAS,7,ULM,Reasoning,1.3333333333333333
+MAS,7,ULM,Solvability,5.0
+MAS,8,QGval,Answer consistency,5.0
+MAS,8,QGval,Answerability,5.0
+MAS,8,QGval,Clarity,5.0
+MAS,8,QGval,Conciseness,5.0
+MAS,8,QGval,Consistency,5.0
+MAS,8,QGval,Fluency,5.0
+MAS,8,QGval,Relevance,5.0
+MAS,8,ULM,Absoluteness,5.0
+MAS,8,ULM,Completeness,5.0
+MAS,8,ULM,Comprehensiveness,3.0
+MAS,8,ULM,Correctness,5.0
+MAS,8,ULM,Exclusiveness,5.0
+MAS,8,ULM,Explanation score,4.333333333333333
+MAS,8,ULM,Explicitness,3.3333333333333335
+MAS,8,ULM,Fairness,3.0
+MAS,8,ULM,Feedback,4.0
+MAS,8,ULM,Fluency,5.0
+MAS,8,ULM,Focus,4.333333333333333
+MAS,8,ULM,Goal alignment,5.0
+MAS,8,ULM,Guess resistance,4.333333333333333
+MAS,8,ULM,Plausibility,4.0
+MAS,8,ULM,Reasoning,3.0
+MAS,8,ULM,Solvability,5.0
+MAS,9,QGval,Answer consistency,5.0
+MAS,9,QGval,Answerability,5.0
+MAS,9,QGval,Clarity,5.0
+MAS,9,QGval,Conciseness,4.666666666666667
+MAS,9,QGval,Consistency,5.0
+MAS,9,QGval,Fluency,4.666666666666667
+MAS,9,QGval,Relevance,5.0
+MAS,9,ULM,Absoluteness,5.0
+MAS,9,ULM,Completeness,5.0
+MAS,9,ULM,Comprehensiveness,3.6666666666666665
+MAS,9,ULM,Correctness,5.0
+MAS,9,ULM,Exclusiveness,5.0
+MAS,9,ULM,Explanation score,4.333333333333333
+MAS,9,ULM,Explicitness,3.3333333333333335
+MAS,9,ULM,Fairness,3.0
+MAS,9,ULM,Feedback,4.0
+MAS,9,ULM,Fluency,4.666666666666667
+MAS,9,ULM,Focus,4.333333333333333
+MAS,9,ULM,Goal alignment,4.0
+MAS,9,ULM,Guess resistance,4.666666666666667
+MAS,9,ULM,Plausibility,4.666666666666667
+MAS,9,ULM,Reasoning,3.0
+MAS,9,ULM,Solvability,5.0
+MAS,10,QGval,Answer consistency,5.0
+MAS,10,QGval,Answerability,5.0
+MAS,10,QGval,Clarity,5.0
+MAS,10,QGval,Conciseness,5.0
+MAS,10,QGval,Consistency,5.0
+MAS,10,QGval,Fluency,5.0
+MAS,10,QGval,Relevance,5.0
+MAS,10,ULM,Absoluteness,5.0
+MAS,10,ULM,Completeness,5.0
+MAS,10,ULM,Comprehensiveness,4.0
+MAS,10,ULM,Correctness,5.0
+MAS,10,ULM,Exclusiveness,5.0
+MAS,10,ULM,Explanation score,4.333333333333333
+MAS,10,ULM,Explicitness,3.3333333333333335
+MAS,10,ULM,Fairness,3.0
+MAS,10,ULM,Feedback,4.0
+MAS,10,ULM,Fluency,5.0
+MAS,10,ULM,Focus,4.0
+MAS,10,ULM,Goal alignment,5.0
+MAS,10,ULM,Guess resistance,5.0
+MAS,10,ULM,Plausibility,5.0
+MAS,10,ULM,Reasoning,3.0
+MAS,10,ULM,Solvability,5.0
+MAS,11,QGval,Answer consistency,5.0
+MAS,11,QGval,Answerability,5.0
+MAS,11,QGval,Clarity,5.0
+MAS,11,QGval,Conciseness,5.0
+MAS,11,QGval,Consistency,5.0
+MAS,11,QGval,Fluency,5.0
+MAS,11,QGval,Relevance,5.0
+MAS,11,ULM,Absoluteness,5.0
+MAS,11,ULM,Completeness,5.0
+MAS,11,ULM,Comprehensiveness,3.6666666666666665
+MAS,11,ULM,Correctness,5.0
+MAS,11,ULM,Exclusiveness,5.0
+MAS,11,ULM,Explanation score,4.333333333333333
+MAS,11,ULM,Explicitness,3.3333333333333335
+MAS,11,ULM,Fairness,3.0
+MAS,11,ULM,Feedback,4.0
+MAS,11,ULM,Fluency,5.0
+MAS,11,ULM,Focus,4.333333333333333
+MAS,11,ULM,Goal alignment,5.0
+MAS,11,ULM,Guess resistance,5.0
+MAS,11,ULM,Plausibility,4.0
+MAS,11,ULM,Reasoning,3.0
+MAS,11,ULM,Solvability,5.0
+MAS,12,QGval,Answer consistency,5.0
+MAS,12,QGval,Answerability,5.0
+MAS,12,QGval,Clarity,5.0
+MAS,12,QGval,Conciseness,5.0
+MAS,12,QGval,Consistency,5.0
+MAS,12,QGval,Fluency,5.0
+MAS,12,QGval,Relevance,5.0
+MAS,12,ULM,Absoluteness,5.0
+MAS,12,ULM,Completeness,5.0
+MAS,12,ULM,Comprehensiveness,4.0
+MAS,12,ULM,Correctness,5.0
+MAS,12,ULM,Exclusiveness,5.0
+MAS,12,ULM,Explanation score,4.333333333333333
+MAS,12,ULM,Explicitness,3.3333333333333335
+MAS,12,ULM,Fairness,3.0
+MAS,12,ULM,Feedback,4.0
+MAS,12,ULM,Fluency,5.0
+MAS,12,ULM,Focus,4.333333333333333
+MAS,12,ULM,Goal alignment,5.0
+MAS,12,ULM,Guess resistance,5.0
+MAS,12,ULM,Plausibility,4.333333333333333
+MAS,12,ULM,Reasoning,3.0
+MAS,12,ULM,Solvability,5.0
+MAS,13,QGval,Answer consistency,5.0
+MAS,13,QGval,Answerability,5.0
+MAS,13,QGval,Clarity,5.0
+MAS,13,QGval,Conciseness,4.0
+MAS,13,QGval,Consistency,5.0
+MAS,13,QGval,Fluency,5.0
+MAS,13,QGval,Relevance,5.0
+MAS,13,ULM,Absoluteness,4.333333333333333
+MAS,13,ULM,Completeness,5.0
+MAS,13,ULM,Comprehensiveness,4.666666666666667
+MAS,13,ULM,Correctness,5.0
+MAS,13,ULM,Exclusiveness,5.0
+MAS,13,ULM,Explanation score,4.333333333333333
+MAS,13,ULM,Explicitness,3.0
+MAS,13,ULM,Fairness,3.0
+MAS,13,ULM,Feedback,4.0
+MAS,13,ULM,Fluency,5.0
+MAS,13,ULM,Focus,5.0
+MAS,13,ULM,Goal alignment,4.0
+MAS,13,ULM,Guess resistance,4.0
+MAS,13,ULM,Plausibility,4.0
+MAS,13,ULM,Reasoning,3.6666666666666665
+MAS,13,ULM,Solvability,5.0
+MAS,14,QGval,Answer consistency,5.0
+MAS,14,QGval,Answerability,5.0
+MAS,14,QGval,Clarity,5.0
+MAS,14,QGval,Conciseness,5.0
+MAS,14,QGval,Consistency,5.0
+MAS,14,QGval,Fluency,5.0
+MAS,14,QGval,Relevance,5.0
+MAS,14,ULM,Absoluteness,5.0
+MAS,14,ULM,Completeness,5.0
+MAS,14,ULM,Comprehensiveness,4.0
+MAS,14,ULM,Correctness,5.0
+MAS,14,ULM,Exclusiveness,5.0
+MAS,14,ULM,Explanation score,4.333333333333333
+MAS,14,ULM,Explicitness,3.3333333333333335
+MAS,14,ULM,Fairness,3.0
+MAS,14,ULM,Feedback,4.0
+MAS,14,ULM,Fluency,5.0
+MAS,14,ULM,Focus,4.333333333333333
+MAS,14,ULM,Goal alignment,5.0
+MAS,14,ULM,Guess resistance,4.333333333333333
+MAS,14,ULM,Plausibility,4.0
+MAS,14,ULM,Reasoning,3.6666666666666665
+MAS,14,ULM,Solvability,5.0
+MAS,15,QGval,Answer consistency,5.0
+MAS,15,QGval,Answerability,5.0
+MAS,15,QGval,Clarity,5.0
+MAS,15,QGval,Conciseness,4.666666666666667
+MAS,15,QGval,Consistency,5.0
+MAS,15,QGval,Fluency,5.0
+MAS,15,QGval,Relevance,5.0
+MAS,15,ULM,Absoluteness,5.0
+MAS,15,ULM,Completeness,5.0
+MAS,15,ULM,Comprehensiveness,3.0
+MAS,15,ULM,Correctness,5.0
+MAS,15,ULM,Exclusiveness,5.0
+MAS,15,ULM,Explanation score,4.333333333333333
+MAS,15,ULM,Explicitness,3.3333333333333335
+MAS,15,ULM,Fairness,3.0
+MAS,15,ULM,Feedback,4.0
+MAS,15,ULM,Fluency,5.0
+MAS,15,ULM,Focus,4.333333333333333
+MAS,15,ULM,Goal alignment,4.333333333333333
+MAS,15,ULM,Guess resistance,4.333333333333333
+MAS,15,ULM,Plausibility,4.666666666666667
+MAS,15,ULM,Reasoning,2.6666666666666665
+MAS,15,ULM,Solvability,5.0
+MAS,16,QGval,Answer consistency,5.0
+MAS,16,QGval,Answerability,5.0
+MAS,16,QGval,Clarity,5.0
+MAS,16,QGval,Conciseness,5.0
+MAS,16,QGval,Consistency,5.0
+MAS,16,QGval,Fluency,5.0
+MAS,16,QGval,Relevance,5.0
+MAS,16,ULM,Absoluteness,5.0
+MAS,16,ULM,Completeness,5.0
+MAS,16,ULM,Comprehensiveness,3.3333333333333335
+MAS,16,ULM,Correctness,5.0
+MAS,16,ULM,Exclusiveness,5.0
+MAS,16,ULM,Explanation score,4.333333333333333
+MAS,16,ULM,Explicitness,3.0
+MAS,16,ULM,Fairness,3.0
+MAS,16,ULM,Feedback,4.0
+MAS,16,ULM,Fluency,5.0
+MAS,16,ULM,Focus,4.333333333333333
+MAS,16,ULM,Goal alignment,5.0
+MAS,16,ULM,Guess resistance,5.0
+MAS,16,ULM,Plausibility,4.666666666666667
+MAS,16,ULM,Reasoning,2.6666666666666665
+MAS,16,ULM,Solvability,5.0
+MAS,17,QGval,Answer consistency,5.0
+MAS,17,QGval,Answerability,5.0
+MAS,17,QGval,Clarity,5.0
+MAS,17,QGval,Conciseness,4.0
+MAS,17,QGval,Consistency,5.0
+MAS,17,QGval,Fluency,4.666666666666667
+MAS,17,QGval,Relevance,5.0
+MAS,17,ULM,Absoluteness,5.0
+MAS,17,ULM,Completeness,5.0
+MAS,17,ULM,Comprehensiveness,4.0
+MAS,17,ULM,Correctness,5.0
+MAS,17,ULM,Exclusiveness,5.0
+MAS,17,ULM,Explanation score,4.333333333333333
+MAS,17,ULM,Explicitness,3.3333333333333335
+MAS,17,ULM,Fairness,3.0
+MAS,17,ULM,Feedback,4.0
+MAS,17,ULM,Fluency,4.666666666666667
+MAS,17,ULM,Focus,4.333333333333333
+MAS,17,ULM,Goal alignment,5.0
+MAS,17,ULM,Guess resistance,4.0
+MAS,17,ULM,Plausibility,4.0
+MAS,17,ULM,Reasoning,3.0
+MAS,17,ULM,Solvability,5.0
+MAS,18,QGval,Answer consistency,5.0
+MAS,18,QGval,Answerability,5.0
+MAS,18,QGval,Clarity,5.0
+MAS,18,QGval,Conciseness,4.666666666666667
+MAS,18,QGval,Consistency,5.0
+MAS,18,QGval,Fluency,5.0
+MAS,18,QGval,Relevance,5.0
+MAS,18,ULM,Absoluteness,5.0
+MAS,18,ULM,Completeness,5.0
+MAS,18,ULM,Comprehensiveness,2.0
+MAS,18,ULM,Correctness,5.0
+MAS,18,ULM,Exclusiveness,4.333333333333333
+MAS,18,ULM,Explanation score,4.333333333333333
+MAS,18,ULM,Explicitness,3.3333333333333335
+MAS,18,ULM,Fairness,3.0
+MAS,18,ULM,Feedback,4.0
+MAS,18,ULM,Fluency,5.0
+MAS,18,ULM,Focus,4.333333333333333
+MAS,18,ULM,Goal alignment,4.333333333333333
+MAS,18,ULM,Guess resistance,4.333333333333333
+MAS,18,ULM,Plausibility,4.0
+MAS,18,ULM,Reasoning,2.3333333333333335
+MAS,18,ULM,Solvability,5.0
+MAS,19,QGval,Answer consistency,5.0
+MAS,19,QGval,Answerability,5.0
+MAS,19,QGval,Clarity,5.0
+MAS,19,QGval,Conciseness,4.666666666666667
+MAS,19,QGval,Consistency,5.0
+MAS,19,QGval,Fluency,5.0
+MAS,19,QGval,Relevance,5.0
+MAS,19,ULM,Absoluteness,5.0
+MAS,19,ULM,Completeness,5.0
+MAS,19,ULM,Comprehensiveness,2.3333333333333335
+MAS,19,ULM,Correctness,5.0
+MAS,19,ULM,Exclusiveness,4.333333333333333
+MAS,19,ULM,Explanation score,4.333333333333333
+MAS,19,ULM,Explicitness,3.3333333333333335
+MAS,19,ULM,Fairness,3.0
+MAS,19,ULM,Feedback,4.0
+MAS,19,ULM,Fluency,5.0
+MAS,19,ULM,Focus,4.333333333333333
+MAS,19,ULM,Goal alignment,4.333333333333333
+MAS,19,ULM,Guess resistance,4.333333333333333
+MAS,19,ULM,Plausibility,4.0
+MAS,19,ULM,Reasoning,2.3333333333333335
+MAS,19,ULM,Solvability,5.0
+MAS,20,QGval,Answer consistency,5.0
+MAS,20,QGval,Answerability,5.0
+MAS,20,QGval,Clarity,5.0
+MAS,20,QGval,Conciseness,5.0
+MAS,20,QGval,Consistency,5.0
+MAS,20,QGval,Fluency,5.0
+MAS,20,QGval,Relevance,5.0
+MAS,20,ULM,Absoluteness,5.0
+MAS,20,ULM,Completeness,5.0
+MAS,20,ULM,Comprehensiveness,4.0
+MAS,20,ULM,Correctness,5.0
+MAS,20,ULM,Exclusiveness,5.0
+MAS,20,ULM,Explanation score,4.333333333333333
+MAS,20,ULM,Explicitness,3.3333333333333335
+MAS,20,ULM,Fairness,3.0
+MAS,20,ULM,Feedback,4.0
+MAS,20,ULM,Fluency,5.0
+MAS,20,ULM,Focus,4.333333333333333
+MAS,20,ULM,Goal alignment,5.0
+MAS,20,ULM,Guess resistance,4.333333333333333
+MAS,20,ULM,Plausibility,3.3333333333333335
+MAS,20,ULM,Reasoning,3.0
+MAS,20,ULM,Solvability,5.0
+MAS,21,QGval,Answer consistency,5.0
+MAS,21,QGval,Answerability,5.0
+MAS,21,QGval,Clarity,5.0
+MAS,21,QGval,Conciseness,5.0
+MAS,21,QGval,Consistency,5.0
+MAS,21,QGval,Fluency,5.0
+MAS,21,QGval,Relevance,5.0
+MAS,21,ULM,Absoluteness,5.0
+MAS,21,ULM,Completeness,5.0
+MAS,21,ULM,Comprehensiveness,2.3333333333333335
+MAS,21,ULM,Correctness,5.0
+MAS,21,ULM,Exclusiveness,4.333333333333333
+MAS,21,ULM,Explanation score,4.333333333333333
+MAS,21,ULM,Explicitness,3.3333333333333335
+MAS,21,ULM,Fairness,3.0
+MAS,21,ULM,Feedback,4.0
+MAS,21,ULM,Fluency,5.0
+MAS,21,ULM,Focus,3.6666666666666665
+MAS,21,ULM,Goal alignment,4.333333333333333
+MAS,21,ULM,Guess resistance,4.333333333333333
+MAS,21,ULM,Plausibility,3.3333333333333335
+MAS,21,ULM,Reasoning,2.3333333333333335
+MAS,21,ULM,Solvability,4.666666666666667
+MAS,22,QGval,Answer consistency,5.0
+MAS,22,QGval,Answerability,5.0
+MAS,22,QGval,Clarity,5.0
+MAS,22,QGval,Conciseness,5.0
+MAS,22,QGval,Consistency,5.0
+MAS,22,QGval,Fluency,5.0
+MAS,22,QGval,Relevance,5.0
+MAS,22,ULM,Absoluteness,5.0
+MAS,22,ULM,Completeness,5.0
+MAS,22,ULM,Comprehensiveness,1.6666666666666667
+MAS,22,ULM,Correctness,5.0
+MAS,22,ULM,Exclusiveness,4.333333333333333
+MAS,22,ULM,Explanation score,4.333333333333333
+MAS,22,ULM,Explicitness,3.3333333333333335
+MAS,22,ULM,Fairness,3.0
+MAS,22,ULM,Feedback,4.0
+MAS,22,ULM,Fluency,5.0
+MAS,22,ULM,Focus,4.333333333333333
+MAS,22,ULM,Goal alignment,4.333333333333333
+MAS,22,ULM,Guess resistance,4.333333333333333
+MAS,22,ULM,Plausibility,4.0
+MAS,22,ULM,Reasoning,2.0
+MAS,22,ULM,Solvability,5.0
+MAS,23,QGval,Answer consistency,5.0
+MAS,23,QGval,Answerability,5.0
+MAS,23,QGval,Clarity,5.0
+MAS,23,QGval,Conciseness,5.0
+MAS,23,QGval,Consistency,5.0
+MAS,23,QGval,Fluency,5.0
+MAS,23,QGval,Relevance,5.0
+MAS,23,ULM,Absoluteness,5.0
+MAS,23,ULM,Completeness,5.0
+MAS,23,ULM,Comprehensiveness,3.0
+MAS,23,ULM,Correctness,5.0
+MAS,23,ULM,Exclusiveness,5.0
+MAS,23,ULM,Explanation score,3.6666666666666665
+MAS,23,ULM,Explicitness,3.3333333333333335
+MAS,23,ULM,Fairness,3.0
+MAS,23,ULM,Feedback,3.3333333333333335
+MAS,23,ULM,Fluency,5.0
+MAS,23,ULM,Focus,4.333333333333333
+MAS,23,ULM,Goal alignment,5.0
+MAS,23,ULM,Guess resistance,4.333333333333333
+MAS,23,ULM,Plausibility,3.3333333333333335
+MAS,23,ULM,Reasoning,2.6666666666666665
+MAS,23,ULM,Solvability,5.0
+MAS,24,QGval,Answer consistency,5.0
+MAS,24,QGval,Answerability,5.0
+MAS,24,QGval,Clarity,5.0
+MAS,24,QGval,Conciseness,5.0
+MAS,24,QGval,Consistency,5.0
+MAS,24,QGval,Fluency,5.0
+MAS,24,QGval,Relevance,5.0
+MAS,24,ULM,Absoluteness,5.0
+MAS,24,ULM,Completeness,5.0
+MAS,24,ULM,Comprehensiveness,4.0
+MAS,24,ULM,Correctness,5.0
+MAS,24,ULM,Exclusiveness,5.0
+MAS,24,ULM,Explanation score,4.333333333333333
+MAS,24,ULM,Explicitness,3.3333333333333335
+MAS,24,ULM,Fairness,3.0
+MAS,24,ULM,Feedback,4.0
+MAS,24,ULM,Fluency,5.0
+MAS,24,ULM,Focus,4.333333333333333
+MAS,24,ULM,Goal alignment,5.0
+MAS,24,ULM,Guess resistance,4.333333333333333
+MAS,24,ULM,Plausibility,4.0
+MAS,24,ULM,Reasoning,3.6666666666666665
+MAS,24,ULM,Solvability,5.0
+MAS,25,QGval,Answer consistency,5.0
+MAS,25,QGval,Answerability,5.0
+MAS,25,QGval,Clarity,5.0
+MAS,25,QGval,Conciseness,5.0
+MAS,25,QGval,Consistency,5.0
+MAS,25,QGval,Fluency,5.0
+MAS,25,QGval,Relevance,5.0
+MAS,25,ULM,Absoluteness,5.0
+MAS,25,ULM,Completeness,5.0
+MAS,25,ULM,Comprehensiveness,2.0
+MAS,25,ULM,Correctness,5.0
+MAS,25,ULM,Exclusiveness,4.333333333333333
+MAS,25,ULM,Explanation score,4.333333333333333
+MAS,25,ULM,Explicitness,3.3333333333333335
+MAS,25,ULM,Fairness,3.0
+MAS,25,ULM,Feedback,4.0
+MAS,25,ULM,Fluency,5.0
+MAS,25,ULM,Focus,4.333333333333333
+MAS,25,ULM,Goal alignment,4.333333333333333
+MAS,25,ULM,Guess resistance,4.333333333333333
+MAS,25,ULM,Plausibility,4.0
+MAS,25,ULM,Reasoning,3.0
+MAS,25,ULM,Solvability,5.0
+MAS,26,QGval,Answer consistency,5.0
+MAS,26,QGval,Answerability,5.0
+MAS,26,QGval,Clarity,5.0
+MAS,26,QGval,Conciseness,5.0
+MAS,26,QGval,Consistency,5.0
+MAS,26,QGval,Fluency,5.0
+MAS,26,QGval,Relevance,5.0
+MAS,26,ULM,Absoluteness,5.0
+MAS,26,ULM,Completeness,5.0
+MAS,26,ULM,Comprehensiveness,3.3333333333333335
+MAS,26,ULM,Correctness,5.0
+MAS,26,ULM,Exclusiveness,5.0
+MAS,26,ULM,Explanation score,4.333333333333333
+MAS,26,ULM,Explicitness,3.0
+MAS,26,ULM,Fairness,3.0
+MAS,26,ULM,Feedback,4.0
+MAS,26,ULM,Fluency,5.0
+MAS,26,ULM,Focus,5.0
+MAS,26,ULM,Goal alignment,5.0
+MAS,26,ULM,Guess resistance,4.333333333333333
+MAS,26,ULM,Plausibility,4.0
+MAS,26,ULM,Reasoning,3.0
+MAS,26,ULM,Solvability,5.0
+MAS,27,QGval,Answer consistency,5.0
+MAS,27,QGval,Answerability,5.0
+MAS,27,QGval,Clarity,5.0
+MAS,27,QGval,Conciseness,5.0
+MAS,27,QGval,Consistency,5.0
+MAS,27,QGval,Fluency,5.0
+MAS,27,QGval,Relevance,5.0
+MAS,27,ULM,Absoluteness,5.0
+MAS,27,ULM,Completeness,5.0
+MAS,27,ULM,Comprehensiveness,3.3333333333333335
+MAS,27,ULM,Correctness,5.0
+MAS,27,ULM,Exclusiveness,5.0
+MAS,27,ULM,Explanation score,4.333333333333333
+MAS,27,ULM,Explicitness,3.3333333333333335
+MAS,27,ULM,Fairness,3.0
+MAS,27,ULM,Feedback,4.0
+MAS,27,ULM,Fluency,5.0
+MAS,27,ULM,Focus,5.0
+MAS,27,ULM,Goal alignment,4.666666666666667
+MAS,27,ULM,Guess resistance,4.333333333333333
+MAS,27,ULM,Plausibility,4.0
+MAS,27,ULM,Reasoning,3.0
+MAS,27,ULM,Solvability,5.0
+MAS,28,QGval,Answer consistency,5.0
+MAS,28,QGval,Answerability,5.0
+MAS,28,QGval,Clarity,5.0
+MAS,28,QGval,Conciseness,5.0
+MAS,28,QGval,Consistency,5.0
+MAS,28,QGval,Fluency,5.0
+MAS,28,QGval,Relevance,5.0
+MAS,28,ULM,Absoluteness,5.0
+MAS,28,ULM,Completeness,5.0
+MAS,28,ULM,Comprehensiveness,3.3333333333333335
+MAS,28,ULM,Correctness,5.0
+MAS,28,ULM,Exclusiveness,5.0
+MAS,28,ULM,Explanation score,3.6666666666666665
+MAS,28,ULM,Explicitness,2.6666666666666665
+MAS,28,ULM,Fairness,3.0
+MAS,28,ULM,Feedback,4.0
+MAS,28,ULM,Fluency,4.666666666666667
+MAS,28,ULM,Focus,5.0
+MAS,28,ULM,Goal alignment,4.666666666666667
+MAS,28,ULM,Guess resistance,3.6666666666666665
+MAS,28,ULM,Plausibility,4.0
+MAS,28,ULM,Reasoning,2.3333333333333335
+MAS,28,ULM,Solvability,5.0
+MAS,29,QGval,Answer consistency,4.333333333333333
+MAS,29,QGval,Answerability,5.0
+MAS,29,QGval,Clarity,5.0
+MAS,29,QGval,Conciseness,4.333333333333333
+MAS,29,QGval,Consistency,5.0
+MAS,29,QGval,Fluency,5.0
+MAS,29,QGval,Relevance,5.0
+MAS,29,ULM,Absoluteness,5.0
+MAS,29,ULM,Completeness,5.0
+MAS,29,ULM,Comprehensiveness,3.0
+MAS,29,ULM,Correctness,5.0
+MAS,29,ULM,Exclusiveness,5.0
+MAS,29,ULM,Explanation score,4.333333333333333
+MAS,29,ULM,Explicitness,3.0
+MAS,29,ULM,Fairness,3.0
+MAS,29,ULM,Feedback,4.0
+MAS,29,ULM,Fluency,5.0
+MAS,29,ULM,Focus,5.0
+MAS,29,ULM,Goal alignment,5.0
+MAS,29,ULM,Guess resistance,4.333333333333333
+MAS,29,ULM,Plausibility,4.0
+MAS,29,ULM,Reasoning,2.0
+MAS,29,ULM,Solvability,5.0
+MAS,30,QGval,Answer consistency,5.0
+MAS,30,QGval,Answerability,5.0
+MAS,30,QGval,Clarity,5.0
+MAS,30,QGval,Conciseness,4.333333333333333
+MAS,30,QGval,Consistency,5.0
+MAS,30,QGval,Fluency,5.0
+MAS,30,QGval,Relevance,5.0
+MAS,30,ULM,Absoluteness,5.0
+MAS,30,ULM,Completeness,5.0
+MAS,30,ULM,Comprehensiveness,3.3333333333333335
+MAS,30,ULM,Correctness,5.0
+MAS,30,ULM,Exclusiveness,5.0
+MAS,30,ULM,Explanation score,4.333333333333333
+MAS,30,ULM,Explicitness,3.0
+MAS,30,ULM,Fairness,3.0
+MAS,30,ULM,Feedback,4.0
+MAS,30,ULM,Fluency,5.0
+MAS,30,ULM,Focus,5.0
+MAS,30,ULM,Goal alignment,5.0
+MAS,30,ULM,Guess resistance,4.333333333333333
+MAS,30,ULM,Plausibility,4.0
+MAS,30,ULM,Reasoning,2.3333333333333335
+MAS,30,ULM,Solvability,5.0
+MAS,31,QGval,Answer consistency,4.666666666666667
+MAS,31,QGval,Answerability,5.0
+MAS,31,QGval,Clarity,5.0
+MAS,31,QGval,Conciseness,4.333333333333333
+MAS,31,QGval,Consistency,5.0
+MAS,31,QGval,Fluency,5.0
+MAS,31,QGval,Relevance,5.0
+MAS,31,ULM,Absoluteness,5.0
+MAS,31,ULM,Completeness,5.0
+MAS,31,ULM,Comprehensiveness,3.3333333333333335
+MAS,31,ULM,Correctness,5.0
+MAS,31,ULM,Exclusiveness,5.0
+MAS,31,ULM,Explanation score,4.333333333333333
+MAS,31,ULM,Explicitness,3.3333333333333335
+MAS,31,ULM,Fairness,3.0
+MAS,31,ULM,Feedback,4.0
+MAS,31,ULM,Fluency,5.0
+MAS,31,ULM,Focus,5.0
+MAS,31,ULM,Goal alignment,5.0
+MAS,31,ULM,Guess resistance,4.333333333333333
+MAS,31,ULM,Plausibility,4.0
+MAS,31,ULM,Reasoning,3.0
+MAS,31,ULM,Solvability,5.0
+MAS,32,QGval,Answer consistency,5.0
+MAS,32,QGval,Answerability,5.0
+MAS,32,QGval,Clarity,5.0
+MAS,32,QGval,Conciseness,4.333333333333333
+MAS,32,QGval,Consistency,5.0
+MAS,32,QGval,Fluency,5.0
+MAS,32,QGval,Relevance,5.0
+MAS,32,ULM,Absoluteness,5.0
+MAS,32,ULM,Completeness,5.0
+MAS,32,ULM,Comprehensiveness,3.3333333333333335
+MAS,32,ULM,Correctness,5.0
+MAS,32,ULM,Exclusiveness,5.0
+MAS,32,ULM,Explanation score,4.333333333333333
+MAS,32,ULM,Explicitness,3.3333333333333335
+MAS,32,ULM,Fairness,3.0
+MAS,32,ULM,Feedback,4.0
+MAS,32,ULM,Fluency,5.0
+MAS,32,ULM,Focus,5.0
+MAS,32,ULM,Goal alignment,5.0
+MAS,32,ULM,Guess resistance,4.333333333333333
+MAS,32,ULM,Plausibility,4.0
+MAS,32,ULM,Reasoning,3.0
+MAS,32,ULM,Solvability,5.0
+MAS,33,QGval,Answer consistency,5.0
+MAS,33,QGval,Answerability,5.0
+MAS,33,QGval,Clarity,5.0
+MAS,33,QGval,Conciseness,4.333333333333333
+MAS,33,QGval,Consistency,5.0
+MAS,33,QGval,Fluency,5.0
+MAS,33,QGval,Relevance,5.0
+MAS,33,ULM,Absoluteness,5.0
+MAS,33,ULM,Completeness,5.0
+MAS,33,ULM,Comprehensiveness,3.0
+MAS,33,ULM,Correctness,5.0
+MAS,33,ULM,Exclusiveness,5.0
+MAS,33,ULM,Explanation score,4.333333333333333
+MAS,33,ULM,Explicitness,3.3333333333333335
+MAS,33,ULM,Fairness,3.0
+MAS,33,ULM,Feedback,4.0
+MAS,33,ULM,Fluency,5.0
+MAS,33,ULM,Focus,5.0
+MAS,33,ULM,Goal alignment,5.0
+MAS,33,ULM,Guess resistance,4.333333333333333
+MAS,33,ULM,Plausibility,4.0
+MAS,33,ULM,Reasoning,2.6666666666666665
+MAS,33,ULM,Solvability,5.0
+MAS,34,QGval,Answer consistency,5.0
+MAS,34,QGval,Answerability,5.0
+MAS,34,QGval,Clarity,5.0
+MAS,34,QGval,Conciseness,5.0
+MAS,34,QGval,Consistency,5.0
+MAS,34,QGval,Fluency,5.0
+MAS,34,QGval,Relevance,5.0
+MAS,34,ULM,Absoluteness,5.0
+MAS,34,ULM,Completeness,5.0
+MAS,34,ULM,Comprehensiveness,3.3333333333333335
+MAS,34,ULM,Correctness,5.0
+MAS,34,ULM,Exclusiveness,5.0
+MAS,34,ULM,Explanation score,4.333333333333333
+MAS,34,ULM,Explicitness,3.0
+MAS,34,ULM,Fairness,3.0
+MAS,34,ULM,Feedback,4.0
+MAS,34,ULM,Fluency,5.0
+MAS,34,ULM,Focus,5.0
+MAS,34,ULM,Goal alignment,5.0
+MAS,34,ULM,Guess resistance,4.333333333333333
+MAS,34,ULM,Plausibility,4.0
+MAS,34,ULM,Reasoning,3.6666666666666665
+MAS,34,ULM,Solvability,5.0
+MAS,35,QGval,Answer consistency,5.0
+MAS,35,QGval,Answerability,5.0
+MAS,35,QGval,Clarity,5.0
+MAS,35,QGval,Conciseness,5.0
+MAS,35,QGval,Consistency,5.0
+MAS,35,QGval,Fluency,5.0
+MAS,35,QGval,Relevance,5.0
+MAS,35,ULM,Absoluteness,5.0
+MAS,35,ULM,Completeness,5.0
+MAS,35,ULM,Comprehensiveness,3.3333333333333335
+MAS,35,ULM,Correctness,5.0
+MAS,35,ULM,Exclusiveness,5.0
+MAS,35,ULM,Explanation score,4.333333333333333
+MAS,35,ULM,Explicitness,3.0
+MAS,35,ULM,Fairness,3.0
+MAS,35,ULM,Feedback,4.0
+MAS,35,ULM,Fluency,5.0
+MAS,35,ULM,Focus,5.0
+MAS,35,ULM,Goal alignment,5.0
+MAS,35,ULM,Guess resistance,4.333333333333333
+MAS,35,ULM,Plausibility,4.0
+MAS,35,ULM,Reasoning,3.6666666666666665
+MAS,35,ULM,Solvability,5.0
+MAS,36,QGval,Answer consistency,5.0
+MAS,36,QGval,Answerability,5.0
+MAS,36,QGval,Clarity,5.0
+MAS,36,QGval,Conciseness,4.333333333333333
+MAS,36,QGval,Consistency,5.0
+MAS,36,QGval,Fluency,5.0
+MAS,36,QGval,Relevance,5.0
+MAS,36,ULM,Absoluteness,5.0
+MAS,36,ULM,Completeness,5.0
+MAS,36,ULM,Comprehensiveness,3.3333333333333335
+MAS,36,ULM,Correctness,5.0
+MAS,36,ULM,Exclusiveness,5.0
+MAS,36,ULM,Explanation score,4.333333333333333
+MAS,36,ULM,Explicitness,3.0
+MAS,36,ULM,Fairness,3.0
+MAS,36,ULM,Feedback,4.0
+MAS,36,ULM,Fluency,5.0
+MAS,36,ULM,Focus,5.0
+MAS,36,ULM,Goal alignment,5.0
+MAS,36,ULM,Guess resistance,4.333333333333333
+MAS,36,ULM,Plausibility,4.0
+MAS,36,ULM,Reasoning,3.3333333333333335
+MAS,36,ULM,Solvability,5.0
+MAS,37,QGval,Answer consistency,5.0
+MAS,37,QGval,Answerability,5.0
+MAS,37,QGval,Clarity,5.0
+MAS,37,QGval,Conciseness,5.0
+MAS,37,QGval,Consistency,5.0
+MAS,37,QGval,Fluency,4.333333333333333
+MAS,37,QGval,Relevance,5.0
+MAS,37,ULM,Absoluteness,5.0
+MAS,37,ULM,Completeness,3.6666666666666665
+MAS,37,ULM,Comprehensiveness,3.0
+MAS,37,ULM,Correctness,5.0
+MAS,37,ULM,Exclusiveness,5.0
+MAS,37,ULM,Explanation score,4.333333333333333
+MAS,37,ULM,Explicitness,3.3333333333333335
+MAS,37,ULM,Fairness,3.0
+MAS,37,ULM,Feedback,4.0
+MAS,37,ULM,Fluency,4.333333333333333
+MAS,37,ULM,Focus,5.0
+MAS,37,ULM,Goal alignment,5.0
+MAS,37,ULM,Guess resistance,4.333333333333333
+MAS,37,ULM,Plausibility,4.0
+MAS,37,ULM,Reasoning,2.0
+MAS,37,ULM,Solvability,5.0
+MAS,38,QGval,Answer consistency,5.0
+MAS,38,QGval,Answerability,5.0
+MAS,38,QGval,Clarity,5.0
+MAS,38,QGval,Conciseness,5.0
+MAS,38,QGval,Consistency,5.0
+MAS,38,QGval,Fluency,4.333333333333333
+MAS,38,QGval,Relevance,5.0
+MAS,38,ULM,Absoluteness,5.0
+MAS,38,ULM,Completeness,3.6666666666666665
+MAS,38,ULM,Comprehensiveness,3.0
+MAS,38,ULM,Correctness,5.0
+MAS,38,ULM,Exclusiveness,5.0
+MAS,38,ULM,Explanation score,4.333333333333333
+MAS,38,ULM,Explicitness,3.3333333333333335
+MAS,38,ULM,Fairness,3.0
+MAS,38,ULM,Feedback,4.0
+MAS,38,ULM,Fluency,4.333333333333333
+MAS,38,ULM,Focus,5.0
+MAS,38,ULM,Goal alignment,5.0
+MAS,38,ULM,Guess resistance,4.333333333333333
+MAS,38,ULM,Plausibility,4.0
+MAS,38,ULM,Reasoning,2.0
+MAS,38,ULM,Solvability,5.0
+MAS,39,QGval,Answer consistency,5.0
+MAS,39,QGval,Answerability,5.0
+MAS,39,QGval,Clarity,5.0
+MAS,39,QGval,Conciseness,5.0
+MAS,39,QGval,Consistency,5.0
+MAS,39,QGval,Fluency,4.333333333333333
+MAS,39,QGval,Relevance,5.0
+MAS,39,ULM,Absoluteness,5.0
+MAS,39,ULM,Completeness,3.6666666666666665
+MAS,39,ULM,Comprehensiveness,3.0
+MAS,39,ULM,Correctness,5.0
+MAS,39,ULM,Exclusiveness,5.0
+MAS,39,ULM,Explanation score,4.333333333333333
+MAS,39,ULM,Explicitness,3.3333333333333335
+MAS,39,ULM,Fairness,3.0
+MAS,39,ULM,Feedback,4.0
+MAS,39,ULM,Fluency,4.333333333333333
+MAS,39,ULM,Focus,5.0
+MAS,39,ULM,Goal alignment,5.0
+MAS,39,ULM,Guess resistance,4.333333333333333
+MAS,39,ULM,Plausibility,4.0
+MAS,39,ULM,Reasoning,2.0
+MAS,39,ULM,Solvability,5.0
+MAS,40,QGval,Answer consistency,5.0
+MAS,40,QGval,Answerability,5.0
+MAS,40,QGval,Clarity,5.0
+MAS,40,QGval,Conciseness,4.666666666666667
+MAS,40,QGval,Consistency,5.0
+MAS,40,QGval,Fluency,5.0
+MAS,40,QGval,Relevance,5.0
+MAS,40,ULM,Absoluteness,5.0
+MAS,40,ULM,Completeness,5.0
+MAS,40,ULM,Comprehensiveness,2.6666666666666665
+MAS,40,ULM,Correctness,5.0
+MAS,40,ULM,Exclusiveness,5.0
+MAS,40,ULM,Explanation score,5.0
+MAS,40,ULM,Explicitness,3.0
+MAS,40,ULM,Fairness,3.0
+MAS,40,ULM,Feedback,4.0
+MAS,40,ULM,Fluency,5.0
+MAS,40,ULM,Focus,5.0
+MAS,40,ULM,Goal alignment,5.0
+MAS,40,ULM,Guess resistance,4.333333333333333
+MAS,40,ULM,Plausibility,4.0
+MAS,40,ULM,Reasoning,2.3333333333333335
+MAS,40,ULM,Solvability,5.0
+MAS,41,QGval,Answer consistency,5.0
+MAS,41,QGval,Answerability,5.0
+MAS,41,QGval,Clarity,5.0
+MAS,41,QGval,Conciseness,5.0
+MAS,41,QGval,Consistency,5.0
+MAS,41,QGval,Fluency,5.0
+MAS,41,QGval,Relevance,5.0
+MAS,41,ULM,Absoluteness,5.0
+MAS,41,ULM,Completeness,5.0
+MAS,41,ULM,Comprehensiveness,2.6666666666666665
+MAS,41,ULM,Correctness,5.0
+MAS,41,ULM,Exclusiveness,5.0
+MAS,41,ULM,Explanation score,5.0
+MAS,41,ULM,Explicitness,3.0
+MAS,41,ULM,Fairness,3.0
+MAS,41,ULM,Feedback,4.0
+MAS,41,ULM,Fluency,5.0
+MAS,41,ULM,Focus,5.0
+MAS,41,ULM,Goal alignment,5.0
+MAS,41,ULM,Guess resistance,4.333333333333333
+MAS,41,ULM,Plausibility,4.0
+MAS,41,ULM,Reasoning,2.3333333333333335
+MAS,41,ULM,Solvability,5.0
+MAS,42,QGval,Answer consistency,5.0
+MAS,42,QGval,Answerability,5.0
+MAS,42,QGval,Clarity,5.0
+MAS,42,QGval,Conciseness,5.0
+MAS,42,QGval,Consistency,5.0
+MAS,42,QGval,Fluency,5.0
+MAS,42,QGval,Relevance,5.0
+MAS,42,ULM,Absoluteness,5.0
+MAS,42,ULM,Completeness,4.333333333333333
+MAS,42,ULM,Comprehensiveness,2.3333333333333335
+MAS,42,ULM,Correctness,5.0
+MAS,42,ULM,Exclusiveness,5.0
+MAS,42,ULM,Explanation score,5.0
+MAS,42,ULM,Explicitness,3.0
+MAS,42,ULM,Fairness,3.0
+MAS,42,ULM,Feedback,3.6666666666666665
+MAS,42,ULM,Fluency,5.0
+MAS,42,ULM,Focus,5.0
+MAS,42,ULM,Goal alignment,5.0
+MAS,42,ULM,Guess resistance,4.333333333333333
+MAS,42,ULM,Plausibility,4.0
+MAS,42,ULM,Reasoning,2.0
+MAS,42,ULM,Solvability,5.0
+MAS,43,QGval,Answer consistency,5.0
+MAS,43,QGval,Answerability,5.0
+MAS,43,QGval,Clarity,5.0
+MAS,43,QGval,Conciseness,4.666666666666667
+MAS,43,QGval,Consistency,5.0
+MAS,43,QGval,Fluency,5.0
+MAS,43,QGval,Relevance,5.0
+MAS,43,ULM,Absoluteness,5.0
+MAS,43,ULM,Completeness,2.3333333333333335
+MAS,43,ULM,Comprehensiveness,2.3333333333333335
+MAS,43,ULM,Correctness,5.0
+MAS,43,ULM,Exclusiveness,5.0
+MAS,43,ULM,Explanation score,3.6666666666666665
+MAS,43,ULM,Explicitness,4.0
+MAS,43,ULM,Fairness,3.0
+MAS,43,ULM,Feedback,3.6666666666666665
+MAS,43,ULM,Fluency,5.0
+MAS,43,ULM,Focus,4.333333333333333
+MAS,43,ULM,Goal alignment,5.0
+MAS,43,ULM,Guess resistance,4.333333333333333
+MAS,43,ULM,Plausibility,4.0
+MAS,43,ULM,Reasoning,1.6666666666666667
+MAS,43,ULM,Solvability,5.0
+MAS,44,QGval,Answer consistency,5.0
+MAS,44,QGval,Answerability,5.0
+MAS,44,QGval,Clarity,5.0
+MAS,44,QGval,Conciseness,5.0
+MAS,44,QGval,Consistency,5.0
+MAS,44,QGval,Fluency,5.0
+MAS,44,QGval,Relevance,5.0
+MAS,44,ULM,Absoluteness,5.0
+MAS,44,ULM,Completeness,3.0
+MAS,44,ULM,Comprehensiveness,2.6666666666666665
+MAS,44,ULM,Correctness,5.0
+MAS,44,ULM,Exclusiveness,5.0
+MAS,44,ULM,Explanation score,3.6666666666666665
+MAS,44,ULM,Explicitness,3.3333333333333335
+MAS,44,ULM,Fairness,3.0
+MAS,44,ULM,Feedback,4.0
+MAS,44,ULM,Fluency,5.0
+MAS,44,ULM,Focus,4.333333333333333
+MAS,44,ULM,Goal alignment,5.0
+MAS,44,ULM,Guess resistance,4.333333333333333
+MAS,44,ULM,Plausibility,4.0
+MAS,44,ULM,Reasoning,2.6666666666666665
+MAS,44,ULM,Solvability,5.0
+MAS,45,QGval,Answer consistency,5.0
+MAS,45,QGval,Answerability,5.0
+MAS,45,QGval,Clarity,5.0
+MAS,45,QGval,Conciseness,5.0
+MAS,45,QGval,Consistency,5.0
+MAS,45,QGval,Fluency,5.0
+MAS,45,QGval,Relevance,5.0
+MAS,45,ULM,Absoluteness,5.0
+MAS,45,ULM,Completeness,4.333333333333333
+MAS,45,ULM,Comprehensiveness,3.3333333333333335
+MAS,45,ULM,Correctness,5.0
+MAS,45,ULM,Exclusiveness,5.0
+MAS,45,ULM,Explanation score,3.6666666666666665
+MAS,45,ULM,Explicitness,3.0
+MAS,45,ULM,Fairness,3.0
+MAS,45,ULM,Feedback,3.3333333333333335
+MAS,45,ULM,Fluency,5.0
+MAS,45,ULM,Focus,4.333333333333333
+MAS,45,ULM,Goal alignment,5.0
+MAS,45,ULM,Guess resistance,4.333333333333333
+MAS,45,ULM,Plausibility,4.0
+MAS,45,ULM,Reasoning,2.3333333333333335
+MAS,45,ULM,Solvability,3.6666666666666665
+MAS,46,QGval,Answer consistency,5.0
+MAS,46,QGval,Answerability,5.0
+MAS,46,QGval,Clarity,5.0
+MAS,46,QGval,Conciseness,5.0
+MAS,46,QGval,Consistency,5.0
+MAS,46,QGval,Fluency,5.0
+MAS,46,QGval,Relevance,5.0
+MAS,46,ULM,Absoluteness,5.0
+MAS,46,ULM,Completeness,5.0
+MAS,46,ULM,Comprehensiveness,3.0
+MAS,46,ULM,Correctness,5.0
+MAS,46,ULM,Exclusiveness,4.333333333333333
+MAS,46,ULM,Explanation score,4.333333333333333
+MAS,46,ULM,Explicitness,3.3333333333333335
+MAS,46,ULM,Fairness,3.0
+MAS,46,ULM,Feedback,4.0
+MAS,46,ULM,Fluency,4.333333333333333
+MAS,46,ULM,Focus,4.333333333333333
+MAS,46,ULM,Goal alignment,4.333333333333333
+MAS,46,ULM,Guess resistance,4.333333333333333
+MAS,46,ULM,Plausibility,4.0
+MAS,46,ULM,Reasoning,2.3333333333333335
+MAS,46,ULM,Solvability,5.0
+MAS,47,QGval,Answer consistency,5.0
+MAS,47,QGval,Answerability,5.0
+MAS,47,QGval,Clarity,5.0
+MAS,47,QGval,Conciseness,5.0
+MAS,47,QGval,Consistency,5.0
+MAS,47,QGval,Fluency,5.0
+MAS,47,QGval,Relevance,5.0
+MAS,47,ULM,Absoluteness,5.0
+MAS,47,ULM,Completeness,5.0
+MAS,47,ULM,Comprehensiveness,3.6666666666666665
+MAS,47,ULM,Correctness,4.666666666666667
+MAS,47,ULM,Exclusiveness,5.0
+MAS,47,ULM,Explanation score,4.333333333333333
+MAS,47,ULM,Explicitness,3.3333333333333335
+MAS,47,ULM,Fairness,3.0
+MAS,47,ULM,Feedback,4.0
+MAS,47,ULM,Fluency,5.0
+MAS,47,ULM,Focus,4.333333333333333
+MAS,47,ULM,Goal alignment,5.0
+MAS,47,ULM,Guess resistance,5.0
+MAS,47,ULM,Plausibility,4.666666666666667
+MAS,47,ULM,Reasoning,3.3333333333333335
+MAS,47,ULM,Solvability,5.0
+MAS,48,QGval,Answer consistency,5.0
+MAS,48,QGval,Answerability,5.0
+MAS,48,QGval,Clarity,5.0
+MAS,48,QGval,Conciseness,5.0
+MAS,48,QGval,Consistency,5.0
+MAS,48,QGval,Fluency,5.0
+MAS,48,QGval,Relevance,5.0
+MAS,48,ULM,Absoluteness,5.0
+MAS,48,ULM,Completeness,5.0
+MAS,48,ULM,Comprehensiveness,3.6666666666666665
+MAS,48,ULM,Correctness,5.0
+MAS,48,ULM,Exclusiveness,5.0
+MAS,48,ULM,Explanation score,4.333333333333333
+MAS,48,ULM,Explicitness,3.3333333333333335
+MAS,48,ULM,Fairness,3.0
+MAS,48,ULM,Feedback,4.0
+MAS,48,ULM,Fluency,5.0
+MAS,48,ULM,Focus,4.333333333333333
+MAS,48,ULM,Goal alignment,5.0
+MAS,48,ULM,Guess resistance,5.0
+MAS,48,ULM,Plausibility,4.666666666666667
+MAS,48,ULM,Reasoning,3.0
+MAS,48,ULM,Solvability,5.0
+MAS,49,QGval,Answer consistency,5.0
+MAS,49,QGval,Answerability,5.0
+MAS,49,QGval,Clarity,5.0
+MAS,49,QGval,Conciseness,4.666666666666667
+MAS,49,QGval,Consistency,5.0
+MAS,49,QGval,Fluency,5.0
+MAS,49,QGval,Relevance,5.0
+MAS,49,ULM,Absoluteness,4.666666666666667
+MAS,49,ULM,Completeness,2.3333333333333335
+MAS,49,ULM,Comprehensiveness,2.6666666666666665
+MAS,49,ULM,Correctness,5.0
+MAS,49,ULM,Exclusiveness,5.0
+MAS,49,ULM,Explanation score,3.6666666666666665
+MAS,49,ULM,Explicitness,3.3333333333333335
+MAS,49,ULM,Fairness,3.0
+MAS,49,ULM,Feedback,4.0
+MAS,49,ULM,Fluency,5.0
+MAS,49,ULM,Focus,4.333333333333333
+MAS,49,ULM,Goal alignment,5.0
+MAS,49,ULM,Guess resistance,4.333333333333333
+MAS,49,ULM,Plausibility,4.0
+MAS,49,ULM,Reasoning,2.3333333333333335
+MAS,49,ULM,Solvability,5.0
+MAS,50,QGval,Answer consistency,5.0
+MAS,50,QGval,Answerability,5.0
+MAS,50,QGval,Clarity,5.0
+MAS,50,QGval,Conciseness,4.666666666666667
+MAS,50,QGval,Consistency,5.0
+MAS,50,QGval,Fluency,5.0
+MAS,50,QGval,Relevance,5.0
+MAS,50,ULM,Absoluteness,5.0
+MAS,50,ULM,Completeness,5.0
+MAS,50,ULM,Comprehensiveness,2.3333333333333335
+MAS,50,ULM,Correctness,5.0
+MAS,50,ULM,Exclusiveness,5.0
+MAS,50,ULM,Explanation score,4.333333333333333
+MAS,50,ULM,Explicitness,3.0
+MAS,50,ULM,Fairness,3.0
+MAS,50,ULM,Feedback,4.0
+MAS,50,ULM,Fluency,5.0
+MAS,50,ULM,Focus,4.333333333333333
+MAS,50,ULM,Goal alignment,4.333333333333333
+MAS,50,ULM,Guess resistance,4.333333333333333
+MAS,50,ULM,Plausibility,4.0
+MAS,50,ULM,Reasoning,2.6666666666666665
+MAS,50,ULM,Solvability,5.0
+MAS,51,QGval,Answer consistency,5.0
+MAS,51,QGval,Answerability,5.0
+MAS,51,QGval,Clarity,5.0
+MAS,51,QGval,Conciseness,5.0
+MAS,51,QGval,Consistency,5.0
+MAS,51,QGval,Fluency,5.0
+MAS,51,QGval,Relevance,4.666666666666667
+MAS,51,ULM,Absoluteness,5.0
+MAS,51,ULM,Completeness,3.6666666666666665
+MAS,51,ULM,Comprehensiveness,1.6666666666666667
+MAS,51,ULM,Correctness,5.0
+MAS,51,ULM,Exclusiveness,5.0
+MAS,51,ULM,Explanation score,3.6666666666666665
+MAS,51,ULM,Explicitness,3.6666666666666665
+MAS,51,ULM,Fairness,3.0
+MAS,51,ULM,Feedback,3.6666666666666665
+MAS,51,ULM,Fluency,5.0
+MAS,51,ULM,Focus,4.333333333333333
+MAS,51,ULM,Goal alignment,4.333333333333333
+MAS,51,ULM,Guess resistance,4.333333333333333
+MAS,51,ULM,Plausibility,4.0
+MAS,51,ULM,Reasoning,1.3333333333333333
+MAS,51,ULM,Solvability,5.0
+MAS,52,QGval,Answer consistency,5.0
+MAS,52,QGval,Answerability,5.0
+MAS,52,QGval,Clarity,5.0
+MAS,52,QGval,Conciseness,5.0
+MAS,52,QGval,Consistency,5.0
+MAS,52,QGval,Fluency,5.0
+MAS,52,QGval,Relevance,4.666666666666667
+MAS,52,ULM,Absoluteness,5.0
+MAS,52,ULM,Completeness,3.6666666666666665
+MAS,52,ULM,Comprehensiveness,1.6666666666666667
+MAS,52,ULM,Correctness,5.0
+MAS,52,ULM,Exclusiveness,5.0
+MAS,52,ULM,Explanation score,4.0
+MAS,52,ULM,Explicitness,3.3333333333333335
+MAS,52,ULM,Fairness,3.0
+MAS,52,ULM,Feedback,3.6666666666666665
+MAS,52,ULM,Fluency,5.0
+MAS,52,ULM,Focus,4.333333333333333
+MAS,52,ULM,Goal alignment,4.666666666666667
+MAS,52,ULM,Guess resistance,4.333333333333333
+MAS,52,ULM,Plausibility,4.0
+MAS,52,ULM,Reasoning,1.3333333333333333
+MAS,52,ULM,Solvability,5.0
+MAS,53,QGval,Answer consistency,5.0
+MAS,53,QGval,Answerability,5.0
+MAS,53,QGval,Clarity,5.0
+MAS,53,QGval,Conciseness,5.0
+MAS,53,QGval,Consistency,5.0
+MAS,53,QGval,Fluency,5.0
+MAS,53,QGval,Relevance,4.666666666666667
+MAS,53,ULM,Absoluteness,5.0
+MAS,53,ULM,Completeness,3.6666666666666665
+MAS,53,ULM,Comprehensiveness,1.6666666666666667
+MAS,53,ULM,Correctness,5.0
+MAS,53,ULM,Exclusiveness,5.0
+MAS,53,ULM,Explanation score,4.0
+MAS,53,ULM,Explicitness,3.3333333333333335
+MAS,53,ULM,Fairness,3.0
+MAS,53,ULM,Feedback,3.6666666666666665
+MAS,53,ULM,Fluency,5.0
+MAS,53,ULM,Focus,4.333333333333333
+MAS,53,ULM,Goal alignment,4.666666666666667
+MAS,53,ULM,Guess resistance,4.333333333333333
+MAS,53,ULM,Plausibility,4.0
+MAS,53,ULM,Reasoning,1.3333333333333333
+MAS,53,ULM,Solvability,5.0
+MAS,54,QGval,Answer consistency,5.0
+MAS,54,QGval,Answerability,5.0
+MAS,54,QGval,Clarity,5.0
+MAS,54,QGval,Conciseness,5.0
+MAS,54,QGval,Consistency,5.0
+MAS,54,QGval,Fluency,5.0
+MAS,54,QGval,Relevance,5.0
+MAS,54,ULM,Absoluteness,5.0
+MAS,54,ULM,Completeness,5.0
+MAS,54,ULM,Comprehensiveness,2.0
+MAS,54,ULM,Correctness,5.0
+MAS,54,ULM,Exclusiveness,4.666666666666667
+MAS,54,ULM,Explanation score,4.333333333333333
+MAS,54,ULM,Explicitness,3.6666666666666665
+MAS,54,ULM,Fairness,3.0
+MAS,54,ULM,Feedback,3.6666666666666665
+MAS,54,ULM,Fluency,5.0
+MAS,54,ULM,Focus,4.333333333333333
+MAS,54,ULM,Goal alignment,4.333333333333333
+MAS,54,ULM,Guess resistance,4.333333333333333
+MAS,54,ULM,Plausibility,3.3333333333333335
+MAS,54,ULM,Reasoning,2.0
+MAS,54,ULM,Solvability,5.0
+MAS,55,QGval,Answer consistency,5.0
+MAS,55,QGval,Answerability,5.0
+MAS,55,QGval,Clarity,5.0
+MAS,55,QGval,Conciseness,5.0
+MAS,55,QGval,Consistency,5.0
+MAS,55,QGval,Fluency,5.0
+MAS,55,QGval,Relevance,4.666666666666667
+MAS,55,ULM,Absoluteness,5.0
+MAS,55,ULM,Completeness,5.0
+MAS,55,ULM,Comprehensiveness,1.6666666666666667
+MAS,55,ULM,Correctness,5.0
+MAS,55,ULM,Exclusiveness,5.0
+MAS,55,ULM,Explanation score,4.0
+MAS,55,ULM,Explicitness,3.3333333333333335
+MAS,55,ULM,Fairness,3.0
+MAS,55,ULM,Feedback,2.6666666666666665
+MAS,55,ULM,Fluency,4.666666666666667
+MAS,55,ULM,Focus,4.333333333333333
+MAS,55,ULM,Goal alignment,5.0
+MAS,55,ULM,Guess resistance,4.333333333333333
+MAS,55,ULM,Plausibility,3.3333333333333335
+MAS,55,ULM,Reasoning,1.0
+MAS,55,ULM,Solvability,5.0
+MAS,56,QGval,Answer consistency,5.0
+MAS,56,QGval,Answerability,5.0
+MAS,56,QGval,Clarity,5.0
+MAS,56,QGval,Conciseness,5.0
+MAS,56,QGval,Consistency,5.0
+MAS,56,QGval,Fluency,5.0
+MAS,56,QGval,Relevance,5.0
+MAS,56,ULM,Absoluteness,5.0
+MAS,56,ULM,Completeness,5.0
+MAS,56,ULM,Comprehensiveness,2.6666666666666665
+MAS,56,ULM,Correctness,5.0
+MAS,56,ULM,Exclusiveness,4.666666666666667
+MAS,56,ULM,Explanation score,4.333333333333333
+MAS,56,ULM,Explicitness,3.3333333333333335
+MAS,56,ULM,Fairness,3.0
+MAS,56,ULM,Feedback,3.6666666666666665
+MAS,56,ULM,Fluency,5.0
+MAS,56,ULM,Focus,4.333333333333333
+MAS,56,ULM,Goal alignment,4.666666666666667
+MAS,56,ULM,Guess resistance,4.333333333333333
+MAS,56,ULM,Plausibility,3.3333333333333335
+MAS,56,ULM,Reasoning,2.0
+MAS,56,ULM,Solvability,5.0
+MAS,57,QGval,Answer consistency,3.0
+MAS,57,QGval,Answerability,5.0
+MAS,57,QGval,Clarity,4.666666666666667
+MAS,57,QGval,Conciseness,4.666666666666667
+MAS,57,QGval,Consistency,5.0
+MAS,57,QGval,Fluency,5.0
+MAS,57,QGval,Relevance,4.666666666666667
+MAS,57,ULM,Absoluteness,5.0
+MAS,57,ULM,Completeness,5.0
+MAS,57,ULM,Comprehensiveness,2.3333333333333335
+MAS,57,ULM,Correctness,5.0
+MAS,57,ULM,Exclusiveness,4.666666666666667
+MAS,57,ULM,Explanation score,4.333333333333333
+MAS,57,ULM,Explicitness,3.6666666666666665
+MAS,57,ULM,Fairness,3.0
+MAS,57,ULM,Feedback,3.6666666666666665
+MAS,57,ULM,Fluency,4.666666666666667
+MAS,57,ULM,Focus,4.333333333333333
+MAS,57,ULM,Goal alignment,4.666666666666667
+MAS,57,ULM,Guess resistance,4.333333333333333
+MAS,57,ULM,Plausibility,4.0
+MAS,57,ULM,Reasoning,2.0
+MAS,57,ULM,Solvability,5.0
+MAS,58,QGval,Answer consistency,4.666666666666667
+MAS,58,QGval,Answerability,5.0
+MAS,58,QGval,Clarity,4.666666666666667
+MAS,58,QGval,Conciseness,5.0
+MAS,58,QGval,Consistency,5.0
+MAS,58,QGval,Fluency,5.0
+MAS,58,QGval,Relevance,5.0
+MAS,58,ULM,Absoluteness,5.0
+MAS,58,ULM,Completeness,5.0
+MAS,58,ULM,Comprehensiveness,2.6666666666666665
+MAS,58,ULM,Correctness,5.0
+MAS,58,ULM,Exclusiveness,4.666666666666667
+MAS,58,ULM,Explanation score,4.333333333333333
+MAS,58,ULM,Explicitness,3.6666666666666665
+MAS,58,ULM,Fairness,3.0
+MAS,58,ULM,Feedback,4.0
+MAS,58,ULM,Fluency,5.0
+MAS,58,ULM,Focus,4.333333333333333
+MAS,58,ULM,Goal alignment,4.666666666666667
+MAS,58,ULM,Guess resistance,4.333333333333333
+MAS,58,ULM,Plausibility,4.0
+MAS,58,ULM,Reasoning,2.6666666666666665
+MAS,58,ULM,Solvability,5.0
+MAS,59,QGval,Answer consistency,5.0
+MAS,59,QGval,Answerability,5.0
+MAS,59,QGval,Clarity,5.0
+MAS,59,QGval,Conciseness,5.0
+MAS,59,QGval,Consistency,5.0
+MAS,59,QGval,Fluency,5.0
+MAS,59,QGval,Relevance,5.0
+MAS,59,ULM,Absoluteness,5.0
+MAS,59,ULM,Completeness,5.0
+MAS,59,ULM,Comprehensiveness,2.3333333333333335
+MAS,59,ULM,Correctness,5.0
+MAS,59,ULM,Exclusiveness,4.666666666666667
+MAS,59,ULM,Explanation score,4.0
+MAS,59,ULM,Explicitness,3.6666666666666665
+MAS,59,ULM,Fairness,3.0
+MAS,59,ULM,Feedback,4.0
+MAS,59,ULM,Fluency,4.666666666666667
+MAS,59,ULM,Focus,4.333333333333333
+MAS,59,ULM,Goal alignment,4.666666666666667
+MAS,59,ULM,Guess resistance,4.333333333333333
+MAS,59,ULM,Plausibility,3.3333333333333335
+MAS,59,ULM,Reasoning,2.6666666666666665
+MAS,59,ULM,Solvability,5.0
+MAS,60,QGval,Answer consistency,4.666666666666667
+MAS,60,QGval,Answerability,5.0
+MAS,60,QGval,Clarity,4.666666666666667
+MAS,60,QGval,Conciseness,5.0
+MAS,60,QGval,Consistency,5.0
+MAS,60,QGval,Fluency,5.0
+MAS,60,QGval,Relevance,5.0
+MAS,60,ULM,Absoluteness,5.0
+MAS,60,ULM,Completeness,5.0
+MAS,60,ULM,Comprehensiveness,2.3333333333333335
+MAS,60,ULM,Correctness,5.0
+MAS,60,ULM,Exclusiveness,4.666666666666667
+MAS,60,ULM,Explanation score,4.333333333333333
+MAS,60,ULM,Explicitness,3.6666666666666665
+MAS,60,ULM,Fairness,3.0
+MAS,60,ULM,Feedback,4.0
+MAS,60,ULM,Fluency,4.666666666666667
+MAS,60,ULM,Focus,4.333333333333333
+MAS,60,ULM,Goal alignment,4.666666666666667
+MAS,60,ULM,Guess resistance,4.333333333333333
+MAS,60,ULM,Plausibility,4.0
+MAS,60,ULM,Reasoning,2.6666666666666665
+MAS,60,ULM,Solvability,5.0
+MAS,61,QGval,Answer consistency,5.0
+MAS,61,QGval,Answerability,5.0
+MAS,61,QGval,Clarity,5.0
+MAS,61,QGval,Conciseness,4.666666666666667
+MAS,61,QGval,Consistency,5.0
+MAS,61,QGval,Fluency,5.0
+MAS,61,QGval,Relevance,4.666666666666667
+MAS,61,ULM,Absoluteness,5.0
+MAS,61,ULM,Completeness,5.0
+MAS,61,ULM,Comprehensiveness,2.6666666666666665
+MAS,61,ULM,Correctness,5.0
+MAS,61,ULM,Exclusiveness,4.666666666666667
+MAS,61,ULM,Explanation score,4.0
+MAS,61,ULM,Explicitness,3.3333333333333335
+MAS,61,ULM,Fairness,3.0
+MAS,61,ULM,Feedback,4.0
+MAS,61,ULM,Fluency,4.666666666666667
+MAS,61,ULM,Focus,4.333333333333333
+MAS,61,ULM,Goal alignment,4.666666666666667
+MAS,61,ULM,Guess resistance,4.333333333333333
+MAS,61,ULM,Plausibility,3.3333333333333335
+MAS,61,ULM,Reasoning,2.3333333333333335
+MAS,61,ULM,Solvability,5.0
+MAS,62,QGval,Answer consistency,5.0
+MAS,62,QGval,Answerability,5.0
+MAS,62,QGval,Clarity,5.0
+MAS,62,QGval,Conciseness,4.666666666666667
+MAS,62,QGval,Consistency,5.0
+MAS,62,QGval,Fluency,5.0
+MAS,62,QGval,Relevance,4.666666666666667
+MAS,62,ULM,Absoluteness,5.0
+MAS,62,ULM,Completeness,5.0
+MAS,62,ULM,Comprehensiveness,2.6666666666666665
+MAS,62,ULM,Correctness,5.0
+MAS,62,ULM,Exclusiveness,4.666666666666667
+MAS,62,ULM,Explanation score,4.0
+MAS,62,ULM,Explicitness,3.3333333333333335
+MAS,62,ULM,Fairness,3.0
+MAS,62,ULM,Feedback,4.0
+MAS,62,ULM,Fluency,4.666666666666667
+MAS,62,ULM,Focus,4.333333333333333
+MAS,62,ULM,Goal alignment,4.666666666666667
+MAS,62,ULM,Guess resistance,4.333333333333333
+MAS,62,ULM,Plausibility,3.3333333333333335
+MAS,62,ULM,Reasoning,2.3333333333333335
+MAS,62,ULM,Solvability,5.0
+MAS,63,QGval,Answer consistency,5.0
+MAS,63,QGval,Answerability,5.0
+MAS,63,QGval,Clarity,5.0
+MAS,63,QGval,Conciseness,4.666666666666667
+MAS,63,QGval,Consistency,5.0
+MAS,63,QGval,Fluency,5.0
+MAS,63,QGval,Relevance,4.666666666666667
+MAS,63,ULM,Absoluteness,5.0
+MAS,63,ULM,Completeness,5.0
+MAS,63,ULM,Comprehensiveness,2.6666666666666665
+MAS,63,ULM,Correctness,5.0
+MAS,63,ULM,Exclusiveness,4.666666666666667
+MAS,63,ULM,Explanation score,4.0
+MAS,63,ULM,Explicitness,3.3333333333333335
+MAS,63,ULM,Fairness,3.0
+MAS,63,ULM,Feedback,4.0
+MAS,63,ULM,Fluency,4.666666666666667
+MAS,63,ULM,Focus,5.0
+MAS,63,ULM,Goal alignment,4.666666666666667
+MAS,63,ULM,Guess resistance,4.333333333333333
+MAS,63,ULM,Plausibility,3.3333333333333335
+MAS,63,ULM,Reasoning,2.3333333333333335
+MAS,63,ULM,Solvability,5.0
+MAS,64,QGval,Answer consistency,5.0
+MAS,64,QGval,Answerability,5.0
+MAS,64,QGval,Clarity,5.0
+MAS,64,QGval,Conciseness,4.666666666666667
+MAS,64,QGval,Consistency,5.0
+MAS,64,QGval,Fluency,5.0
+MAS,64,QGval,Relevance,4.666666666666667
+MAS,64,ULM,Absoluteness,5.0
+MAS,64,ULM,Completeness,5.0
+MAS,64,ULM,Comprehensiveness,2.6666666666666665
+MAS,64,ULM,Correctness,5.0
+MAS,64,ULM,Exclusiveness,4.666666666666667
+MAS,64,ULM,Explanation score,4.0
+MAS,64,ULM,Explicitness,3.3333333333333335
+MAS,64,ULM,Fairness,3.0
+MAS,64,ULM,Feedback,4.0
+MAS,64,ULM,Fluency,4.666666666666667
+MAS,64,ULM,Focus,5.0
+MAS,64,ULM,Goal alignment,4.666666666666667
+MAS,64,ULM,Guess resistance,4.333333333333333
+MAS,64,ULM,Plausibility,3.3333333333333335
+MAS,64,ULM,Reasoning,2.3333333333333335
+MAS,64,ULM,Solvability,5.0
+MAS,65,QGval,Answer consistency,5.0
+MAS,65,QGval,Answerability,5.0
+MAS,65,QGval,Clarity,5.0
+MAS,65,QGval,Conciseness,5.0
+MAS,65,QGval,Consistency,5.0
+MAS,65,QGval,Fluency,5.0
+MAS,65,QGval,Relevance,5.0
+MAS,65,ULM,Absoluteness,5.0
+MAS,65,ULM,Completeness,5.0
+MAS,65,ULM,Comprehensiveness,2.6666666666666665
+MAS,65,ULM,Correctness,5.0
+MAS,65,ULM,Exclusiveness,5.0
+MAS,65,ULM,Explanation score,4.333333333333333
+MAS,65,ULM,Explicitness,3.3333333333333335
+MAS,65,ULM,Fairness,3.0
+MAS,65,ULM,Feedback,4.0
+MAS,65,ULM,Fluency,5.0
+MAS,65,ULM,Focus,4.333333333333333
+MAS,65,ULM,Goal alignment,5.0
+MAS,65,ULM,Guess resistance,4.333333333333333
+MAS,65,ULM,Plausibility,4.0
+MAS,65,ULM,Reasoning,2.3333333333333335
+MAS,65,ULM,Solvability,5.0
+MAS,66,QGval,Answer consistency,5.0
+MAS,66,QGval,Answerability,5.0
+MAS,66,QGval,Clarity,5.0
+MAS,66,QGval,Conciseness,5.0
+MAS,66,QGval,Consistency,5.0
+MAS,66,QGval,Fluency,5.0
+MAS,66,QGval,Relevance,5.0
+MAS,66,ULM,Absoluteness,5.0
+MAS,66,ULM,Completeness,5.0
+MAS,66,ULM,Comprehensiveness,2.6666666666666665
+MAS,66,ULM,Correctness,5.0
+MAS,66,ULM,Exclusiveness,5.0
+MAS,66,ULM,Explanation score,4.333333333333333
+MAS,66,ULM,Explicitness,3.3333333333333335
+MAS,66,ULM,Fairness,3.0
+MAS,66,ULM,Feedback,4.0
+MAS,66,ULM,Fluency,5.0
+MAS,66,ULM,Focus,4.333333333333333
+MAS,66,ULM,Goal alignment,5.0
+MAS,66,ULM,Guess resistance,4.333333333333333
+MAS,66,ULM,Plausibility,4.0
+MAS,66,ULM,Reasoning,2.3333333333333335
+MAS,66,ULM,Solvability,5.0
+MAS,67,QGval,Answer consistency,5.0
+MAS,67,QGval,Answerability,5.0
+MAS,67,QGval,Clarity,5.0
+MAS,67,QGval,Conciseness,5.0
+MAS,67,QGval,Consistency,5.0
+MAS,67,QGval,Fluency,5.0
+MAS,67,QGval,Relevance,5.0
+MAS,67,ULM,Absoluteness,5.0
+MAS,67,ULM,Completeness,5.0
+MAS,67,ULM,Comprehensiveness,2.6666666666666665
+MAS,67,ULM,Correctness,5.0
+MAS,67,ULM,Exclusiveness,5.0
+MAS,67,ULM,Explanation score,4.0
+MAS,67,ULM,Explicitness,3.3333333333333335
+MAS,67,ULM,Fairness,3.0
+MAS,67,ULM,Feedback,4.0
+MAS,67,ULM,Fluency,5.0
+MAS,67,ULM,Focus,4.333333333333333
+MAS,67,ULM,Goal alignment,5.0
+MAS,67,ULM,Guess resistance,4.333333333333333
+MAS,67,ULM,Plausibility,4.0
+MAS,67,ULM,Reasoning,2.3333333333333335
+MAS,67,ULM,Solvability,5.0
+MAS,68,QGval,Answer consistency,5.0
+MAS,68,QGval,Answerability,5.0
+MAS,68,QGval,Clarity,5.0
+MAS,68,QGval,Conciseness,5.0
+MAS,68,QGval,Consistency,5.0
+MAS,68,QGval,Fluency,5.0
+MAS,68,QGval,Relevance,5.0
+MAS,68,ULM,Absoluteness,5.0
+MAS,68,ULM,Completeness,2.6666666666666665
+MAS,68,ULM,Comprehensiveness,2.3333333333333335
+MAS,68,ULM,Correctness,5.0
+MAS,68,ULM,Exclusiveness,5.0
+MAS,68,ULM,Explanation score,4.0
+MAS,68,ULM,Explicitness,3.6666666666666665
+MAS,68,ULM,Fairness,3.0
+MAS,68,ULM,Feedback,4.0
+MAS,68,ULM,Fluency,5.0
+MAS,68,ULM,Focus,4.333333333333333
+MAS,68,ULM,Goal alignment,4.666666666666667
+MAS,68,ULM,Guess resistance,4.333333333333333
+MAS,68,ULM,Plausibility,4.0
+MAS,68,ULM,Reasoning,2.0
+MAS,68,ULM,Solvability,5.0
+MAS,69,QGval,Answer consistency,5.0
+MAS,69,QGval,Answerability,5.0
+MAS,69,QGval,Clarity,5.0
+MAS,69,QGval,Conciseness,5.0
+MAS,69,QGval,Consistency,5.0
+MAS,69,QGval,Fluency,5.0
+MAS,69,QGval,Relevance,5.0
+MAS,69,ULM,Absoluteness,5.0
+MAS,69,ULM,Completeness,2.6666666666666665
+MAS,69,ULM,Comprehensiveness,2.6666666666666665
+MAS,69,ULM,Correctness,5.0
+MAS,69,ULM,Exclusiveness,5.0
+MAS,69,ULM,Explanation score,4.0
+MAS,69,ULM,Explicitness,3.6666666666666665
+MAS,69,ULM,Fairness,3.0
+MAS,69,ULM,Feedback,4.0
+MAS,69,ULM,Fluency,5.0
+MAS,69,ULM,Focus,4.333333333333333
+MAS,69,ULM,Goal alignment,4.666666666666667
+MAS,69,ULM,Guess resistance,4.333333333333333
+MAS,69,ULM,Plausibility,4.0
+MAS,69,ULM,Reasoning,2.0
+MAS,69,ULM,Solvability,5.0
+MAS,70,QGval,Answer consistency,5.0
+MAS,70,QGval,Answerability,5.0
+MAS,70,QGval,Clarity,5.0
+MAS,70,QGval,Conciseness,5.0
+MAS,70,QGval,Consistency,5.0
+MAS,70,QGval,Fluency,5.0
+MAS,70,QGval,Relevance,5.0
+MAS,70,ULM,Absoluteness,5.0
+MAS,70,ULM,Completeness,2.6666666666666665
+MAS,70,ULM,Comprehensiveness,2.6666666666666665
+MAS,70,ULM,Correctness,5.0
+MAS,70,ULM,Exclusiveness,5.0
+MAS,70,ULM,Explanation score,4.0
+MAS,70,ULM,Explicitness,3.6666666666666665
+MAS,70,ULM,Fairness,3.0
+MAS,70,ULM,Feedback,4.0
+MAS,70,ULM,Fluency,5.0
+MAS,70,ULM,Focus,4.333333333333333
+MAS,70,ULM,Goal alignment,4.666666666666667
+MAS,70,ULM,Guess resistance,4.333333333333333
+MAS,70,ULM,Plausibility,4.0
+MAS,70,ULM,Reasoning,2.6666666666666665
+MAS,70,ULM,Solvability,5.0

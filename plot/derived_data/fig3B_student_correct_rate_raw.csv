@@ -1,201 +1,201 @@
-﻿panel,student_id,training_setting,source_true,correct_rate,score_percent
-Overall,S001,main,MAS,0.66,66.0
-Overall,S002,main,MAS,0.52,52.0
-Overall,S003,main,MAS,0.38,38.0
-Overall,S004,main,MAS,0.46,46.0
-Overall,S005,main,MAS,0.56,56.00000000000001
-Overall,S006,main,MAS,0.6,60.0
-Overall,S007,main,MAS,0.52,52.0
-Overall,S008,main,MAS,0.62,62.0
-Overall,S009,main,MAS,0.56,56.00000000000001
-Overall,S010,main,MAS,0.68,68.0
-Overall,S011,main,MAS,0.48,48.0
-Overall,S012,main,MAS,0.68,68.0
-Overall,S013,non_main,MAS,0.52,52.0
-Overall,S014,main,MAS,0.72,72.0
-Overall,S015,non_main,MAS,0.58,57.99999999999999
-Overall,S016,non_main,MAS,0.52,52.0
-Overall,S017,non_main,MAS,0.34,34.0
-Overall,S018,non_main,MAS,0.58,57.99999999999999
-Overall,S019,non_main,MAS,0.54,54.0
-Overall,S020,non_main,MAS,0.64,64.0
-Overall,S021,main,MAS,0.54,54.0
-Overall,S022,main,MAS,0.42,42.0
-Overall,S023,non_main,MAS,0.88,88.0
-Overall,S024,non_main,MAS,0.88,88.0
-Overall,S025,non_main,MAS,0.84,84.0
-Overall,S026,main,MAS,0.62,62.0
-Overall,S027,main,MAS,0.64,64.0
-Overall,S028,main,MAS,0.8,80.0
-Overall,S029,non_main,MAS,0.86,86.0
-Overall,S030,non_main,MAS,0.68,68.0
-Overall,S031,non_main,MAS,0.56,56.00000000000001
-Overall,S032,non_main,MAS,0.46,46.0
-Overall,S033,main,MAS,0.66,66.0
-Overall,S034,main,MAS,0.78,78.0
-Overall,S035,non_main,MAS,0.82,82.0
-Overall,S036,non_main,MAS,0.76,76.0
-Overall,S037,non_main,MAS,0.8,80.0
-Overall,S038,main,MAS,0.52,52.0
-Overall,S039,non_main,MAS,0.48,48.0
-Overall,S040,main,MAS,0.58,57.99999999999999
-Overall,S041,main,MAS,0.46,46.0
-Overall,S042,main,MAS,0.5,50.0
-Overall,S043,main,MAS,0.46,46.0
-Overall,S044,main,MAS,0.62,62.0
-Overall,S045,main,MAS,0.54,54.0
-Overall,S046,main,MAS,0.5,50.0
-Overall,S047,main,MAS,0.66,66.0
-Overall,S048,main,MAS,0.68,68.0
-Overall,S049,main,MAS,0.5,50.0
-Overall,S050,main,MAS,0.56,56.00000000000001
-Overall,S001,main,Human,0.68,68.0
-Overall,S002,main,Human,0.54,54.0
-Overall,S003,main,Human,0.5,50.0
-Overall,S004,main,Human,0.42,42.0
-Overall,S005,main,Human,0.64,64.0
-Overall,S006,main,Human,0.54,54.0
-Overall,S007,main,Human,0.6,60.0
-Overall,S008,main,Human,0.68,68.0
-Overall,S009,main,Human,0.74,74.0
-Overall,S010,main,Human,0.64,64.0
-Overall,S011,main,Human,0.54,54.0
-Overall,S012,main,Human,0.7,70.0
-Overall,S013,non_main,Human,0.68,68.0
-Overall,S014,main,Human,0.76,76.0
-Overall,S015,non_main,Human,0.54,54.0
-Overall,S016,non_main,Human,0.58,57.99999999999999
-Overall,S017,non_main,Human,0.5,50.0
-Overall,S018,non_main,Human,0.58,57.99999999999999
-Overall,S019,non_main,Human,0.6,60.0
-Overall,S020,non_main,Human,0.68,68.0
-Overall,S021,main,Human,0.56,56.00000000000001
-Overall,S022,main,Human,0.44,44.0
-Overall,S023,non_main,Human,0.74,74.0
-Overall,S024,non_main,Human,0.7,70.0
-Overall,S025,non_main,Human,0.7,70.0
-Overall,S026,main,Human,0.72,72.0
-Overall,S027,main,Human,0.64,64.0
-Overall,S028,main,Human,0.82,82.0
-Overall,S029,non_main,Human,0.8,80.0
-Overall,S030,non_main,Human,0.6,60.0
-Overall,S031,non_main,Human,0.32,32.0
-Overall,S032,non_main,Human,0.3,30.0
-Overall,S033,main,Human,0.72,72.0
-Overall,S034,main,Human,0.82,82.0
-Overall,S035,non_main,Human,0.78,78.0
-Overall,S036,non_main,Human,0.76,76.0
-Overall,S037,non_main,Human,0.78,78.0
-Overall,S038,main,Human,0.56,56.00000000000001
-Overall,S039,non_main,Human,0.48,48.0
-Overall,S040,main,Human,0.58,57.99999999999999
-Overall,S041,main,Human,0.66,66.0
-Overall,S042,main,Human,0.58,57.99999999999999
-Overall,S043,main,Human,0.22,22.0
-Overall,S044,main,Human,0.64,64.0
-Overall,S045,main,Human,0.56,56.00000000000001
-Overall,S046,main,Human,0.6,60.0
-Overall,S047,main,Human,0.82,82.0
-Overall,S048,main,Human,0.82,82.0
-Overall,S049,main,Human,0.54,54.0
-Overall,S050,main,Human,0.54,54.0
-Main campus,S001,main,MAS,0.66,66.0
-Main campus,S002,main,MAS,0.52,52.0
-Main campus,S003,main,MAS,0.38,38.0
-Main campus,S004,main,MAS,0.46,46.0
-Main campus,S005,main,MAS,0.56,56.00000000000001
-Main campus,S006,main,MAS,0.6,60.0
-Main campus,S007,main,MAS,0.52,52.0
-Main campus,S008,main,MAS,0.62,62.0
-Main campus,S009,main,MAS,0.56,56.00000000000001
-Main campus,S010,main,MAS,0.68,68.0
-Main campus,S011,main,MAS,0.48,48.0
-Main campus,S012,main,MAS,0.68,68.0
-Main campus,S014,main,MAS,0.72,72.0
-Main campus,S021,main,MAS,0.54,54.0
-Main campus,S022,main,MAS,0.42,42.0
-Main campus,S026,main,MAS,0.62,62.0
-Main campus,S027,main,MAS,0.64,64.0
-Main campus,S028,main,MAS,0.8,80.0
-Main campus,S033,main,MAS,0.66,66.0
-Main campus,S034,main,MAS,0.78,78.0
-Main campus,S038,main,MAS,0.52,52.0
-Main campus,S040,main,MAS,0.58,57.99999999999999
-Main campus,S041,main,MAS,0.46,46.0
-Main campus,S042,main,MAS,0.5,50.0
-Main campus,S043,main,MAS,0.46,46.0
-Main campus,S044,main,MAS,0.62,62.0
-Main campus,S045,main,MAS,0.54,54.0
-Main campus,S046,main,MAS,0.5,50.0
-Main campus,S047,main,MAS,0.66,66.0
-Main campus,S048,main,MAS,0.68,68.0
-Main campus,S049,main,MAS,0.5,50.0
-Main campus,S050,main,MAS,0.56,56.00000000000001
-Main campus,S001,main,Human,0.68,68.0
-Main campus,S002,main,Human,0.54,54.0
-Main campus,S003,main,Human,0.5,50.0
-Main campus,S004,main,Human,0.42,42.0
-Main campus,S005,main,Human,0.64,64.0
-Main campus,S006,main,Human,0.54,54.0
-Main campus,S007,main,Human,0.6,60.0
-Main campus,S008,main,Human,0.68,68.0
-Main campus,S009,main,Human,0.74,74.0
-Main campus,S010,main,Human,0.64,64.0
-Main campus,S011,main,Human,0.54,54.0
-Main campus,S012,main,Human,0.7,70.0
-Main campus,S014,main,Human,0.76,76.0
-Main campus,S021,main,Human,0.56,56.00000000000001
-Main campus,S022,main,Human,0.44,44.0
-Main campus,S026,main,Human,0.72,72.0
-Main campus,S027,main,Human,0.64,64.0
-Main campus,S028,main,Human,0.82,82.0
-Main campus,S033,main,Human,0.72,72.0
-Main campus,S034,main,Human,0.82,82.0
-Main campus,S038,main,Human,0.56,56.00000000000001
-Main campus,S040,main,Human,0.58,57.99999999999999
-Main campus,S041,main,Human,0.66,66.0
-Main campus,S042,main,Human,0.58,57.99999999999999
-Main campus,S043,main,Human,0.22,22.0
-Main campus,S044,main,Human,0.64,64.0
-Main campus,S045,main,Human,0.56,56.00000000000001
-Main campus,S046,main,Human,0.6,60.0
-Main campus,S047,main,Human,0.82,82.0
-Main campus,S048,main,Human,0.82,82.0
-Main campus,S049,main,Human,0.54,54.0
-Main campus,S050,main,Human,0.54,54.0
-Non-main campus,S013,non_main,MAS,0.52,52.0
-Non-main campus,S015,non_main,MAS,0.58,57.99999999999999
-Non-main campus,S016,non_main,MAS,0.52,52.0
-Non-main campus,S017,non_main,MAS,0.34,34.0
-Non-main campus,S018,non_main,MAS,0.58,57.99999999999999
-Non-main campus,S019,non_main,MAS,0.54,54.0
-Non-main campus,S020,non_main,MAS,0.64,64.0
-Non-main campus,S023,non_main,MAS,0.88,88.0
-Non-main campus,S024,non_main,MAS,0.88,88.0
-Non-main campus,S025,non_main,MAS,0.84,84.0
-Non-main campus,S029,non_main,MAS,0.86,86.0
-Non-main campus,S030,non_main,MAS,0.68,68.0
-Non-main campus,S031,non_main,MAS,0.56,56.00000000000001
-Non-main campus,S032,non_main,MAS,0.46,46.0
-Non-main campus,S035,non_main,MAS,0.82,82.0
-Non-main campus,S036,non_main,MAS,0.76,76.0
-Non-main campus,S037,non_main,MAS,0.8,80.0
-Non-main campus,S039,non_main,MAS,0.48,48.0
-Non-main campus,S013,non_main,Human,0.68,68.0
-Non-main campus,S015,non_main,Human,0.54,54.0
-Non-main campus,S016,non_main,Human,0.58,57.99999999999999
-Non-main campus,S017,non_main,Human,0.5,50.0
-Non-main campus,S018,non_main,Human,0.58,57.99999999999999
-Non-main campus,S019,non_main,Human,0.6,60.0
-Non-main campus,S020,non_main,Human,0.68,68.0
-Non-main campus,S023,non_main,Human,0.74,74.0
-Non-main campus,S024,non_main,Human,0.7,70.0
-Non-main campus,S025,non_main,Human,0.7,70.0
-Non-main campus,S029,non_main,Human,0.8,80.0
-Non-main campus,S030,non_main,Human,0.6,60.0
-Non-main campus,S031,non_main,Human,0.32,32.0
-Non-main campus,S032,non_main,Human,0.3,30.0
-Non-main campus,S035,non_main,Human,0.78,78.0
-Non-main campus,S036,non_main,Human,0.76,76.0
-Non-main campus,S037,non_main,Human,0.78,78.0
-Non-main campus,S039,non_main,Human,0.48,48.0
+﻿panel,student_id,source_true,correct_rate
+Overall,S001,Human,0.68
+Overall,S001,MAS,0.66
+Overall,S002,Human,0.54
+Overall,S002,MAS,0.52
+Overall,S003,Human,0.5
+Overall,S003,MAS,0.38
+Overall,S004,Human,0.42
+Overall,S004,MAS,0.46
+Overall,S005,Human,0.64
+Overall,S005,MAS,0.56
+Overall,S006,Human,0.54
+Overall,S006,MAS,0.6
+Overall,S007,Human,0.6
+Overall,S007,MAS,0.52
+Overall,S008,Human,0.68
+Overall,S008,MAS,0.62
+Overall,S009,Human,0.74
+Overall,S009,MAS,0.56
+Overall,S010,Human,0.64
+Overall,S010,MAS,0.68
+Overall,S011,Human,0.54
+Overall,S011,MAS,0.48
+Overall,S012,Human,0.7
+Overall,S012,MAS,0.68
+Overall,S013,Human,0.68
+Overall,S013,MAS,0.52
+Overall,S014,Human,0.76
+Overall,S014,MAS,0.72
+Overall,S015,Human,0.54
+Overall,S015,MAS,0.58
+Overall,S016,Human,0.58
+Overall,S016,MAS,0.52
+Overall,S017,Human,0.5
+Overall,S017,MAS,0.34
+Overall,S018,Human,0.58
+Overall,S018,MAS,0.58
+Overall,S019,Human,0.6
+Overall,S019,MAS,0.54
+Overall,S020,Human,0.68
+Overall,S020,MAS,0.64
+Overall,S021,Human,0.56
+Overall,S021,MAS,0.54
+Overall,S022,Human,0.44
+Overall,S022,MAS,0.42
+Overall,S023,Human,0.74
+Overall,S023,MAS,0.88
+Overall,S024,Human,0.7
+Overall,S024,MAS,0.88
+Overall,S025,Human,0.7
+Overall,S025,MAS,0.84
+Overall,S026,Human,0.72
+Overall,S026,MAS,0.62
+Overall,S027,Human,0.64
+Overall,S027,MAS,0.64
+Overall,S028,Human,0.82
+Overall,S028,MAS,0.8
+Overall,S029,Human,0.8
+Overall,S029,MAS,0.86
+Overall,S030,Human,0.6
+Overall,S030,MAS,0.68
+Overall,S031,Human,0.32
+Overall,S031,MAS,0.56
+Overall,S032,Human,0.3
+Overall,S032,MAS,0.46
+Overall,S033,Human,0.72
+Overall,S033,MAS,0.66
+Overall,S034,Human,0.82
+Overall,S034,MAS,0.78
+Overall,S035,Human,0.78
+Overall,S035,MAS,0.82
+Overall,S036,Human,0.76
+Overall,S036,MAS,0.76
+Overall,S037,Human,0.78
+Overall,S037,MAS,0.8
+Overall,S038,Human,0.56
+Overall,S038,MAS,0.52
+Overall,S039,Human,0.48
+Overall,S039,MAS,0.48
+Overall,S040,Human,0.58
+Overall,S040,MAS,0.58
+Overall,S041,Human,0.66
+Overall,S041,MAS,0.46
+Overall,S042,Human,0.58
+Overall,S042,MAS,0.5
+Overall,S043,Human,0.22
+Overall,S043,MAS,0.46
+Overall,S044,Human,0.64
+Overall,S044,MAS,0.62
+Overall,S045,Human,0.56
+Overall,S045,MAS,0.54
+Overall,S046,Human,0.6
+Overall,S046,MAS,0.5
+Overall,S047,Human,0.82
+Overall,S047,MAS,0.66
+Overall,S048,Human,0.82
+Overall,S048,MAS,0.68
+Overall,S049,Human,0.54
+Overall,S049,MAS,0.5
+Overall,S050,Human,0.54
+Overall,S050,MAS,0.56
+Main campus,S001,Human,0.68
+Main campus,S001,MAS,0.66
+Main campus,S002,Human,0.54
+Main campus,S002,MAS,0.52
+Main campus,S003,Human,0.5
+Main campus,S003,MAS,0.38
+Main campus,S004,Human,0.42
+Main campus,S004,MAS,0.46
+Main campus,S005,Human,0.64
+Main campus,S005,MAS,0.56
+Main campus,S006,Human,0.54
+Main campus,S006,MAS,0.6
+Main campus,S007,Human,0.6
+Main campus,S007,MAS,0.52
+Main campus,S008,Human,0.68
+Main campus,S008,MAS,0.62
+Main campus,S009,Human,0.74
+Main campus,S009,MAS,0.56
+Main campus,S010,Human,0.64
+Main campus,S010,MAS,0.68
+Main campus,S011,Human,0.54
+Main campus,S011,MAS,0.48
+Main campus,S012,Human,0.7
+Main campus,S012,MAS,0.68
+Main campus,S014,Human,0.76
+Main campus,S014,MAS,0.72
+Main campus,S021,Human,0.56
+Main campus,S021,MAS,0.54
+Main campus,S022,Human,0.44
+Main campus,S022,MAS,0.42
+Main campus,S026,Human,0.72
+Main campus,S026,MAS,0.62
+Main campus,S027,Human,0.64
+Main campus,S027,MAS,0.64
+Main campus,S028,Human,0.82
+Main campus,S028,MAS,0.8
+Main campus,S033,Human,0.72
+Main campus,S033,MAS,0.66
+Main campus,S034,Human,0.82
+Main campus,S034,MAS,0.78
+Main campus,S038,Human,0.56
+Main campus,S038,MAS,0.52
+Main campus,S040,Human,0.58
+Main campus,S040,MAS,0.58
+Main campus,S041,Human,0.66
+Main campus,S041,MAS,0.46
+Main campus,S042,Human,0.58
+Main campus,S042,MAS,0.5
+Main campus,S043,Human,0.22
+Main campus,S043,MAS,0.46
+Main campus,S044,Human,0.64
+Main campus,S044,MAS,0.62
+Main campus,S045,Human,0.56
+Main campus,S045,MAS,0.54
+Main campus,S046,Human,0.6
+Main campus,S046,MAS,0.5
+Main campus,S047,Human,0.82
+Main campus,S047,MAS,0.66
+Main campus,S048,Human,0.82
+Main campus,S048,MAS,0.68
+Main campus,S049,Human,0.54
+Main campus,S049,MAS,0.5
+Main campus,S050,Human,0.54
+Main campus,S050,MAS,0.56
+Non-main campus,S013,Human,0.68
+Non-main campus,S013,MAS,0.52
+Non-main campus,S015,Human,0.54
+Non-main campus,S015,MAS,0.58
+Non-main campus,S016,Human,0.58
+Non-main campus,S016,MAS,0.52
+Non-main campus,S017,Human,0.5
+Non-main campus,S017,MAS,0.34
+Non-main campus,S018,Human,0.58
+Non-main campus,S018,MAS,0.58
+Non-main campus,S019,Human,0.6
+Non-main campus,S019,MAS,0.54
+Non-main campus,S020,Human,0.68
+Non-main campus,S020,MAS,0.64
+Non-main campus,S023,Human,0.74
+Non-main campus,S023,MAS,0.88
+Non-main campus,S024,Human,0.7
+Non-main campus,S024,MAS,0.88
+Non-main campus,S025,Human,0.7
+Non-main campus,S025,MAS,0.84
+Non-main campus,S029,Human,0.8
+Non-main campus,S029,MAS,0.86
+Non-main campus,S030,Human,0.6
+Non-main campus,S030,MAS,0.68
+Non-main campus,S031,Human,0.32
+Non-main campus,S031,MAS,0.56
+Non-main campus,S032,Human,0.3
+Non-main campus,S032,MAS,0.46
+Non-main campus,S035,Human,0.78
+Non-main campus,S035,MAS,0.82
+Non-main campus,S036,Human,0.76
+Non-main campus,S036,MAS,0.76
+Non-main campus,S037,Human,0.78
+Non-main campus,S037,MAS,0.8
+Non-main campus,S039,Human,0.48
+Non-main campus,S039,MAS,0.48
