@@ -1,0 +1,24 @@
+﻿family,dimension,annotation
+QGval,Fluency,n.s.
+QGval,Clarity,n.s.
+QGval,Conciseness,n.s.
+QGval,Relevance,n.s.
+QGval,Consistency,n.s.
+QGval,Answerability,n.s.
+QGval,Answer consistency,n.s.
+ULM,Fluency,n.s.
+ULM,Exclusiveness,n.s.
+ULM,Explicitness,n.s.
+ULM,Goal alignment,n.s.
+ULM,Comprehensiveness,n.s.
+ULM,Focus,n.s.
+ULM,Guess resistance,n.s.
+ULM,Completeness,***
+ULM,Correctness,n.s.
+ULM,Solvability,n.s.
+ULM,Absoluteness,n.s.
+ULM,Plausibility,n.s.
+ULM,Reasoning,n.s.
+ULM,Feedback,n.s.
+ULM,Fairness,n.s.
+ULM,Explanation score,n.s.

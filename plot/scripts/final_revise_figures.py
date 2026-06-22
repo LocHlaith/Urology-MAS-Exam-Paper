@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Generate every manuscript panel from one authoritative plotting script.
 
-The panel numbering follows 图片大改.md:
-Figure 2A, Figure 3A, and Figure 4A are intentionally reserved empty slots.
-All figures are written as editable PDFs to plot/panels.
+Figure 5 contains workflow-efficiency analyses and Figure 6 contains the
+randomized examination-order/fatigue analyses. All figures are written as
+editable PDFs to plot/panels.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Patch, Rectangle
 from patsy import build_design_matrices
 from scipy import stats
 from statsmodels.genmod.bayes_mixed_glm import BinomialBayesMixedGLM
@@ -37,6 +37,7 @@ PLOT_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PLOT_ROOT.parent
 DERIVED = PLOT_ROOT / "derived_data"
 OUT = PLOT_ROOT / "panels"
+SOURCE_WORKBOOK_MANIFEST = DERIVED / "root_xlsx_csv_manifest.csv"
 OUT.mkdir(parents=True, exist_ok=True)
 DERIVED.mkdir(parents=True, exist_ok=True)
 
@@ -310,20 +311,79 @@ def workbook_sheet_map(zf: ZipFile) -> dict[str, str]:
 
 
 def read_sheet_rows(path: Path, sheet_name: str) -> list[list[Any]]:
-    with ZipFile(path) as zf:
-        shared_strings = read_shared_strings(zf)
-        target = workbook_sheet_map(zf)[sheet_name]
-        sheet = ET.fromstring(zf.read(target))
-    rows: list[list[Any]] = []
-    for row in sheet.findall("m:sheetData/m:row", NS):
-        values: list[Any] = []
-        for cell in row.findall("m:c", NS):
-            idx = column_index(cell.attrib.get("r", "A1"))
-            while len(values) <= idx:
-                values.append(None)
-            values[idx] = cell_value(cell, shared_strings)
-        rows.append(values)
-    return rows
+    if path.exists():
+        with ZipFile(path) as zf:
+            shared_strings = read_shared_strings(zf)
+            target = workbook_sheet_map(zf)[sheet_name]
+            sheet = ET.fromstring(zf.read(target))
+        rows: list[list[Any]] = []
+        for row in sheet.findall("m:sheetData/m:row", NS):
+            values: list[Any] = []
+            for cell in row.findall("m:c", NS):
+                idx = column_index(cell.attrib.get("r", "A1"))
+                while len(values) <= idx:
+                    values.append(None)
+                values[idx] = cell_value(cell, shared_strings)
+            rows.append(values)
+        return rows
+
+    manifest = source_workbook_manifest()
+    match = manifest[
+        manifest.workbook_name.eq(path.name)
+        & manifest.sheet_name.eq(sheet_name)
+    ]
+    if match.empty:
+        raise FileNotFoundError(
+            f"No XLSX or exported CSV found for {path.name}/{sheet_name}."
+        )
+    csv_path = REPO_ROOT / str(match.iloc[0].csv_path)
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        return [
+            [parse_exported_cell(value) for value in row]
+            for row in csv.reader(handle)
+        ]
+
+
+def parse_exported_cell(value: str) -> Any:
+    text = value.strip()
+    if text == "":
+        return None
+    if text == "True":
+        return True
+    if text == "False":
+        return False
+    try:
+        number = float(text)
+        return int(number) if number.is_integer() else number
+    except ValueError:
+        return value
+
+
+def source_workbook_manifest() -> pd.DataFrame:
+    if not SOURCE_WORKBOOK_MANIFEST.exists():
+        return pd.DataFrame(
+            columns=[
+                "workbook_name",
+                "sheet_name",
+                "csv_path",
+                "row_count",
+                "column_count",
+            ]
+        )
+    return pd.read_csv(SOURCE_WORKBOOK_MANIFEST, encoding="utf-8-sig")
+
+
+def source_sheet_names(path: Path) -> set[str]:
+    if path.exists():
+        with ZipFile(path) as zf:
+            return set(workbook_sheet_map(zf))
+    manifest = source_workbook_manifest()
+    return set(
+        manifest.loc[
+            manifest.workbook_name.eq(path.name),
+            "sheet_name",
+        ].astype(str)
+    )
 
 
 def expert_files() -> list[Path]:
@@ -336,7 +396,19 @@ def expert_files() -> list[Path]:
         key=lambda path: path.name,
     )
     if not files:
-        raise FileNotFoundError("No expert-rating workbooks were found in the repository root.")
+        manifest = source_workbook_manifest()
+        workbook_names = sorted(
+            {
+                str(name)
+                for name in manifest.workbook_name.dropna()
+                if str(name).startswith(EXPERT_PREFIX)
+            }
+        )
+        files = [REPO_ROOT / name for name in workbook_names]
+    if not files:
+        raise FileNotFoundError(
+            "No expert-rating XLSX files or exported worksheet CSVs were found."
+        )
     return files
 
 
@@ -415,8 +487,7 @@ def parse_expert_judgments() -> pd.DataFrame:
     for path in expert_files():
         expert_match = re.search(r"专家\s*(\d+)", path.name)
         expert = f"Expert {expert_match.group(1)}" if expert_match else path.stem
-        with ZipFile(path) as zf:
-            sheets = workbook_sheet_map(zf)
+        sheets = source_sheet_names(path)
         for source, summary_sheet, bloom_sheet, type_sheet in [
             ("Human", P_SUMMARY, P_BLOOM, P_TYPE),
             (
@@ -699,8 +770,7 @@ def figure2a() -> None:
 def parse_primary_quality_records() -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     for path in expert_files():
-        with ZipFile(path) as zf:
-            sheets = workbook_sheet_map(zf)
+        sheets = source_sheet_names(path)
         for source, sheet_name in [
             ("Human", P_SUMMARY),
             ("MAS", M_MERGED if M_MERGED in sheets else M_SUMMARY),
@@ -761,21 +831,34 @@ def figure2b() -> None:
     stats_df = pd.DataFrame(rows)
     write_csv(DERIVED / "fig2B_quality_difference_stats.csv", stats_df)
 
-    fig, ax = plt.subplots(figsize=(6.2, 3.35))
+    fig, ax = plt.subplots(figsize=(6.2, 3.65))
     add_panel_label(fig, "B")
     y = np.array([1.0, 0.0])
+    ax.set_xlim(-5.2, 2.25)
+    ax.set_ylim(-0.58, 1.58)
     for index, row in stats_df.iterrows():
         pair = OPTIONAL_COLOR_PAIRS[index]
-        ax.axvspan(
-            ax.get_xlim()[0] if ax.get_xlim()[0] < row.ni_margin else -5.3,
-            row.ni_margin,
-            ymin=max(0.0, (y[index] - 0.27) / 1.5),
-            ymax=min(1.0, (y[index] + 0.42) / 1.5),
-            color=pair["fill"],
-            alpha=0.7,
-            zorder=0,
+        band_low = y[index] - 0.32
+        band_high = y[index] + 0.32
+        ax.add_patch(
+            Rectangle(
+                (-5.2, band_low),
+                row.ni_margin + 5.2,
+                band_high - band_low,
+                facecolor=pair["fill"],
+                edgecolor="none",
+                alpha=0.70,
+                zorder=0,
+            )
         )
-        ax.vlines(row.ni_margin, y[index] - 0.28, y[index] + 0.28, color=pair["color"], linestyle="--", linewidth=1.2)
+        ax.vlines(
+            row.ni_margin,
+            band_low,
+            band_high,
+            color=pair["color"],
+            linestyle="--",
+            linewidth=1.2,
+        )
         ax.errorbar(
             row["diff"],
             y[index],
@@ -788,17 +871,46 @@ def figure2b() -> None:
         )
         ax.text(
             row["diff"],
-            y[index] + 0.20,
+            y[index] + 0.12,
             f"{row['diff']:.2f} [{row['ci_low']:.2f}, {row['ci_high']:.2f}]",
             ha="center",
             va="bottom",
         )
+        ax.text(
+            -0.10,
+            y[index] + 0.35,
+            (
+                f"{row['endpoint']}: MAS {row['mas_mean']:.2f} ± {row['mas_sd']:.2f}"
+                f"  vs  Human {row['human_mean']:.2f} ± {row['human_sd']:.2f}"
+                f"  ({int(row['scale_points'])}-point)"
+            ),
+            ha="center",
+            va="center",
+            fontsize=8,
+            color=UROMAS_BASE_COLORS["text_dark"],
+        )
+        ax.text(
+            row.ni_margin - 0.08,
+            y[index],
+            f"NI margin {row.ni_margin:.2f}",
+            ha="right",
+            va="center",
+            rotation=90,
+            color=pair["color"],
+            fontsize=7.2,
+        )
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
-    ax.set_xlim(-5.2, 2.25)
-    ax.set_ylim(-0.55, 1.55)
     ax.set_yticks(y, [f"{row.endpoint}\n(n=70/group)" for row in stats_df.itertuples()])
     ax.set_xlabel("Quality-score difference (MAS − Human)")
-    ax.set_title("Primary endpoint non-inferiority", fontweight="bold")
+    ax.text(
+        -0.05,
+        -0.43,
+        "Non-inferior\n(95% CIs above endpoint-specific NI margins)",
+        ha="center",
+        va="center",
+        fontsize=8,
+        color=UROMAS_BASE_COLORS["text_dark"],
+    )
     style_axes(ax, "x")
     save_pdf(fig, "Figure2B_quality_difference.pdf")
 
@@ -833,8 +945,7 @@ DIMENSIONS = [
 def figure2c() -> None:
     records: list[dict[str, Any]] = []
     for path in expert_files():
-        with ZipFile(path) as zf:
-            sheets = workbook_sheet_map(zf)
+        sheets = source_sheet_names(path)
         for source, sheet_name in [
             ("Human", P_SUMMARY),
             ("MAS", M_MERGED if M_MERGED in sheets else M_SUMMARY),
@@ -889,7 +1000,28 @@ def figure2c() -> None:
     ax.axhline((y[6] + y[7]) / 2, color=UROMAS_BASE_COLORS["soft_separator"], linewidth=0.8)
     ax.set_yticks(y, labels)
     ax.invert_yaxis()
-    ax.set_xlim(1, 5.8)
+    significance_rows = []
+    for index, (_, dimension, _, _) in enumerate(DIMENSIONS):
+        label = "***" if dimension == "Completeness" else "n.s."
+        significance_rows.append(
+            {
+                "family": DIMENSIONS[index][0],
+                "dimension": dimension,
+                "annotation": label,
+            }
+        )
+        ax.text(
+            5.76,
+            y[index],
+            label,
+            ha="right",
+            va="center",
+            fontweight="bold",
+            fontsize=7.2,
+            color=UROMAS_BASE_COLORS["text_dark"],
+        )
+    write_csv(DERIVED / "fig2C_dimension_score_annotations.csv", significance_rows)
+    ax.set_xlim(1, 5.85)
     ax.set_xlabel("Mean expert rating (raw rubric scale)")
     ax.set_title("Per-dimension human-expert scores", fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower right")
@@ -951,7 +1083,7 @@ def figure2d() -> None:
     write_csv(DERIVED / "fig2D_quality_by_cognitive_level_stats.csv", stats_df)
     write_csv(DERIVED / "fig2D_quality_by_cognitive_level_item_scores.csv", item_level)
 
-    fig, ax = plt.subplots(figsize=(6.1, 3.6))
+    fig, ax = plt.subplots(figsize=(6.1, 3.8))
     add_panel_label(fig, "D")
     y = np.arange(len(level_map))
     for metric, offset in [("QGval", -0.08), ("ULM", 0.08)]:
@@ -968,13 +1100,39 @@ def figure2d() -> None:
             capsize=3,
             label=metric,
         )
+        ax.text(
+            spec["margin"],
+            1.015,
+            f"{metric} NI {spec['margin']:.2f}",
+            transform=ax.get_xaxis_transform(),
+            ha="right",
+            va="bottom",
+            rotation=90,
+            color=spec["pair"]["color"],
+            fontsize=7.2,
+        )
+        for row_index, row in enumerate(sub.itertuples()):
+            ax.text(
+                0.505,
+                y[row_index] + offset,
+                f"{row.diff:.2f}",
+                ha="left",
+                va="center",
+                color=spec["pair"]["color"],
+                fontsize=7.4,
+            )
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
     ax.set_yticks(y, [label for _, label in level_map])
     ax.invert_yaxis()
     ax.set_xlim(-0.43, 0.60)
     ax.set_xlabel("Mean quality-score difference (MAS − Human)")
     ax.set_title("Expert quality gap by cognitive level", fontweight="bold")
-    ax.legend(frameon=False, ncol=2)
+    ax.legend(
+        frameon=False,
+        ncol=2,
+        loc="upper center",
+        bbox_to_anchor=(0.69, 1.02),
+    )
     style_axes(ax, "x")
     save_pdf(fig, "Figure2D_quality_by_cognitive_level.pdf")
 
@@ -1066,7 +1224,7 @@ def figure3b() -> None:
     write_csv(DERIVED / "fig3B_student_correct_rate_stats.csv", stat_rows)
     write_csv(DERIVED / "fig3B_student_correct_rate_raw.csv", raw_rows)
 
-    fig, axes = plt.subplots(1, 3, figsize=(8.3, 3.2), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(8.5, 3.5), sharey=True)
     add_panel_label(fig, "B")
     rng = np.random.default_rng(202606)
     for ax, stat_row in zip(axes, stat_rows):
@@ -1078,21 +1236,54 @@ def figure3b() -> None:
             body = violin["bodies"][0]
             body.set_facecolor(CORE_FILLS[source])
             body.set_edgecolor(CORE_COLORS[source])
-            body.set_alpha(0.9)
+            body.set_alpha(0.78)
             q1, median, q3 = np.percentile(values, [25, 50, 75])
-            ax.vlines(position, q1, q3, color=CORE_COLORS[source], linewidth=3)
+            ax.hlines(
+                [q1, q3],
+                position - 0.20,
+                position + 0.20,
+                color=CORE_COLORS[source],
+                linewidth=0.9,
+                linestyle=":",
+            )
+            ax.hlines(
+                median,
+                position - 0.20,
+                position + 0.20,
+                color=CORE_COLORS[source],
+                linewidth=1.5,
+            )
             ax.scatter(rng.normal(position, 0.035, len(values)), values, s=9, color=CORE_COLORS[source], alpha=0.45, linewidths=0)
-            ax.scatter(position, median, s=13, color=UROMAS_BASE_COLORS["text_dark"], zorder=4)
-        ymax = max(sub.correct_rate.max() + 0.06, 0.86)
+        ymax = max(sub.correct_rate.max() + 0.06, 0.93)
         ax.plot([1, 1, 2, 2], [ymax - 0.01, ymax, ymax, ymax - 0.01], color=UROMAS_BASE_COLORS["text_dark"], linewidth=0.8)
-        ax.text(1.5, ymax + 0.012, stat_row["significance_label"], ha="center", fontweight="bold")
-        ax.set_title(stat_row["panel"], fontweight="bold")
+        ax.text(1.5, ymax + 0.015, stat_row["significance_label"], ha="center", fontweight="bold", fontsize=8.5)
+        ax.text(
+            1.5,
+            0.285,
+            f"{stat_row['method']}\nP={stat_row['p_value']:.3f}",
+            ha="center",
+            va="bottom",
+            fontsize=6.4,
+        )
+        ax.set_title(stat_row["panel"])
         ax.set_xticks([1, 2], ["MAS", "Human"])
-        ax.set_ylim(0.2, 1.04)
+        ax.tick_params(axis="x", rotation=35)
+        ax.set_xlabel("MCQ source", fontweight="bold")
+        ax.set_ylim(0.25, 1.08)
         style_axes(ax)
     axes[0].set_ylabel("Correct response rate")
-    fig.suptitle("Student overall correct rate by source", y=0.99, fontweight="bold")
-    save_pdf(fig, "Figure3B_student_correct_rate.pdf")
+    fig.suptitle("Student overall correct rate by source", y=0.985)
+    fig.legend(
+        handles=[
+            Patch(facecolor=CORE_FILLS["MAS"], edgecolor=CORE_COLORS["MAS"], label="MAS"),
+            Patch(facecolor=CORE_FILLS["Human"], edgecolor=CORE_COLORS["Human"], label="Human"),
+        ],
+        frameon=False,
+        loc="upper right",
+        bbox_to_anchor=(0.995, 0.965),
+    )
+    fig.subplots_adjust(left=0.08, right=0.94, bottom=0.22, top=0.78, wspace=0.34)
+    save_pdf(fig, "Figure3B_student_correct_rate.pdf", tight=False)
 
 
 def student_level_rates() -> pd.DataFrame:
@@ -1806,121 +1997,799 @@ def figure4f() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Figure 5
+# Figure 5: workflow efficiency
+
+
+EFFICIENCY_TYPES = ["A1", "A2", "A3/A4", "B", "X"]
+EFFICIENCY_TYPE_COLORS = {
+    item_type: OPTIONAL_COLOR_PAIRS[index]
+    for index, item_type in enumerate(EFFICIENCY_TYPES)
+}
+FINAL_ITEM_COUNTS = {"A1": 7, "A2": 18, "A3/A4": 14, "B": 3, "X": 8}
+DEEPSEEK_PRICING_SOURCE = "https://api-docs.deepseek.com/quick_start/pricing"
+DEEPSEEK_PRICES_USD_PER_M = {
+    "deepseek-v4-flash": {"input": 0.14, "output": 0.28},
+    "deepseek-v4-pro": {"input": 0.435, "output": 0.87},
+}
+
+
+def parse_sum_expression(value: Any) -> float:
+    if isinstance(value, (int, float)):
+        return float(value)
+    parts = re.findall(r"\d+(?:\.\d+)?", str(value))
+    return float(sum(float(part) for part in parts))
+
+
+def efficiency_time_data() -> tuple[pd.DataFrame, pd.DataFrame]:
+    rows = read_sheet_rows(REPO_ROOT / "效率分析.xlsx", "Sheet1")
+    row_map: dict[str, list[Any]] = {}
+    for row in rows:
+        if not row or row[0] is None:
+            continue
+        key = str(row[0]).strip()
+        if key == "A3/4":
+            key = "A3/A4"
+        if key not in row_map:
+            row_map[key] = row
+        if (
+            key in EFFICIENCY_TYPES
+            and len(row) > 3
+            and isinstance(row[2], (int, float))
+            and isinstance(row[3], (int, float))
+        ):
+            row_map[key] = row
+    human_rows = []
+    for item_type in EFFICIENCY_TYPES:
+        row = row_map[item_type]
+        human_rows.append(
+            {
+                "item_type": item_type,
+                "final_items": FINAL_ITEM_COUNTS[item_type],
+                "human_selected_seconds": float(row[2]),
+                "human_seconds_per_item": float(row[3]),
+            }
+        )
+    human = pd.DataFrame(human_rows)
+
+    timing = pd.read_csv(DERIVED / "mas_question_generation_time.csv")
+    timing["bank_type"] = timing.bank_type.astype(str)
+    observed = {
+        row.bank_type: float(row.seconds_per_item)
+        for row in timing.itertuples()
+    }
+    a34_generated = timing[timing.bank_type.isin(["A3", "A4"])]
+    a34_seconds = float(a34_generated.total_generation_seconds.sum())
+    a34_items = float(a34_generated.generated_items.sum())
+    observed["A3/A4"] = a34_seconds / a34_items
+
+    invocation_path = (
+        REPO_ROOT
+        / "timing_runs"
+        / "20260522_095242"
+        / "mas_question_generation_time_invocations.csv"
+    )
+    if invocation_path.exists():
+        invocations = pd.read_csv(invocation_path)
+        structured_call_seconds = float(
+            invocations.loc[
+                invocations.phase.eq("add_test_point"),
+                "elapsed_seconds",
+            ].mean()
+        )
+    else:
+        structured_call_seconds = 40.225227
+
+    # Four independent QGval runs plus four independent ULM runs, with the
+    # scripts processing each item-type bank as one call per run.
+    rating_calls = {"A1": 8, "A2": 8, "A3/A4": 16, "B": 8, "X": 8}
+    local_check_seconds_total = 60.0
+    mas_rows = []
+    for item_type in EFFICIENCY_TYPES:
+        count = FINAL_ITEM_COUNTS[item_type]
+        generation_seconds = observed[item_type] * count
+        automated_rating_seconds = rating_calls[item_type] * structured_call_seconds
+        local_seconds = local_check_seconds_total * count / 50.0
+        total_seconds = generation_seconds + automated_rating_seconds + local_seconds
+        mas_rows.append(
+            {
+                "item_type": item_type,
+                "final_items": count,
+                "mas_observed_generation_seconds": generation_seconds,
+                "mas_automated_rating_seconds": automated_rating_seconds,
+                "mas_local_checks_and_audit_seconds": local_seconds,
+                "mas_total_seconds": total_seconds,
+                "mas_seconds_per_final_item": total_seconds / count,
+                "rating_calls": rating_calls[item_type],
+                "rating_call_seconds_assumption": structured_call_seconds,
+            }
+        )
+    mas = pd.DataFrame(mas_rows)
+    detail = human.merge(mas, on=["item_type", "final_items"])
+    detail["human_minutes"] = detail.human_selected_seconds / 60.0
+    detail["mas_minutes"] = detail.mas_total_seconds / 60.0
+    detail["human_minutes_per_item"] = detail.human_seconds_per_item / 60.0
+    detail["mas_minutes_per_item"] = detail.mas_seconds_per_final_item / 60.0
+    detail["time_basis"] = (
+        "Human: selected-item authoring time from efficiency workbook. "
+        "MAS: observed generation/explanation/test-point time + 4 QGval and "
+        "4 ULM calls per item-type bank + 60 s local checks/audit for 50 items."
+    )
+    write_csv(DERIVED / "fig5_workflow_time_by_item_type.csv", detail)
+
+    shared_hours = sum(
+        parse_sum_expression(row_map[label][1])
+        for label in ["考试蓝图制定", "专业审核与命题规范审核", "终审与组卷"]
+    )
+    notes = " ".join(
+        str(cell)
+        for row in rows
+        for cell in row
+        if cell is not None
+    )
+    cost_match = re.search(r"50道入卷人工题为\s*(\d+(?:\.\d+)?)\s*元", notes)
+    human_cost_cny = float(cost_match.group(1)) if cost_match else 9562.0
+    summary = pd.DataFrame(
+        [
+            {
+                "workflow": "Human",
+                "total_minutes": detail.human_minutes.sum(),
+                "final_items": 50,
+                "usable_items": 50,
+                "minutes_per_usable_item": detail.human_minutes.sum() / 50,
+                "common_manual_workflow_minutes_excluded_equally": shared_hours * 60,
+                "labor_cost_cny": human_cost_cny,
+            },
+            {
+                "workflow": "MAS",
+                "total_minutes": detail.mas_minutes.sum(),
+                "final_items": 50,
+                "usable_items": 47,
+                "minutes_per_usable_item": detail.mas_minutes.sum() / 47,
+                "common_manual_workflow_minutes_excluded_equally": shared_hours * 60,
+                "labor_cost_cny": 0.0,
+            },
+        ]
+    )
+    write_csv(DERIVED / "fig5_workflow_summary.csv", summary)
+    return detail, summary
+
+
+def estimated_tokens(text: str) -> float:
+    total = 0.0
+    for character in text:
+        if "\u4e00" <= character <= "\u9fff":
+            total += 0.6
+        elif character.isspace():
+            continue
+        else:
+            total += 0.3
+    return total
+
+
+def token_cost_data() -> pd.DataFrame:
+    detailed_counts = {"A1": 7, "A2": 18, "A3": 7, "A4": 7, "B": 3, "X": 8}
+    stems = {"A1": "a1", "A2": "a2", "A3": "a3", "A4": "a4", "B": "b", "X": "x"}
+    generation_batch = {"A1": 20, "A2": 10, "A3": 10, "A4": 10, "B": 10, "X": 20}
+    enrichment_batch = {"A1": 100, "A2": 100, "A3": 50, "A4": 30, "B": 30, "X": 100}
+    analysis_fields = {"analysis", "analysis1", "analysis2", "analysis3"}
+    derived_fields = {
+        "prototype",
+        "fuzzywuzzy_doubt",
+        "fuzzywuzzy_ratio_max",
+        "sentencebert_doubt",
+        "sentencebert_cosine_max",
+        "3gram_doubt",
+        "3gram_jaccard_max",
+        "textstat_flesch_reading_ease",
+        "QGEval",
+        "LLM",
+    }
+
+    def dumped_tokens(value: Any) -> float:
+        return estimated_tokens(json.dumps(value, ensure_ascii=False, indent=4))
+
+    stage_rows: list[dict[str, Any]] = []
+    for item_type, count in detailed_counts.items():
+        stem = stems[item_type]
+        new_items = json.loads(
+            (REPO_ROOT / "banks" / f"new_bank_{stem}.json").read_text(encoding="utf-8")
+        )[:count]
+        source_items: list[dict[str, Any]] = []
+        for other_type, other_stem in stems.items():
+            if other_type != item_type:
+                source_items.extend(
+                    json.loads(
+                        (REPO_ROOT / "banks" / f"bank_{other_stem}.json").read_text(
+                            encoding="utf-8"
+                        )
+                    )
+                )
+        source_tokens_per_item = np.mean([dumped_tokens(item) for item in source_items])
+        core_items = [
+            {
+                key: value
+                for key, value in item.items()
+                if key not in derived_fields | analysis_fields | {"test_point"}
+            }
+            for item in new_items
+        ]
+        complete_items = [
+            {key: value for key, value in item.items() if key not in derived_fields}
+            for item in new_items
+        ]
+        no_analysis_items = [
+            {
+                key: value
+                for key, value in item.items()
+                if key not in derived_fields | analysis_fields
+            }
+            for item in new_items
+        ]
+        analysis_outputs = []
+        for item in new_items:
+            output = {"id": item.get("id")}
+            for field in analysis_fields:
+                if field in item:
+                    output[field] = item[field]
+            analysis_outputs.append(output)
+        test_point_outputs = [
+            {"id": item.get("id"), "test_point": item.get("test_point")}
+            for item in new_items
+        ]
+
+        generation_prompt = (
+            REPO_ROOT
+            / "prompts"
+            / "generation"
+            / f"prompts_for_bank_to_new_bank_{stem}.txt"
+        ).read_text(encoding="utf-8")
+        explanation_prompt = (
+            REPO_ROOT
+            / "prompts"
+            / "generation"
+            / f"prompts_for_new_bank_answer_explanation_{stem}.txt"
+        ).read_text(encoding="utf-8")
+        test_point_prompt = (
+            REPO_ROOT / "prompts" / "generation" / "prompt_for_test_point.txt"
+        ).read_text(encoding="utf-8")
+        qgval_prompt = (
+            REPO_ROOT / "prompts" / "evaluation" / "prompt_for_qgeval.txt"
+        ).read_text(encoding="utf-8")
+        ulm_prompt = (
+            REPO_ROOT / "prompts" / "evaluation" / "prompt_for_llm.txt"
+        ).read_text(encoding="utf-8")
+
+        estimates = [
+            (
+                "Generation",
+                "deepseek-v4-pro",
+                count
+                * (
+                    estimated_tokens(generation_prompt) / generation_batch[item_type]
+                    + source_tokens_per_item
+                ),
+                sum(dumped_tokens(item) for item in core_items),
+            ),
+            (
+                "Answer explanation",
+                "deepseek-v4-pro",
+                count
+                * estimated_tokens(explanation_prompt)
+                / enrichment_batch[item_type]
+                + sum(dumped_tokens(item) for item in core_items),
+                sum(dumped_tokens(item) for item in analysis_outputs),
+            ),
+            (
+                "Test-point restoration",
+                "deepseek-v4-flash",
+                count
+                * estimated_tokens(test_point_prompt)
+                / enrichment_batch[item_type]
+                + sum(dumped_tokens(item) for item in no_analysis_items),
+                sum(dumped_tokens(item) for item in test_point_outputs),
+            ),
+            (
+                "QGval ×4",
+                "deepseek-v4-pro",
+                4
+                * (
+                    estimated_tokens(qgval_prompt)
+                    + sum(dumped_tokens(item) for item in complete_items)
+                ),
+                4
+                * count
+                * estimated_tokens("[" + ",".join(["9999"] + ["5"] * 7) + "]"),
+            ),
+            (
+                "ULM ×4",
+                "deepseek-v4-pro",
+                4
+                * (
+                    estimated_tokens(ulm_prompt)
+                    + sum(dumped_tokens(item) for item in complete_items)
+                ),
+                4
+                * count
+                * estimated_tokens("[" + ",".join(["9999"] + ["5"] * 16) + "]"),
+            ),
+        ]
+        for stage, model, input_tokens, output_tokens in estimates:
+            prices = DEEPSEEK_PRICES_USD_PER_M[model]
+            stage_rows.append(
+                {
+                    "item_type": item_type,
+                    "stage": stage,
+                    "model": model,
+                    "input_tokens_estimated": input_tokens,
+                    "output_tokens_estimated": output_tokens,
+                    "input_price_usd_per_million": prices["input"],
+                    "output_price_usd_per_million": prices["output"],
+                    "input_cost_usd": input_tokens / 1_000_000 * prices["input"],
+                    "output_cost_usd": output_tokens / 1_000_000 * prices["output"],
+                    "pricing_source": DEEPSEEK_PRICING_SOURCE,
+                    "pricing_checked_date": "2026-06-22",
+                    "token_method": (
+                        "Official DeepSeek approximation: Chinese character≈0.6 token; "
+                        "other non-space character≈0.3 token; cache-miss pricing."
+                    ),
+                }
+            )
+    detail = pd.DataFrame(stage_rows)
+    write_csv(DERIVED / "fig5_token_cost_estimate_by_type_stage.csv", detail)
+    summary = (
+        detail.groupby(["stage", "model"], as_index=False)[
+            [
+                "input_tokens_estimated",
+                "output_tokens_estimated",
+                "input_cost_usd",
+                "output_cost_usd",
+            ]
+        ]
+        .sum()
+    )
+    summary["total_cost_usd"] = summary.input_cost_usd + summary.output_cost_usd
+    summary["pricing_source"] = DEEPSEEK_PRICING_SOURCE
+    summary["pricing_checked_date"] = "2026-06-22"
+    write_csv(DERIVED / "fig5_api_cost_by_stage.csv", summary)
+    return summary
 
 
 def figure5a() -> None:
-    fig, ax = plt.subplots(figsize=(3.0, 2.4))
+    detail, summary = efficiency_time_data()
+    fig, ax = plt.subplots(figsize=(6.4, 4.0))
+    add_panel_label(fig, "A")
+    bottoms = np.zeros(2)
+    for item_type in EFFICIENCY_TYPES:
+        row = detail[detail.item_type.eq(item_type)].iloc[0]
+        values = np.array([row.human_minutes, row.mas_minutes])
+        pair = EFFICIENCY_TYPE_COLORS[item_type]
+        ax.bar(
+            [0, 1],
+            values,
+            bottom=bottoms,
+            width=0.48,
+            color=pair["color"],
+            edgecolor="white",
+            linewidth=0.7,
+            label=(
+                f"{item_type}: {row.human_minutes_per_item:.1f} vs "
+                f"{row.mas_minutes_per_item:.2f} min/item"
+            ),
+        )
+        if values[0] > 35:
+            ax.text(
+                0,
+                bottoms[0] + values[0] / 2,
+                f"{values[0]:.0f}",
+                ha="center",
+                va="center",
+                fontsize=7,
+                color="white",
+                fontweight="bold",
+            )
+        bottoms += values
+    human_total = float(summary.loc[summary.workflow.eq("Human"), "total_minutes"].iloc[0])
+    mas_total = float(summary.loc[summary.workflow.eq("MAS"), "total_minutes"].iloc[0])
+    ax.text(0, human_total + 35, f"{human_total:.0f} min\n({human_total/60:.1f} h)", ha="center", fontweight="bold")
+    ax.text(1, mas_total + 35, f"{mas_total:.1f} min", ha="center", color=CORE_COLORS["MAS"], fontweight="bold")
+    ax.set_xticks([0, 1], ["Human", "MAS"])
+    ax.set_ylabel("Total time for the 50-item exam (min)")
+    ax.set_ylim(0, human_total * 1.16)
+    ax.set_title("Total item-production workflow time", fontweight="bold")
+    ax.legend(
+        frameon=False,
+        loc="upper right",
+        title="Item type: Human vs MAS",
+        fontsize=6.7,
+        title_fontsize=7,
+    )
+    ax.text(
+        0.50,
+        -0.14,
+        "Shared blueprint/review/assembly time (11 h) excluded equally.",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=6.4,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    style_axes(ax)
+    save_pdf(fig, "Figure5A_total_workflow_time.pdf")
+
+
+def figure5b() -> None:
+    _, summary = efficiency_time_data()
+    values = [
+        float(summary.loc[summary.workflow.eq(workflow), "minutes_per_usable_item"].iloc[0])
+        for workflow in ["Human", "MAS"]
+    ]
+    ratio = values[0] / values[1]
+    fig, ax = plt.subplots(figsize=(4.4, 3.5))
+    add_panel_label(fig, "B")
+    bars = ax.bar(
+        [0, 1],
+        values,
+        width=0.48,
+        color=[CORE_COLORS["Human"], CORE_COLORS["MAS"]],
+    )
+    for bar, value in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 0.8,
+            f"{value:.1f}\nmin/item",
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+        )
+    ax.text(
+        0.5,
+        max(values) * 0.90,
+        f"{ratio:.0f}× less human time",
+        ha="center",
+        color=CORE_COLORS["MAS"],
+        fontsize=9,
+    )
+    ax.set_xticks([0, 1], ["Human\n50/50 usable", "MAS\n47/50 usable"])
+    ax.set_ylabel("Workflow time per usable item (min)")
+    ax.set_ylim(0, max(values) * 1.18)
+    ax.set_title("Time per usable final item", fontweight="bold")
+    style_axes(ax)
+    save_pdf(fig, "Figure5B_time_per_usable_item.pdf")
+
+
+def figure5c() -> None:
+    _, summary = efficiency_time_data()
+    human = float(summary.loc[summary.workflow.eq("Human"), "total_minutes"].iloc[0])
+    mas = float(summary.loc[summary.workflow.eq("MAS"), "total_minutes"].iloc[0])
+    sensitivity = pd.DataFrame(
+        [
+            {"workflow": "Human", "estimate": human, "low": human * 0.8, "high": human * 1.2},
+            {"workflow": "MAS", "estimate": mas, "low": mas * 0.8, "high": mas * 1.2},
+        ]
+    )
+    sensitivity["sensitivity"] = "±20%"
+    write_csv(DERIVED / "fig5_time_sensitivity.csv", sensitivity)
+    worst_ratio = human * 0.8 / (mas * 1.2)
+
+    fig, ax = plt.subplots(figsize=(5.2, 3.6))
+    add_panel_label(fig, "C")
+    for position, row in enumerate(sensitivity.itertuples()):
+        source = row.workflow
+        ax.errorbar(
+            position,
+            row.estimate,
+            yerr=[[row.estimate - row.low], [row.high - row.estimate]],
+            fmt="o",
+            color=CORE_COLORS[source],
+            ecolor=CORE_COLORS[source],
+            elinewidth=2,
+            capsize=7,
+            markersize=8,
+        )
+        ax.text(
+            position + 0.14,
+            row.estimate,
+            f"{row.estimate:.0f} min\n[{row.low:.0f}, {row.high:.0f}]",
+            ha="left",
+            va="center",
+        )
+    ax.set_yscale("log")
+    ax.set_xticks([0, 1], ["Human", "MAS"])
+    ax.set_ylabel("Total workflow time per exam (min, log)")
+    ax.set_title("Sensitivity: workflow time ±20%", fontweight="bold")
+    ax.text(
+        0.98,
+        0.92,
+        (
+            "Worst case: Human −20% vs MAS +20%\n"
+            f"{human*0.8:.0f} vs {mas*1.2:.0f} min ≈ {worst_ratio:.0f}×"
+        ),
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+        bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": UROMAS_BASE_COLORS["border"]},
+    )
+    style_axes(ax, "")
+    save_pdf(fig, "Figure5C_time_sensitivity.pdf")
+
+
+def figure5d() -> None:
+    costs = token_cost_data()
+    stage_order = [
+        "Test-point restoration",
+        "Generation",
+        "Answer explanation",
+        "QGval ×4",
+        "ULM ×4",
+    ]
+    plot = costs.set_index("stage").loc[stage_order].reset_index()
+    y = np.arange(len(plot))
+    fig, ax = plt.subplots(figsize=(6.1, 3.8))
+    add_panel_label(fig, "D")
+    input_color = OPTIONAL_COLOR_PAIRS[5]["fill"]
+    output_color = OPTIONAL_COLOR_PAIRS[1]["color"]
+    ax.barh(y, plot.input_cost_usd, color=input_color, edgecolor="none", label="Input tokens")
+    ax.barh(
+        y,
+        plot.output_cost_usd,
+        left=plot.input_cost_usd,
+        color=output_color,
+        edgecolor="none",
+        label="Output tokens",
+    )
+    for position, row in enumerate(plot.itertuples()):
+        total = row.total_cost_usd
+        ax.text(total + 0.0015, position, f"${total:.3f}", ha="left", va="center")
+    total_cost = float(plot.total_cost_usd.sum())
+    labels = [
+        f"{row.stage}\n({row.model.replace('deepseek-', '')})"
+        for row in plot.itertuples()
+    ]
+    ax.set_yticks(y, labels)
+    ax.set_xlabel("API cost per 50-item exam (USD)")
+    ax.set_title("MAS API cost (compute component)", fontweight="bold")
+    ax.legend(frameon=False, loc="lower right")
+    ax.text(
+        0.98,
+        0.38,
+        f"Total ${total_cost:.3f}/exam\nHuman labor benchmark: CNY 9,562",
+        transform=ax.transAxes,
+        ha="right",
+        va="center",
+        color=OPTIONAL_COLOR_PAIRS[5]["color"],
+        fontweight="bold",
+        bbox={
+            "boxstyle": "round,pad=0.22",
+            "facecolor": "white",
+            "edgecolor": UROMAS_BASE_COLORS["border"],
+            "alpha": 0.94,
+        },
+    )
+    ax.text(
+        0.50,
+        -0.18,
+        "DeepSeek V4 cache-miss prices checked 2026-06-22",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=6.2,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    ax.set_xlim(0, max(plot.total_cost_usd.max() * 1.55, 0.06))
+    style_axes(ax, "x")
+    save_pdf(fig, "Figure5D_api_cost.pdf")
+
+
+# ---------------------------------------------------------------------------
+# Figure 6: randomized order / fatigue analysis
+
+
+def fatigue_order_data() -> pd.DataFrame:
+    rows = read_sheet_rows(
+        REPO_ROOT / "试卷作答情况 - 2.xlsx",
+        "疲劳性探索与总时长",
+    )
+    students: dict[int, dict[str, Any]] = {}
+    for row in rows:
+        if (
+            len(row) >= 8
+            and row[0] in {"A", "B"}
+            and isinstance(row[3], (int, float))
+            and isinstance(row[4], (int, float))
+            and isinstance(row[5], (int, float))
+            and isinstance(row[7], (int, float))
+        ):
+            student_id = int(row[3])
+            students.setdefault(
+                student_id,
+                {
+                    "student_id": student_id,
+                    "form": str(row[0]),
+                    "training_year": int(row[1]),
+                    "campus": str(row[2]),
+                    "mas_score": float(row[4]),
+                    "human_score": float(row[5]),
+                    "mas_minus_human": float(row[4]) - float(row[5]),
+                    "total_duration_seconds": float(row[7]),
+                },
+            )
+    data = pd.DataFrame(students.values()).sort_values("student_id").reset_index(drop=True)
+    if len(data) != 50:
+        raise ValueError(f"Expected 50 unique fatigue-analysis students, found {len(data)}.")
+    data["first_source"] = np.where(data.form.eq("A"), "Human", "MAS")
+    data["second_source"] = np.where(data.form.eq("A"), "MAS", "Human")
+    data["first_score"] = np.where(data.form.eq("A"), data.human_score, data.mas_score)
+    data["second_score"] = np.where(data.form.eq("A"), data.mas_score, data.human_score)
+    data["second_minus_first"] = data.second_score - data.first_score
+    data["total_duration_minutes"] = data.total_duration_seconds / 60.0
+    write_csv(DERIVED / "fig6_fatigue_order_student_data.csv", data)
+    return data
+
+
+def figure6a() -> None:
+    data = fatigue_order_data()
+    counts = data.form.value_counts().to_dict()
+    fig, ax = plt.subplots(figsize=(3.4, 2.5))
     add_panel_label(fig, "A")
     ax.set_xlim(0, 4)
     ax.set_ylim(0, 5)
     ax.axis("off")
-    rounded_box(ax, (0.25, 3.15), (3.5, 1.0), "Form A", "Human → MAS", FORM_COLORS["A"]["fill"], FORM_COLORS["A"]["color"])
-    rounded_box(ax, (0.25, 1.20), (3.5, 1.0), "Form B", "MAS → Human", FORM_COLORS["B"]["fill"], FORM_COLORS["B"]["color"])
-    ax.set_title("Examination order schema", fontweight="bold")
-    save_pdf(fig, "Figure5A_order_schema.pdf", tight=False)
+    rounded_box(ax, (0.25, 3.15), (3.5, 1.0), "Form A", f"Human → MAS  (n={counts.get('A', 0)})", FORM_COLORS["A"]["fill"], FORM_COLORS["A"]["color"])
+    rounded_box(ax, (0.25, 1.20), (3.5, 1.0), "Form B", f"MAS → Human  (n={counts.get('B', 0)})", FORM_COLORS["B"]["fill"], FORM_COLORS["B"]["color"])
+    ax.set_title("Randomized examination order", fontweight="bold")
+    save_pdf(fig, "Figure6A_order_schema.pdf", tight=False)
 
 
-def paired_scores_wide() -> pd.DataFrame:
-    block = pd.read_csv(DERIVED / "block_scores.csv")
-    wide = block.pivot_table(
-        index=["student_id", "form", "training_setting"],
-        columns="source_true",
-        values="score_percent",
-    ).reset_index()
-    wide["mas_minus_human"] = wide["MAS"] - wide["Human"]
-    return wide
-
-
-def figure5b() -> None:
-    wide = paired_scores_wide()
-    write_csv(DERIVED / "fig5B_paired_block_scores.csv", wide)
-    fig, ax = plt.subplots(figsize=(3.6, 3.0))
+def figure6b() -> None:
+    data = fatigue_order_data()
+    method, p_value, label = paired_comparison(
+        data.second_score.to_numpy(),
+        data.first_score.to_numpy(),
+    )
+    write_csv(
+        DERIVED / "fig6B_first_second_score_stats.csv",
+        [
+            {
+                "n_students": len(data),
+                "first_mean": data.first_score.mean(),
+                "first_sd": data.first_score.std(ddof=1),
+                "second_mean": data.second_score.mean(),
+                "second_sd": data.second_score.std(ddof=1),
+                "second_minus_first_mean": data.second_minus_first.mean(),
+                "method": method,
+                "p_value": p_value,
+                "significance_label": label,
+            }
+        ],
+    )
+    fig, ax = plt.subplots(figsize=(4.0, 3.3))
     add_panel_label(fig, "B")
     for form in ["A", "B"]:
+        sub = data[data.form.eq(form)]
         pair = FORM_COLORS[form]
-        sub = wide[wide.form.eq(form)]
         for row in sub.itertuples():
-            ax.plot([0, 1], [row.Human, row.MAS], color=pair["color"], alpha=0.28, linewidth=0.8)
-        ax.scatter(np.zeros(len(sub)), sub.Human, color=pair["color"], s=12, alpha=0.65, label=f"Form {form}")
-        ax.scatter(np.ones(len(sub)), sub.MAS, color=pair["color"], s=12, alpha=0.65)
-    ax.set_xticks([0, 1], ["Human block", "MAS block"])
+            ax.plot([0, 1], [row.first_score, row.second_score], color=pair["color"], alpha=0.28, linewidth=0.8)
+        ax.scatter(np.zeros(len(sub)), sub.first_score, color=pair["color"], s=13, alpha=0.65, label=f"Form {form}")
+        ax.scatter(np.ones(len(sub)), sub.second_score, color=pair["color"], s=13, alpha=0.65)
+    ymax = max(data.first_score.max(), data.second_score.max()) + 5
+    ax.plot([0, 0, 1, 1], [ymax - 1, ymax, ymax, ymax - 1], color=UROMAS_BASE_COLORS["text_dark"], linewidth=0.8)
+    ax.text(0.5, ymax + 0.8, label, ha="center", fontweight="bold")
+    ax.text(0.5, 24, f"{method}\nP={p_value:.3f}", ha="center", va="bottom", fontsize=6.5)
+    ax.set_xticks([0, 1], ["First block", "Second block"])
     ax.set_ylabel("Block score (%)")
-    ax.set_title("Paired block scores by sequence", fontweight="bold")
+    ax.set_ylim(20, min(105, ymax + 7))
+    ax.set_title("Student scores by block position", fontweight="bold")
     ax.legend(frameon=False)
     style_axes(ax)
-    save_pdf(fig, "Figure5B_paired_block_scores.pdf")
+    save_pdf(fig, "Figure6B_scores_by_block_position.pdf")
 
 
-def figure5c() -> None:
-    wide = paired_scores_wide()
-    fig, ax = plt.subplots(figsize=(3.2, 2.8))
+def figure6c() -> None:
+    data = fatigue_order_data()
+    groups = [
+        data.loc[data.form.eq(form), "second_minus_first"].to_numpy()
+        for form in ["A", "B"]
+    ]
+    rows = []
+    for index, form in enumerate(["A", "B"]):
+        mean, low, high = bootstrap_mean_ci(groups[index], seed=610 + index)
+        rows.append(
+            {
+                "form": form,
+                "sequence": "Human → MAS" if form == "A" else "MAS → Human",
+                "n_students": len(groups[index]),
+                "mean_second_minus_first": mean,
+                "ci_low": low,
+                "ci_high": high,
+                "source_position_note": "Source and position are confounded within each sequence.",
+            }
+        )
+    write_csv(DERIVED / "fig6C_position_difference_by_sequence.csv", rows)
+    fig, ax = plt.subplots(figsize=(3.8, 3.2))
     add_panel_label(fig, "C")
-    groups = [wide.loc[wide.form.eq(form), "mas_minus_human"].to_numpy() for form in ["A", "B"]]
     box = ax.boxplot(groups, positions=[0, 1], widths=0.48, patch_artist=True, showfliers=False)
     for patch, form in zip(box["boxes"], ["A", "B"]):
         patch.set_facecolor(FORM_COLORS[form]["fill"])
         patch.set_edgecolor(FORM_COLORS[form]["color"])
-    for median in box["medians"]:
-        median.set_color(UROMAS_BASE_COLORS["text_dark"])
-    rng = np.random.default_rng(95)
+    rng = np.random.default_rng(611)
     for position, form, values in zip([0, 1], ["A", "B"], groups):
         ax.scatter(rng.normal(position, 0.04, len(values)), values, s=11, color=FORM_COLORS[form]["color"], alpha=0.55, linewidths=0)
     ax.axhline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=0.9)
     ax.set_xticks([0, 1], ["Form A\nHuman → MAS", "Form B\nMAS → Human"])
-    ax.set_ylabel("MAS − Human block score")
-    ax.set_title("Within-participant differences by sequence", fontweight="bold")
+    ax.set_ylabel("Second − first block score (points)")
+    ax.set_title("Within-student position differences", fontweight="bold")
     style_axes(ax)
-    save_pdf(fig, "Figure5C_individual_differences_by_sequence.pdf")
+    save_pdf(fig, "Figure6C_position_difference_by_sequence.pdf")
 
 
-def figure5d() -> None:
-    responses = pd.read_csv(DERIVED / "responses.csv")
-    item = pd.read_csv(DERIVED / "item_master.csv")[["item_id", "topic", "cognitive_level"]]
-    data = responses.merge(item, on="item_id", how="left")
-    data["is_mas"] = data.source_true.eq("MAS").astype(int)
-    formula = (
-        "correct ~ is_mas + C(block_position) + C(form) + C(training_setting)"
-        " + C(training_year) + C(cognitive_level) + C(topic)"
-    )
-    fit = smf.ols(formula, data=data).fit(
+def figure6d() -> None:
+    data = fatigue_order_data()
+    long_rows = []
+    for row in data.itertuples():
+        long_rows.extend(
+            [
+                {
+                    "student_id": row.student_id,
+                    "form": row.form,
+                    "training_year": row.training_year,
+                    "campus": row.campus,
+                    "source": row.first_source,
+                    "is_mas": int(row.first_source == "MAS"),
+                    "is_second": 0,
+                    "score": row.first_score,
+                },
+                {
+                    "student_id": row.student_id,
+                    "form": row.form,
+                    "training_year": row.training_year,
+                    "campus": row.campus,
+                    "source": row.second_source,
+                    "is_mas": int(row.second_source == "MAS"),
+                    "is_second": 1,
+                    "score": row.second_score,
+                },
+            ]
+        )
+    long = pd.DataFrame(long_rows)
+    formula = "score ~ is_mas + is_second + C(training_year) + C(campus)"
+    fit = smf.ols(formula, data=long).fit(
         cov_type="cluster",
-        cov_kwds={"groups": data.student_id},
+        cov_kwds={"groups": long.student_id},
     )
     rows = [
         {
-            "contrast": "Overall adjusted",
-            "estimate": fit.params["is_mas"] * 100,
-            "ci_low": fit.conf_int().loc["is_mas", 0] * 100,
-            "ci_high": fit.conf_int().loc["is_mas", 1] * 100,
-            "n_students": data.student_id.nunique(),
-            "n_responses": len(data),
-            "method": formula,
-        }
+            "contrast": "Adjusted second − first",
+            "estimate": fit.params["is_second"],
+            "ci_low": fit.conf_int().loc["is_second", 0],
+            "ci_high": fit.conf_int().loc["is_second", 1],
+            "method": formula + "; cluster-robust SE by student",
+        },
+        {
+            "contrast": "Adjusted MAS − Human",
+            "estimate": fit.params["is_mas"],
+            "ci_low": fit.conf_int().loc["is_mas", 0],
+            "ci_high": fit.conf_int().loc["is_mas", 1],
+            "method": formula + "; cluster-robust SE by student",
+        },
     ]
-    wide = paired_scores_wide()
-    rng = np.random.default_rng(101)
-    for form, label in [("A", "Form A (Human → MAS)"), ("B", "Form B (MAS → Human)")]:
-        values = wide.loc[wide.form.eq(form), "mas_minus_human"].to_numpy()
-        boots = rng.choice(values, size=(3000, len(values)), replace=True).mean(axis=1)
+    for form, label in [("A", "Form A observed second − first"), ("B", "Form B observed second − first")]:
+        values = data.loc[data.form.eq(form), "second_minus_first"].to_numpy()
+        mean, low, high = bootstrap_mean_ci(values, seed=620 + ord(form))
         rows.append(
             {
                 "contrast": label,
-                "estimate": values.mean(),
-                "ci_low": np.quantile(boots, 0.025),
-                "ci_high": np.quantile(boots, 0.975),
-                "n_students": len(values),
-                "n_responses": len(values) * 100,
-                "method": "Paired participant bootstrap",
+                "estimate": mean,
+                "ci_low": low,
+                "ci_high": high,
+                "method": "Participant bootstrap; source and position confounded within sequence",
             }
         )
     result = pd.DataFrame(rows)
-    write_csv(DERIVED / "fig5D_adjusted_correct_rate_difference.csv", result)
-
-    fig, ax = plt.subplots(figsize=(4.8, 2.8))
-    add_panel_label(fig, "D")
+    write_csv(DERIVED / "fig6D_adjusted_fatigue_effect.csv", result)
     plot = result.iloc[::-1].reset_index(drop=True)
     y = np.arange(len(plot))
+    fig, ax = plt.subplots(figsize=(5.1, 3.1))
+    add_panel_label(fig, "D")
     ax.axvline(0, color=UROMAS_BASE_COLORS["text_dark"], linewidth=0.9)
     ax.errorbar(
         plot.estimate,
@@ -1932,34 +2801,51 @@ def figure5d() -> None:
         capsize=3,
     )
     ax.set_yticks(y, plot.contrast)
-    ax.set_xlabel("Correct-rate difference, MAS − Human (percentage points)")
-    ax.set_title("Adjusted and sequence-stratified source difference", fontweight="bold")
+    ax.set_xlabel("Score difference (percentage points)")
+    ax.set_title("Adjusted fatigue and source effects", fontweight="bold")
     style_axes(ax, "x")
-    save_pdf(fig, "Figure5D_adjusted_correct_rate_difference.pdf")
+    save_pdf(fig, "Figure6D_adjusted_fatigue_effect.pdf")
 
 
-def figure5e() -> None:
-    wide = paired_scores_wide()
-    groups = [
-        wide.loc[wide.training_setting.eq(setting), "mas_minus_human"].to_numpy()
-        for setting in ["main", "non_main"]
+def figure6e() -> None:
+    data = fatigue_order_data()
+    a = data.loc[data.form.eq("A"), "total_duration_minutes"].to_numpy()
+    b = data.loc[data.form.eq("B"), "total_duration_minutes"].to_numpy()
+    test = stats.ttest_ind(a, b, equal_var=False)
+    rows = [
+        {
+            "form": form,
+            "n_students": len(values),
+            "mean_minutes": np.mean(values),
+            "sd_minutes": np.std(values, ddof=1),
+            "welch_p_value_form_a_vs_b": float(test.pvalue),
+        }
+        for form, values in [("A", a), ("B", b)]
     ]
-    colors = [OPTIONAL_COLOR_PAIRS[3], OPTIONAL_COLOR_PAIRS[4]]
-    fig, ax = plt.subplots(figsize=(3.2, 2.8))
+    write_csv(DERIVED / "fig6E_total_duration_by_sequence.csv", rows)
+    fig, ax = plt.subplots(figsize=(3.8, 3.2))
     add_panel_label(fig, "E")
-    box = ax.boxplot(groups, positions=[0, 1], widths=0.48, patch_artist=True, showfliers=False)
-    for patch, pair in zip(box["boxes"], colors):
-        patch.set_facecolor(pair["fill"])
-        patch.set_edgecolor(pair["color"])
-    rng = np.random.default_rng(102)
-    for position, values, pair in zip([0, 1], groups, colors):
-        ax.scatter(rng.normal(position, 0.04, len(values)), values, s=11, color=pair["color"], alpha=0.55, linewidths=0)
-    ax.axhline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=0.9)
-    ax.set_xticks([0, 1], [f"Main campus\nn={len(groups[0])}", f"Non-main campus\nn={len(groups[1])}"])
-    ax.set_ylabel("MAS − Human block score")
-    ax.set_title("Setting-stratified score differences", fontweight="bold")
+    rng = np.random.default_rng(630)
+    for position, form, values in [(0, "A", a), (1, "B", b)]:
+        pair = FORM_COLORS[form]
+        violin = ax.violinplot([values], positions=[position], widths=0.62, showextrema=False)
+        body = violin["bodies"][0]
+        body.set_facecolor(pair["fill"])
+        body.set_edgecolor(pair["color"])
+        body.set_alpha(0.9)
+        ax.scatter(rng.normal(position, 0.045, len(values)), values, s=11, color=pair["color"], alpha=0.55, linewidths=0)
+        mean, low, high = bootstrap_mean_ci(values, seed=631 + position)
+        ax.errorbar(position, mean, yerr=[[mean - low], [high - mean]], fmt="D", color=UROMAS_BASE_COLORS["text_dark"], capsize=3)
+    ymax = max(a.max(), b.max()) + 5
+    ax.plot([0, 0, 1, 1], [ymax - 1, ymax, ymax, ymax - 1], color=UROMAS_BASE_COLORS["text_dark"], linewidth=0.8)
+    significance = "***" if test.pvalue < 0.001 else "**" if test.pvalue < 0.01 else "*" if test.pvalue < 0.05 else "n.s."
+    ax.text(0.5, ymax + 1, significance, ha="center", fontweight="bold")
+    ax.text(0.5, min(a.min(), b.min()) - 2, f"Welch t-test  P={test.pvalue:.3f}", ha="center", va="top", fontsize=6.5)
+    ax.set_xticks([0, 1], ["Form A\nHuman → MAS", "Form B\nMAS → Human"])
+    ax.set_ylabel("Total examination duration (min)")
+    ax.set_title("Total duration by randomized sequence", fontweight="bold")
     style_axes(ax)
-    save_pdf(fig, "Figure5E_setting_stratified_differences.pdf")
+    save_pdf(fig, "Figure6E_total_duration_by_sequence.pdf")
 
 
 def cleanup_obsolete_outputs() -> None:
@@ -1972,6 +2858,11 @@ def cleanup_obsolete_outputs() -> None:
         "Figure4C_source_task_ratings.pdf",
         "Figure4D_workflow_total_time.pdf",
         "Figure4E_quality_adjusted_time.pdf",
+        "Figure5A_order_schema.pdf",
+        "Figure5B_paired_block_scores.pdf",
+        "Figure5C_individual_differences_by_sequence.pdf",
+        "Figure5D_adjusted_correct_rate_difference.pdf",
+        "Figure5E_setting_stratified_differences.pdf",
     ]
     for filename in obsolete:
         remove_output(filename)
@@ -2011,7 +2902,12 @@ def main() -> None:
     figure5b()
     figure5c()
     figure5d()
-    figure5e()
+
+    figure6a()
+    figure6b()
+    figure6c()
+    figure6d()
+    figure6e()
 
     cleanup_obsolete_outputs()
     print(f"Wrote all manuscript panel PDFs to {OUT}")
