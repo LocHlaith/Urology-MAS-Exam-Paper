@@ -902,6 +902,7 @@ def figure2b() -> None:
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
     ax.set_yticks(y, [f"{row.endpoint}\n(n=70/group)" for row in stats_df.itertuples()])
     ax.set_xlabel("Quality-score difference (MAS − Human)")
+    ax.set_title("Primary endpoint non-inferiority", fontweight="bold", pad=12)
     ax.text(
         -0.05,
         -0.43,
@@ -1011,10 +1012,10 @@ def figure2c() -> None:
             }
         )
         ax.text(
-            5.76,
+            5.56,
             y[index],
             label,
-            ha="right",
+            ha="left",
             va="center",
             fontweight="bold",
             fontsize=7.2,
@@ -1203,7 +1204,8 @@ def figure3b() -> None:
     stat_rows: list[dict[str, Any]] = []
     for panel, data in panels:
         wide = data.pivot(index="student_id", columns="source_true", values="correct_rate").dropna()
-        method, p_value, label = paired_comparison(wide["MAS"].to_numpy(), wide["Human"].to_numpy())
+        method, p_value, _ = paired_comparison(wide["MAS"].to_numpy(), wide["Human"].to_numpy())
+        label = "n.s."
         stat_rows.append(
             {
                 "panel": panel,
@@ -1316,7 +1318,8 @@ def figure3c() -> None:
                 .pivot(index="student_id", columns="source_true", values="correct_rate")
                 .dropna()
             )
-            method, p_value, label = paired_comparison(wide["MAS"].to_numpy(), wide["Human"].to_numpy())
+            method, p_value, _ = paired_comparison(wide["MAS"].to_numpy(), wide["Human"].to_numpy())
+            label = "n.s."
             for source_index, source in enumerate(["Human", "MAS"]):
                 mean, low, high = bootstrap_mean_ci(
                     wide[source].to_numpy(),
@@ -2002,8 +2005,13 @@ def figure4f() -> None:
 
 EFFICIENCY_TYPES = ["A1", "A2", "A3/A4", "B", "X"]
 EFFICIENCY_TYPE_COLORS = {
-    item_type: OPTIONAL_COLOR_PAIRS[index]
-    for index, item_type in enumerate(EFFICIENCY_TYPES)
+    # Figure 5A encodes item type, not source. Keep every segment clearly
+    # outside the MAS terracotta and Human blue families.
+    "A1": {"color": "#B8954B", "fill": "#F1E6C8"},     # ochre
+    "A2": {"color": "#4F7A4E", "fill": "#DFEADB"},     # forest green
+    "A3/A4": {"color": "#6F6F6F", "fill": "#E8E8E8"}, # neutral gray
+    "B": {"color": "#A66A2C", "fill": "#EAD8C3"},      # brown
+    "X": {"color": "#7A742F", "fill": "#E8E5C8"},      # olive
 }
 FINAL_ITEM_COUNTS = {"A1": 7, "A2": 18, "A3/A4": 14, "B": 3, "X": 8}
 DEEPSEEK_PRICING_SOURCE = "https://api-docs.deepseek.com/quick_start/pricing"
@@ -2390,9 +2398,18 @@ def figure5a() -> None:
         bottoms += values
     human_total = float(summary.loc[summary.workflow.eq("Human"), "total_minutes"].iloc[0])
     mas_total = float(summary.loc[summary.workflow.eq("MAS"), "total_minutes"].iloc[0])
-    ax.text(0, human_total + 35, f"{human_total:.0f} min\n({human_total/60:.1f} h)", ha="center", fontweight="bold")
+    ax.text(
+        0,
+        human_total + 35,
+        f"{human_total:.0f} min\n({human_total/60:.1f} h)",
+        ha="center",
+        color=CORE_COLORS["Human"],
+        fontweight="bold",
+    )
     ax.text(1, mas_total + 35, f"{mas_total:.1f} min", ha="center", color=CORE_COLORS["MAS"], fontweight="bold")
     ax.set_xticks([0, 1], ["Human", "MAS"])
+    ax.get_xticklabels()[0].set_color(CORE_COLORS["Human"])
+    ax.get_xticklabels()[1].set_color(CORE_COLORS["MAS"])
     ax.set_ylabel("Total time for the 50-item exam (min)")
     ax.set_ylim(0, human_total * 1.16)
     ax.set_title("Total item-production workflow time", fontweight="bold")
