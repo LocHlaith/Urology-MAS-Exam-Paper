@@ -1,0 +1,3 @@
+﻿source,n_items,mean_run_to_run_sd,ci_low,ci_high,ci_method,metric
+Human,50,0.04794723972287367,0.041749247818139025,0.054451206637603916,bootstrap mean 95% CI,machine_proxy_quality_score_sd
+MAS,50,0.05116553371674832,0.044231965008214115,0.05793970904257384,bootstrap mean 95% CI,machine_proxy_quality_score_sd

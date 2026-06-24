@@ -12,6 +12,7 @@ import json
 import math
 import posixpath
 import re
+import warnings
 from collections import Counter, defaultdict, deque
 from pathlib import Path
 from typing import Any, Iterable, Sequence
@@ -26,6 +27,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from matplotlib.lines import Line2D
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Patch, Rectangle
 from patsy import build_design_matrices
 from scipy import stats
@@ -805,12 +807,25 @@ def item_means(records: Sequence[dict[str, Any]], metric: str) -> dict[str, np.n
 def figure2b() -> None:
     records = parse_primary_quality_records()
     rows = []
+    item_score_rows = []
     for endpoint, metric, scale_points, margin in [
         ("QGval", "qg_total", 35, -2.0),
         ("ULM", "ulm_total", 76, -4.0),
     ]:
         arrays = item_means(records, metric)
         human, mas = arrays["Human"], arrays["MAS"]
+        for source in ["Human", "MAS"]:
+            for item_seq, value in enumerate(arrays[source], start=1):
+                item_score_rows.append(
+                    {
+                        "endpoint": endpoint,
+                        "metric": metric,
+                        "source": source,
+                        "item_seq": item_seq,
+                        "item_mean_score": value,
+                        "scale_points": scale_points,
+                    }
+                )
         diff = float(mas.mean() - human.mean())
         se = math.sqrt(mas.var(ddof=1) / len(mas) + human.var(ddof=1) / len(human))
         rows.append(
@@ -829,6 +844,7 @@ def figure2b() -> None:
             }
         )
     stats_df = pd.DataFrame(rows)
+    write_csv(DERIVED / "fig2B_quality_difference_item_scores.csv", item_score_rows)
     write_csv(DERIVED / "fig2B_quality_difference_stats.csv", stats_df)
 
     fig, ax = plt.subplots(figsize=(6.2, 3.65))
@@ -1132,16 +1148,204 @@ def figure2d() -> None:
         frameon=False,
         ncol=2,
         loc="upper center",
-        bbox_to_anchor=(0.69, 1.02),
+        bbox_to_anchor=(0.50, -0.13),
     )
     style_axes(ax, "x")
     save_pdf(fig, "Figure2D_quality_by_cognitive_level.pdf")
 
 
+def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, str]:
+    ratings = pd.read_csv(DERIVED / "expert_ratings_updated.csv")
+    item = pd.read_csv(DERIVED / "item_master.csv")[
+        [
+            "item_id",
+            "blueprint_cognitive_level",
+            "item_type",
+            "topic",
+            "char_count",
+            "has_vignette",
+        ]
+    ]
+    data = ratings.merge(item, on="item_id", how="left")
+    data = data.dropna(
+        subset=[
+            "quality_score_5",
+            "source_true",
+            "blueprint_cognitive_level",
+            "rater_id",
+            "item_id",
+        ]
+    ).copy()
+    data["source_true"] = pd.Categorical(data["source_true"], ["Human", "MAS"])
+    data["blueprint_cognitive_level"] = pd.Categorical(
+        data["blueprint_cognitive_level"],
+        LEVELS_4,
+    )
+    data["has_vignette"] = data["has_vignette"].fillna(0).astype(float)
+    data["char_count"] = data["char_count"].astype(float)
+
+    formula = (
+        "quality_score_5 ~ C(source_true, Treatment(reference='Human'))"
+        " * C(blueprint_cognitive_level, Treatment(reference='recall'))"
+        " + char_count + has_vignette"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        model = smf.mixedlm(
+            formula,
+            data,
+            groups=data["rater_id"],
+            vc_formula={"item": "0 + C(item_id)"},
+            re_formula="1",
+        )
+        fit = model.fit(method="lbfgs", maxiter=500, reml=False, disp=False)
+    if not fit.converged:
+        raise RuntimeError("Figure 2E expert-quality mixed model did not converge.")
+
+    fixed_names = list(fit.fe_params.index)
+    beta = fit.fe_params.to_numpy(dtype=float)
+    covariance = fit.cov_params().loc[fixed_names, fixed_names].to_numpy(dtype=float)
+    design_info = fit.model.data.design_info
+    contrast_rows: list[dict[str, Any]] = []
+    for level in LEVELS_4:
+        scenario_human = data.copy()
+        scenario_mas = data.copy()
+        scenario_human["source_true"] = "Human"
+        scenario_mas["source_true"] = "MAS"
+        scenario_human["blueprint_cognitive_level"] = level
+        scenario_mas["blueprint_cognitive_level"] = level
+        x_human = np.asarray(build_design_matrices([design_info], scenario_human)[0])
+        x_mas = np.asarray(build_design_matrices([design_info], scenario_mas)[0])
+        gradient = (x_mas - x_human).mean(axis=0)
+        estimate = float(gradient @ beta)
+        se = float(math.sqrt(max(gradient @ covariance @ gradient.T, 0.0)))
+        z_value = estimate / se if se > 0 else float("nan")
+        p_value = float(2 * stats.norm.sf(abs(z_value))) if np.isfinite(z_value) else float("nan")
+        contrast_rows.append(
+            {
+                "cognitive_level": level,
+                "cognitive_level_label": LEVEL_LABELS_4[level],
+                "estimate_mas_minus_human": estimate,
+                "se": se,
+                "ci_low": estimate - Z_975 * se,
+                "ci_high": estimate + Z_975 * se,
+                "p_value": p_value,
+                "model_formula": formula,
+                "covariates": "char_count + has_vignette",
+                "random_effects": "(1|rater_id) + (1|item_id)",
+            }
+        )
+
+    fixed_rows = []
+    fixed_table = fit.summary().tables[1]
+    for term in fixed_names:
+        fixed_rows.append(
+            {
+                "term": term,
+                "estimate": float(fit.fe_params[term]),
+                "se": float(fixed_table.loc[term, "Std.Err."]),
+                "z": float(fixed_table.loc[term, "z"]),
+                "p_value": float(fixed_table.loc[term, "P>|z|"]),
+                "ci_low": float(fixed_table.loc[term, "[0.025"]),
+                "ci_high": float(fixed_table.loc[term, "0.975]"]),
+                "model_formula": formula,
+                "covariates": "char_count + has_vignette",
+                "random_effects": "(1|rater_id) + (1|item_id)",
+            }
+        )
+    plot_data = (
+        data.groupby(["source_true", "blueprint_cognitive_level", "item_id"], observed=True)
+        .agg(
+            quality_score=("quality_score_5", "mean"),
+            n_raters=("rater_id", "nunique"),
+        )
+        .reset_index()
+    )
+    return data, plot_data, pd.DataFrame(contrast_rows), pd.DataFrame(fixed_rows), formula
+
+
 def figure2e() -> None:
+    data, plot_data, contrasts, fixed_effects, _ = expert_quality_interaction_data()
+    write_csv(DERIVED / "fig2E_expert_quality_interaction_model_input.csv", data)
+    write_csv(DERIVED / "fig2E_expert_quality_interaction_plot_data.csv", plot_data)
+    write_csv(DERIVED / "fig2E_expert_quality_interaction_contrasts.csv", contrasts)
+    write_csv(DERIVED / "fig2E_expert_quality_interaction_fixed_effects.csv", fixed_effects)
+
+    fig, ax = plt.subplots(figsize=(7.0, 4.0))
+    add_panel_label(fig, "E")
+    x = np.arange(len(LEVELS_4), dtype=float)
+    offsets = {"Human": -0.18, "MAS": 0.18}
+    width = 0.30
+    mean_lines: dict[str, list[float]] = {}
+    for source in ["Human", "MAS"]:
+        groups = [
+            plot_data[
+                plot_data.source_true.eq(source)
+                & plot_data.blueprint_cognitive_level.eq(level)
+            ].quality_score.to_numpy()
+            for level in LEVELS_4
+        ]
+        positions = x + offsets[source]
+        box = ax.boxplot(
+            groups,
+            positions=positions,
+            widths=width,
+            patch_artist=True,
+            showfliers=False,
+            medianprops={"color": UROMAS_BASE_COLORS["text_dark"], "linewidth": 1},
+            whiskerprops={"color": CORE_COLORS[source], "linewidth": 0.8},
+            capprops={"color": CORE_COLORS[source], "linewidth": 0.8},
+        )
+        for patch in box["boxes"]:
+            patch.set_facecolor(CORE_FILLS[source])
+            patch.set_edgecolor(CORE_COLORS[source])
+        means = [float(np.mean(group)) for group in groups]
+        mean_lines[source] = means
+        ax.plot(
+            positions,
+            means,
+            color=CORE_COLORS[source],
+            marker="o",
+            linewidth=1.5,
+            markersize=4,
+            label=source,
+            zorder=4,
+        )
+
+    for index, row in enumerate(contrasts.itertuples()):
+        p_value = row.p_value
+        label = "P<0.001" if p_value < 0.001 else f"P={p_value:.3f}"
+        upper = max(
+            plot_data[plot_data.blueprint_cognitive_level.eq(row.cognitive_level)].quality_score.max(),
+            mean_lines["Human"][index],
+            mean_lines["MAS"][index],
+        )
+        ax.text(index, min(5.05, upper + 0.10), label, ha="center", va="bottom", fontsize=7)
+    ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4], rotation=16, ha="right")
+    ax.set_ylabel("Expert quality score (1–5)")
+    ax.set_ylim(3.55, 5.12)
+    ax.set_title("Expert source × cognitive-level interaction", fontweight="bold")
+    ax.legend(frameon=False, ncol=2, loc="lower left")
+    ax.text(
+        0.98,
+        0.04,
+        "Mixed model: source × cognitive level\n+ char count + vignette; random rater/item intercepts",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=6.2,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    style_axes(ax)
+    save_pdf(fig, "Figure2E_expert_quality_source_cognitive_interaction.pdf")
+
+
+def figure2f() -> None:
+    remove_output("Figure2E_run_consistency.pdf")
     summary = pd.read_csv(DERIVED / "machine_rating_summary.csv")
     fig, ax = plt.subplots(figsize=(3.0, 2.5))
-    add_panel_label(fig, "E")
+    add_panel_label(fig, "F")
+    plot_rows: list[dict[str, Any]] = []
     rng = np.random.default_rng(20260621)
     for position, source in enumerate(["Human", "MAS"]):
         values = summary.loc[summary.source_true.eq(source), "machine_proxy_quality_score_sd"].dropna().to_numpy()
@@ -1154,12 +1358,24 @@ def figure2e() -> None:
             linewidths=0,
         )
         mean, low, high = bootstrap_mean_ci(values, seed=position + 70)
+        plot_rows.append(
+            {
+                "source": source,
+                "n_items": len(values),
+                "mean_run_to_run_sd": mean,
+                "ci_low": low,
+                "ci_high": high,
+                "ci_method": "bootstrap mean 95% CI",
+                "metric": "machine_proxy_quality_score_sd",
+            }
+        )
         ax.errorbar(position, mean, yerr=[[mean - low], [high - mean]], fmt="D", color=UROMAS_BASE_COLORS["text_dark"], capsize=3)
+    write_csv(DERIVED / "fig2F_run_consistency_stats.csv", plot_rows)
     ax.set_xticks([0, 1], ["Human", "MAS"])
     ax.set_ylabel("Run-to-run SD")
     ax.set_title("Machine-rating run consistency", fontweight="bold")
     style_axes(ax)
-    save_pdf(fig, "Figure2E_run_consistency.pdf")
+    save_pdf(fig, "Figure2F_run_consistency.pdf")
 
 
 # ---------------------------------------------------------------------------
@@ -1536,7 +1752,7 @@ def figure3d() -> None:
 def ctt_upper_lower_data() -> pd.DataFrame:
     responses = pd.read_csv(DERIVED / "responses.csv")
     item = pd.read_csv(DERIVED / "item_master.csv")[
-        ["item_id", "source_true", "blueprint_cognitive_level"]
+        ["item_id", "source_true", "blueprint_cognitive_level", "item_type"]
     ]
     matrix = responses.pivot(index="student_id", columns="item_id", values="correct")
     total_score = matrix.sum(axis=1)
@@ -1599,7 +1815,7 @@ def grouped_boxplot_with_means(
     style_axes(ax)
 
 
-def figure3e() -> None:
+def figure3e_old_boxplots_unused() -> None:
     ctt = ctt_upper_lower_data()
     summary = (
         ctt.groupby(["source_true", "blueprint_cognitive_level"])
@@ -1630,6 +1846,113 @@ def figure3e() -> None:
     axes[1].set_title("Upper–lower discrimination", fontweight="bold")
     axes[1].legend(frameon=False, ncol=2, loc="lower right")
     fig.suptitle("Classical test theory by cognitive level", y=0.99, fontweight="bold")
+    save_pdf(fig, "Figure3E_ctt_by_cognitive_level.pdf")
+
+
+def figure3e() -> None:
+    ctt = ctt_upper_lower_data()
+    ctt["item_type_group"] = np.select(
+        [
+            ctt.item_type.isin(["A1", "B"]),
+            ctt.item_type.isin(["A2", "A3", "A4"]),
+            ctt.item_type.eq("X"),
+        ],
+        ["A1/B", "A2/A3/A4", "X"],
+        default=ctt.item_type.astype(str),
+    )
+    summary = (
+        ctt.groupby(["source_true", "blueprint_cognitive_level", "item_type_group"])
+        .agg(
+            n_items=("item_id", "count"),
+            mean_difficulty=("difficulty", "mean"),
+            sd_difficulty=("difficulty", "std"),
+            mean_discrimination=("discrimination_upper_minus_lower", "mean"),
+            sd_discrimination=("discrimination_upper_minus_lower", "std"),
+        )
+        .reset_index()
+    )
+    write_csv(DERIVED / "fig3E_ctt_upper_lower_item_data.csv", ctt)
+    write_csv(DERIVED / "fig3E_ctt_by_cognitive_level_summary.csv", summary)
+
+    fit_data = ctt[["difficulty", "discrimination_upper_minus_lower"]].dropna()
+    slope, intercept = np.polyfit(
+        fit_data.difficulty.to_numpy(),
+        fit_data.discrimination_upper_minus_lower.to_numpy(),
+        deg=1,
+    )
+    correlation = stats.pearsonr(
+        fit_data.difficulty.to_numpy(),
+        fit_data.discrimination_upper_minus_lower.to_numpy(),
+    )
+    write_csv(
+        DERIVED / "fig3E_ctt_linear_fit.csv",
+        [
+            {
+                "model": "ordinary least-squares line",
+                "formula": "discrimination_upper_minus_lower ~ difficulty",
+                "slope": slope,
+                "intercept": intercept,
+                "pearson_r": correlation.statistic,
+                "pearson_p_value": correlation.pvalue,
+                "n_items": len(fit_data),
+            }
+        ],
+    )
+
+    fig, ax = plt.subplots(figsize=(6.9, 4.2))
+    add_panel_label(fig, "E")
+    marker_map = {"A1/B": "o", "A2/A3/A4": "s", "X": "^"}
+    for source in ["MAS", "Human"]:
+        for marker_group, marker in marker_map.items():
+            sub = ctt[ctt.source_true.eq(source) & ctt.item_type_group.eq(marker_group)]
+            ax.scatter(
+                sub.difficulty,
+                sub.discrimination_upper_minus_lower,
+                marker=marker,
+                s=36,
+                color=CORE_COLORS[source],
+                alpha=0.72,
+                edgecolors="white",
+                linewidths=0.35,
+            )
+    x_line = np.linspace(0, 1, 200)
+    ax.plot(
+        x_line,
+        intercept + slope * x_line,
+        color=UROMAS_BASE_COLORS["text_dark"],
+        linewidth=1.4,
+        linestyle="-",
+        zorder=3,
+    )
+    ax.axhline(0.20, color=UROMAS_BASE_COLORS["spine"], linestyle=":", linewidth=1.0)
+    ax.axvline(0.50, color=UROMAS_BASE_COLORS["spine"], linestyle=":", linewidth=1.0)
+    ax.set_xlim(0, 1.02)
+    ax.set_ylim(-0.36, 0.62)
+    ax.set_xlabel("Item difficulty (proportion correct)")
+    ax.set_ylabel("Discrimination (upper 27% − lower 27%)")
+    ax.set_title("Exploratory CTT (objective items)", fontweight="bold")
+    source_handles = [
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["MAS"], markeredgecolor="white", markersize=6, label="MAS"),
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["Human"], markeredgecolor="white", markersize=6, label="Human"),
+    ]
+    marker_handles = [
+        Line2D([0], [0], marker=marker, color=UROMAS_BASE_COLORS["tick"], linestyle="none", markersize=6, label=label)
+        for label, marker in marker_map.items()
+    ]
+    fit_handle = Line2D([0], [0], color=UROMAS_BASE_COLORS["text_dark"], linewidth=1.4, label="Linear fit")
+    ax.legend(handles=source_handles + marker_handles + [fit_handle], frameon=False, loc="lower left")
+    slope_text = f"+ {slope:.2f}x" if slope >= 0 else f"− {abs(slope):.2f}x"
+    ax.text(
+        0.98,
+        0.05,
+        f"Fit: y = {intercept:.2f} {slope_text}\nr={correlation.statistic:.2f}",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=6.6,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    style_axes(ax)
     save_pdf(fig, "Figure3E_ctt_by_cognitive_level.pdf")
 
 
@@ -1756,7 +2079,7 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
         # workbook has a denominator typo in its display string, so use the
         # actual design denominator rather than the formatted text.
         n = 140
-        low, high = proportion_confint(correct, n, alpha=0.10, method="wilson")
+        low, high = proportion_confint(correct, n, alpha=0.05, method="wilson")
         rows.append(
             {
                 "expert": expert,
@@ -1765,6 +2088,7 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
                 "accuracy": correct / n,
                 "ci_low": low,
                 "ci_high": high,
+                "ci_method": "Wilson 95% CI",
             }
         )
     stats_df = pd.DataFrame(rows)
@@ -1801,9 +2125,17 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
         ]
         for row in stats_df.itertuples()
     ]
+    cell_text = [
+        [
+            row.expert,
+            f"{row.correct}/{row.n}",
+            f"{row.accuracy*100:.1f}% ({row.ci_low*100:.1f}–{row.ci_high*100:.1f})",
+        ]
+        for row in stats_df.itertuples()
+    ]
     table = table_ax.table(
         cellText=cell_text,
-        colLabels=["Expert", "Correct/N", "Accuracy, 90% CI"],
+        colLabels=["Expert", "Correct/N", "Accuracy, 95% CI"],
         loc="center",
         cellLoc="center",
         colWidths=[0.25, 0.22, 0.53],
@@ -1927,7 +2259,7 @@ def figure4e() -> None:
     source = pd.read_csv(DERIVED / "source_detection.csv")
     correct = int(source.source_guess_success.sum())
     n = len(source)
-    low, high = proportion_confint(correct, n, alpha=0.10, method="wilson")
+    low, high = proportion_confint(correct, n, alpha=0.05, method="wilson")
     row = pd.DataFrame(
         [
             {
@@ -1937,7 +2269,7 @@ def figure4e() -> None:
                 "accuracy": correct / n,
                 "ci_low": low,
                 "ci_high": high,
-                "ci_method": "Wilson 90% CI",
+                "ci_method": "Wilson 95% CI",
             }
         ]
     )
@@ -1971,6 +2303,8 @@ def figure4e() -> None:
         cellLoc="center",
         colWidths=[0.28, 0.24, 0.48],
     )
+    table[(0, 2)].get_text().set_text("Accuracy, 95% CI")
+    table[(1, 2)].get_text().set_text(f"{estimate:.1f}% ({low*100:.1f}–{high*100:.1f})")
     table.auto_set_font_size(False)
     table.set_fontsize(6.7)
     table.scale(1.0, 1.4)
@@ -2019,6 +2353,7 @@ DEEPSEEK_PRICES_USD_PER_M = {
     "deepseek-v4-flash": {"input": 0.14, "output": 0.28},
     "deepseek-v4-pro": {"input": 0.435, "output": 0.87},
 }
+USD_TO_CNY_FOR_FIG5 = 6.80
 
 
 def parse_sum_expression(value: Any) -> float:
@@ -2151,8 +2486,8 @@ def efficiency_time_data() -> tuple[pd.DataFrame, pd.DataFrame]:
                 "workflow": "MAS",
                 "total_minutes": detail.mas_minutes.sum(),
                 "final_items": 50,
-                "usable_items": 47,
-                "minutes_per_usable_item": detail.mas_minutes.sum() / 47,
+                "usable_items": 50,
+                "minutes_per_usable_item": detail.mas_minutes.sum() / 50,
                 "common_manual_workflow_minutes_excluded_equally": shared_hours * 60,
                 "labor_cost_cny": 0.0,
             },
@@ -2466,7 +2801,7 @@ def figure5b() -> None:
         color=CORE_COLORS["MAS"],
         fontsize=9,
     )
-    ax.set_xticks([0, 1], ["Human\n50/50 usable", "MAS\n47/50 usable"])
+    ax.set_xticks([0, 1], ["Human\n50/50 usable", "MAS\n50/50 usable"])
     ax.set_ylabel("Workflow time per usable item (min)")
     ax.set_ylim(0, max(values) * 1.18)
     ax.set_title("Time per usable final item", fontweight="bold")
@@ -2595,6 +2930,105 @@ def figure5d() -> None:
     ax.set_xlim(0, max(plot.total_cost_usd.max() * 1.55, 0.06))
     style_axes(ax, "x")
     save_pdf(fig, "Figure5D_api_cost.pdf")
+
+
+def figure5e() -> None:
+    _, workflow_summary = efficiency_time_data()
+    token_costs = token_cost_data()
+    human_cost_cny = float(
+        workflow_summary.loc[workflow_summary.workflow.eq("Human"), "labor_cost_cny"].iloc[0]
+    )
+    token_estimated_usd = float(token_costs.total_cost_usd.sum())
+    token_estimated_cny = token_estimated_usd * USD_TO_CNY_FOR_FIG5
+    observed_ai_cost_cny = float("nan")
+    observed_path = DERIVED / "ai_efficiency_filled_from_update.csv"
+    if observed_path.exists():
+        observed = pd.read_csv(observed_path)
+        total = observed[observed.scope.astype(str).str.upper().eq("TOTAL")]
+        if not total.empty and "api_cost_total_cny" in total.columns:
+            observed_ai_cost_cny = float(total.api_cost_total_cny.dropna().iloc[0])
+    ai_total_cny = observed_ai_cost_cny if np.isfinite(observed_ai_cost_cny) else token_estimated_cny
+    rows = pd.DataFrame(
+        [
+            {
+                "workflow": "Human",
+                "cost_component": "labor",
+                "cost_cny": human_cost_cny,
+                "cost_usd": np.nan,
+                "source": "efficiency analysis workbook",
+                "plotted": True,
+            },
+            {
+                "workflow": "AI",
+                "cost_component": "total_api_cost_user_provided",
+                "cost_cny": observed_ai_cost_cny,
+                "cost_usd": np.nan,
+                "source": "plot/derived_data/ai_efficiency_filled_from_update.csv",
+                "plotted": bool(np.isfinite(observed_ai_cost_cny)),
+            },
+            {
+                "workflow": "AI",
+                "cost_component": "total_api_cost_token_estimated",
+                "cost_cny": token_estimated_cny,
+                "cost_usd": token_estimated_usd,
+                "source": DEEPSEEK_PRICING_SOURCE,
+                "plotted": not bool(np.isfinite(observed_ai_cost_cny)),
+            },
+        ]
+    )
+    ratio = human_cost_cny / ai_total_cny if ai_total_cny > 0 else float("nan")
+    rows["human_to_ai_cost_ratio_for_plotted_values"] = ratio
+    rows["usd_to_cny_display_rate_for_token_estimate"] = USD_TO_CNY_FOR_FIG5
+    write_csv(DERIVED / "fig5E_total_cost_comparison.csv", rows)
+
+    fig, ax = plt.subplots(figsize=(4.6, 3.6))
+    add_panel_label(fig, "E")
+    values = [human_cost_cny, ai_total_cny]
+    bars = ax.bar(
+        [0, 1],
+        values,
+        width=0.50,
+        color=[CORE_COLORS["Human"], CORE_COLORS["MAS"]],
+        edgecolor="white",
+        linewidth=0.8,
+    )
+    for bar, value in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value * 1.18,
+            f"¥{value:,.2f}" if value < 100 else f"¥{value:,.0f}",
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+        )
+    ax.set_yscale("log")
+    ax.set_xticks([0, 1], ["Human\nlabor", "AI\nAPI total"])
+    ax.set_ylabel("Cost per 50-item exam (CNY, log scale)")
+    ax.set_title("Human labor cost vs AI total cost", fontweight="bold")
+    ax.text(
+        0.5,
+        0.88,
+        f"≈{ratio:,.0f}× lower AI cost",
+        transform=ax.transAxes,
+        ha="center",
+        va="center",
+        color=CORE_COLORS["MAS"],
+        fontweight="bold",
+    )
+    ax.text(
+        0.50,
+        -0.22,
+        f"AI bar uses user-provided API total (¥{ai_total_cny:.2f}); token estimate: "
+        f"${token_estimated_usd:.3f} ≈ ¥{token_estimated_cny:.2f}.",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=6.2,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    ax.set_ylim(max(min(values) / 2, 0.1), max(values) * 2.6)
+    style_axes(ax)
+    save_pdf(fig, "Figure5E_total_cost_comparison.pdf")
 
 
 # ---------------------------------------------------------------------------
@@ -2870,6 +3304,7 @@ def cleanup_obsolete_outputs() -> None:
         "Figure2B_dimension_scores.pdf",
         "Figure2C_defect_flags.pdf",
         "Figure2D_defect_workflow.pdf",
+        "Figure2E_run_consistency.pdf",
         "Figure3B_defect_risk_by_cognitive_level.pdf",
         "Figure4B_source_judgment_confusion_matrix.pdf",
         "Figure4C_source_task_ratings.pdf",
@@ -2900,6 +3335,7 @@ def main() -> None:
     figure2c()
     figure2d()
     figure2e()
+    figure2f()
 
     figure3a()
     figure3b()
@@ -2919,6 +3355,7 @@ def main() -> None:
     figure5b()
     figure5c()
     figure5d()
+    figure5e()
 
     figure6a()
     figure6b()

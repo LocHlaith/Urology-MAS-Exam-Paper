@@ -1,0 +1,2 @@
+﻿model,formula,slope,intercept,pearson_r,pearson_p_value,n_items
+ordinary least-squares line,discrimination_upper_minus_lower ~ difficulty,-0.0016322259415350094,0.3017125551001286,-0.0021957788315789123,0.9827018237986532,100
