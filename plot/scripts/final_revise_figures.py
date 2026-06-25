@@ -1686,7 +1686,7 @@ def adjusted_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, str]:
     return pd.DataFrame(adjusted_rows), pd.DataFrame(contrast_rows), formula
 
 
-def figure3d() -> None:
+def figure3d_adjusted_unused() -> None:
     adjusted, contrasts, _ = adjusted_interaction_data()
     write_csv(DERIVED / "fig3D_adjusted_student_probabilities.csv", adjusted)
     write_csv(DERIVED / "fig3D_source_cognitive_interaction_contrasts.csv", contrasts)
@@ -1745,6 +1745,140 @@ def figure3d() -> None:
     ax.set_ylabel("Adjusted correct-answer probability")
     ax.set_title("Adjusted source × cognitive-level interaction", fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower left")
+    style_axes(ax)
+    save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf")
+
+
+def figure3d() -> None:
+    for obsolete in [
+        DERIVED / "fig3D_adjusted_student_probabilities.csv",
+        DERIVED / "fig3D_source_cognitive_interaction_contrasts.csv",
+    ]:
+        if obsolete.exists():
+            obsolete.unlink()
+
+    rates = student_level_rates()
+    rate_rows: list[dict[str, Any]] = []
+    comparison_rows: list[dict[str, Any]] = []
+    for level_index, level in enumerate(LEVELS_4):
+        wide = (
+            rates[rates.blueprint_cognitive_level.eq(level)]
+            .pivot(index="student_id", columns="source_true", values="correct_rate")
+            .dropna()
+        )
+        method, p_value, _ = paired_comparison(wide["MAS"].to_numpy(), wide["Human"].to_numpy())
+        label = "n.s."
+        human_mean, human_low, human_high = bootstrap_mean_ci(
+            wide["Human"].to_numpy(),
+            seed=430 + level_index * 4,
+        )
+        mas_mean, mas_low, mas_high = bootstrap_mean_ci(
+            wide["MAS"].to_numpy(),
+            seed=431 + level_index * 4,
+        )
+        diff = wide["MAS"].to_numpy() - wide["Human"].to_numpy()
+        diff_mean, diff_low, diff_high = bootstrap_mean_ci(
+            diff,
+            seed=432 + level_index * 4,
+        )
+        comparison_rows.append(
+            {
+                "cognitive_level": level,
+                "cognitive_level_label": LEVEL_LABELS_4[level],
+                "n_students": len(wide),
+                "human_mean_correct_rate": human_mean,
+                "human_ci_low": human_low,
+                "human_ci_high": human_high,
+                "mas_mean_correct_rate": mas_mean,
+                "mas_ci_low": mas_low,
+                "mas_ci_high": mas_high,
+                "mean_difference_mas_minus_human": diff_mean,
+                "difference_ci_low": diff_low,
+                "difference_ci_high": diff_high,
+                "comparison_method": method,
+                "p_value": p_value,
+                "significance_label": label,
+                "analysis_note": "Same student-level paired comparison as Figure 3C; no covariate adjustment.",
+            }
+        )
+        for student_id, row in wide.iterrows():
+            for source in ["Human", "MAS"]:
+                rate_rows.append(
+                    {
+                        "student_id": student_id,
+                        "cognitive_level": level,
+                        "source_true": source,
+                        "correct_rate": row[source],
+                    }
+                )
+
+    plot_rates = pd.DataFrame(rate_rows)
+    comparisons = pd.DataFrame(comparison_rows)
+    write_csv(DERIVED / "fig3D_student_level_source_cognitive_rates.csv", plot_rates)
+    write_csv(DERIVED / "fig3D_source_cognitive_paired_comparisons.csv", comparisons)
+
+    fig, ax = plt.subplots(figsize=(7.0, 4.0))
+    add_panel_label(fig, "D")
+    x = np.arange(len(LEVELS_4), dtype=float)
+    offsets = {"Human": -0.18, "MAS": 0.18}
+    width = 0.30
+    mean_lines: dict[str, list[float]] = {}
+    for source in ["Human", "MAS"]:
+        groups = [
+            plot_rates[
+                plot_rates.source_true.eq(source)
+                & plot_rates.cognitive_level.eq(level)
+            ].correct_rate.to_numpy()
+            for level in LEVELS_4
+        ]
+        positions = x + offsets[source]
+        box = ax.boxplot(
+            groups,
+            positions=positions,
+            widths=width,
+            patch_artist=True,
+            showfliers=False,
+            medianprops={"color": UROMAS_BASE_COLORS["text_dark"], "linewidth": 1},
+            whiskerprops={"color": CORE_COLORS[source], "linewidth": 0.8},
+            capprops={"color": CORE_COLORS[source], "linewidth": 0.8},
+        )
+        for patch in box["boxes"]:
+            patch.set_facecolor(CORE_FILLS[source])
+            patch.set_edgecolor(CORE_COLORS[source])
+        means = [float(np.mean(group)) for group in groups]
+        mean_lines[source] = means
+        ax.plot(
+            positions,
+            means,
+            color=CORE_COLORS[source],
+            marker="o",
+            linewidth=1.5,
+            markersize=4,
+            label=source,
+            zorder=4,
+        )
+    for index, row in comparisons.iterrows():
+        upper = max(
+            plot_rates[plot_rates.cognitive_level.eq(row.cognitive_level)].correct_rate.max(),
+            mean_lines["Human"][index],
+            mean_lines["MAS"][index],
+        )
+        ax.text(index, min(1.03, upper + 0.05), row["significance_label"], ha="center", va="bottom", fontsize=7)
+    ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4])
+    ax.set_ylim(0.18, 1.08)
+    ax.set_ylabel("Student-level correct-answer rate")
+    ax.set_title("Student source × cognitive-level comparison", fontweight="bold")
+    ax.legend(frameon=False, ncol=2, loc="lower left")
+    ax.text(
+        0.98,
+        0.04,
+        "Same method as Figure 3C: paired student-level comparison;\nno covariate adjustment.",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=6.2,
+        color=UROMAS_BASE_COLORS["text"],
+    )
     style_axes(ax)
     save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf")
 

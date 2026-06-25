@@ -64,8 +64,8 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig3C_student_accuracy_student_rates.csv",
     ],
     "Figure3D": [
-        "fig3D_adjusted_student_probabilities.csv",
-        "fig3D_source_cognitive_interaction_contrasts.csv",
+        "fig3D_student_level_source_cognitive_rates.csv",
+        "fig3D_source_cognitive_paired_comparisons.csv",
     ],
     "Figure3E": [
         "fig3E_ctt_upper_lower_item_data.csv",
@@ -106,8 +106,8 @@ PANEL_NOTES: dict[str, str] = {
         "scores, summarized with bootstrap mean 95% CI."
     ),
     "Figure3D": (
-        "Per user instruction, the ambiguous request to unify Figure 3D and 3C "
-        "statistical methods was not applied."
+        "Figure 3D uses the same student-level paired comparison as Figure 3C: "
+        "no covariate adjustment."
     ),
     "Figure4B": "Wilson 95% confidence intervals.",
     "Figure4E": "Wilson 95% confidence interval.",
