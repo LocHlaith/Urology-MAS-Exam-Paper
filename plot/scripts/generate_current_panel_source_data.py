@@ -57,19 +57,23 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig2E_expert_quality_interaction_contrasts.csv",
         "fig2E_expert_quality_interaction_fixed_effects.csv",
     ],
-    "Figure2F": ["fig2F_run_consistency_stats.csv", "machine_rating_summary.csv"],
+    "Figure2F": [
+        "fig2F_machine_rating_icc_item_scores.csv",
+        "fig2F_machine_rating_icc_stats.csv",
+        "fig2F_machine_rating_icc_bootstrap.csv",
+    ],
     "Figure3B": ["fig3B_student_correct_rate_raw.csv", "fig3B_student_correct_rate_stats.csv"],
     "Figure3C": [
         "fig3C_student_accuracy_horizontal_stats.csv",
         "fig3C_student_accuracy_student_rates.csv",
     ],
     "Figure3D": [
-        "fig3D_student_level_source_cognitive_rates.csv",
-        "fig3D_source_cognitive_paired_comparisons.csv",
+        "fig3D_adjusted_student_probabilities.csv",
+        "fig3D_source_cognitive_interaction_contrasts.csv",
     ],
     "Figure3E": [
-        "fig3E_ctt_upper_lower_item_data.csv",
-        "fig3E_ctt_by_cognitive_level_summary.csv",
+        "fig3E_ctt_scatter_item_data.csv",
+        "fig3E_ctt_scatter_summary.csv",
         "fig3E_ctt_linear_fit.csv",
     ],
     "Figure3F": ["fig3F_reliability_bootstrap_ci.csv", "responses.csv", "item_master.csv"],
@@ -102,12 +106,13 @@ PANEL_NOTES: dict[str, str] = {
         "has_vignette + (1|rater_id) + (1|item_id)."
     ),
     "Figure2F": (
-        "Consistency panel uses run-to-run SD of repeated machine proxy quality "
-        "scores, summarized with bootstrap mean 95% CI."
+        "Consistency panel uses two-way mixed-effects consistency ICC. The plotted "
+        "statistic is average-measure ICC(3,k) across four machine runs."
     ),
     "Figure3D": (
-        "Figure 3D uses the same student-level paired comparison as Figure 3C: "
-        "no covariate adjustment."
+        "Figure 3D uses an adjusted response-level binomial model controlling for "
+        "block position, training setting/campus, training year, randomized form, "
+        "and topic; standard errors are clustered by student."
     ),
     "Figure4B": "Wilson 95% confidence intervals.",
     "Figure4E": "Wilson 95% confidence interval.",

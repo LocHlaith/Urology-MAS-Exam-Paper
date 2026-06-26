@@ -1,2 +1,2 @@
-﻿model,formula,slope,intercept,pearson_r,pearson_p_value,n_items
-ordinary least-squares line,discrimination_upper_minus_lower ~ difficulty,-0.0016322259415350094,0.3017125551001286,-0.0021957788315789123,0.9827018237986532,100
+﻿model,formula,slope_k,intercept,pearson_r,pearson_p_value,n_items,data_source
+positive proportional least-squares line through origin,item_rest_discrimination = k * difficulty,0.39119605692468046,0.0,0.30464062254018726,0.0020581834744512963,100,fig3E_ctt_scatter_item_data.csv from 0612 workflow

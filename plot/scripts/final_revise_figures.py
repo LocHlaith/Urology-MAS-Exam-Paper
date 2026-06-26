@@ -1340,40 +1340,166 @@ def figure2e() -> None:
     save_pdf(fig, "Figure2E_expert_quality_source_cognitive_interaction.pdf")
 
 
-def figure2f() -> None:
-    remove_output("Figure2E_run_consistency.pdf")
-    summary = pd.read_csv(DERIVED / "machine_rating_summary.csv")
-    fig, ax = plt.subplots(figsize=(3.0, 2.5))
-    add_panel_label(fig, "F")
-    plot_rows: list[dict[str, Any]] = []
-    rng = np.random.default_rng(20260621)
-    for position, source in enumerate(["Human", "MAS"]):
-        values = summary.loc[summary.source_true.eq(source), "machine_proxy_quality_score_sd"].dropna().to_numpy()
-        ax.scatter(
-            rng.normal(position, 0.045, len(values)),
-            values,
-            color=CORE_COLORS[source],
-            s=12,
-            alpha=0.55,
-            linewidths=0,
+def icc_3_consistency(values: np.ndarray) -> dict[str, float]:
+    matrix = np.asarray(values, dtype=float)
+    matrix = matrix[~np.isnan(matrix).any(axis=1)]
+    n_items, n_runs = matrix.shape
+    if n_items < 2 or n_runs < 2:
+        return {
+            "n_items": n_items,
+            "n_runs": n_runs,
+            "ms_item": float("nan"),
+            "ms_error": float("nan"),
+            "icc_3_1": float("nan"),
+            "icc_3_k": float("nan"),
+        }
+    item_means = matrix.mean(axis=1, keepdims=True)
+    run_means = matrix.mean(axis=0, keepdims=True)
+    grand_mean = matrix.mean()
+    ss_item = n_runs * ((item_means - grand_mean) ** 2).sum()
+    ss_run = n_items * ((run_means - grand_mean) ** 2).sum()
+    ss_total = ((matrix - grand_mean) ** 2).sum()
+    ss_error = ss_total - ss_item - ss_run
+    ms_item = ss_item / (n_items - 1)
+    ms_error = ss_error / ((n_items - 1) * (n_runs - 1))
+    icc_3_1 = (ms_item - ms_error) / (ms_item + (n_runs - 1) * ms_error)
+    icc_3_k = (ms_item - ms_error) / ms_item
+    return {
+        "n_items": int(n_items),
+        "n_runs": int(n_runs),
+        "ms_item": float(ms_item),
+        "ms_error": float(ms_error),
+        "icc_3_1": float(icc_3_1),
+        "icc_3_k": float(icc_3_k),
+    }
+
+
+def machine_rating_icc_data(reps: int = 3000, seed: int = 20260627) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    ratings = pd.read_csv(DERIVED / "machine_ratings.csv")
+    item_score_rows: list[dict[str, Any]] = []
+    stat_rows: list[dict[str, Any]] = []
+    boot_rows: list[dict[str, Any]] = []
+    rng = np.random.default_rng(seed)
+    for source in ["Human", "MAS"]:
+        wide = (
+            ratings[ratings.source_true.eq(source)]
+            .pivot(index="item_id", columns="rater_id", values="machine_proxy_quality_score")
+            .sort_index()
         )
-        mean, low, high = bootstrap_mean_ci(values, seed=position + 70)
-        plot_rows.append(
+        for item_id, row in wide.iterrows():
+            for run_id, score in row.items():
+                item_score_rows.append(
+                    {
+                        "source": source,
+                        "item_id": item_id,
+                        "machine_run": run_id,
+                        "machine_proxy_quality_score": score,
+                    }
+                )
+        estimate = icc_3_consistency(wide.to_numpy())
+        boot_icc_3_1: list[float] = []
+        boot_icc_3_k: list[float] = []
+        matrix = wide.to_numpy(float)
+        n_items = matrix.shape[0]
+        for rep in range(reps):
+            sampled = matrix[rng.integers(0, n_items, size=n_items), :]
+            boot = icc_3_consistency(sampled)
+            boot_icc_3_1.append(boot["icc_3_1"])
+            boot_icc_3_k.append(boot["icc_3_k"])
+            boot_rows.append(
+                {
+                    "source": source,
+                    "bootstrap_replicate": rep + 1,
+                    "icc_3_1": boot["icc_3_1"],
+                    "icc_3_k": boot["icc_3_k"],
+                }
+            )
+        stat_rows.append(
             {
                 "source": source,
-                "n_items": len(values),
-                "mean_run_to_run_sd": mean,
-                "ci_low": low,
-                "ci_high": high,
-                "ci_method": "bootstrap mean 95% CI",
-                "metric": "machine_proxy_quality_score_sd",
+                **estimate,
+                "icc_3_1_ci_low": float(np.nanquantile(boot_icc_3_1, 0.025)),
+                "icc_3_1_ci_high": float(np.nanquantile(boot_icc_3_1, 0.975)),
+                "icc_3_k_ci_low": float(np.nanquantile(boot_icc_3_k, 0.025)),
+                "icc_3_k_ci_high": float(np.nanquantile(boot_icc_3_k, 0.975)),
+                "ci_method": f"item bootstrap, {reps} replicates",
+                "icc_model": "two-way mixed-effects consistency ICC; ICC(3,k) is average-measure reliability across four machine runs",
+                "score_column": "machine_proxy_quality_score",
             }
         )
-        ax.errorbar(position, mean, yerr=[[mean - low], [high - mean]], fmt="D", color=UROMAS_BASE_COLORS["text_dark"], capsize=3)
-    write_csv(DERIVED / "fig2F_run_consistency_stats.csv", plot_rows)
-    ax.set_xticks([0, 1], ["Human", "MAS"])
-    ax.set_ylabel("Run-to-run SD")
-    ax.set_title("Machine-rating run consistency", fontweight="bold")
+    return pd.DataFrame(item_score_rows), pd.DataFrame(stat_rows), pd.DataFrame(boot_rows)
+
+
+def figure2f() -> None:
+    remove_output("Figure2E_run_consistency.pdf")
+    old_sd = DERIVED / "fig2F_run_consistency_stats.csv"
+    if old_sd.exists():
+        old_sd.unlink()
+    item_scores, stats_df, boot = machine_rating_icc_data()
+    write_csv(DERIVED / "fig2F_machine_rating_icc_item_scores.csv", item_scores)
+    write_csv(DERIVED / "fig2F_machine_rating_icc_stats.csv", stats_df)
+    write_csv(DERIVED / "fig2F_machine_rating_icc_bootstrap.csv", boot)
+    remove_output("Figure2F_run_consistency.pdf")
+
+    fig, ax = plt.subplots(figsize=(4.2, 3.1))
+    add_panel_label(fig, "F")
+    x = np.arange(len(stats_df))
+    colors = [CORE_COLORS[row.source] for row in stats_df.itertuples()]
+    bars = ax.bar(
+        x,
+        stats_df.icc_3_k,
+        width=0.48,
+        color=colors,
+        alpha=0.88,
+        edgecolor="white",
+        linewidth=0.8,
+    )
+    ax.errorbar(
+        x,
+        stats_df.icc_3_k,
+        yerr=[
+            stats_df.icc_3_k - stats_df.icc_3_k_ci_low,
+            stats_df.icc_3_k_ci_high - stats_df.icc_3_k,
+        ],
+        fmt="none",
+        ecolor=UROMAS_BASE_COLORS["text_dark"],
+        capsize=3,
+        linewidth=0.9,
+    )
+    for bar, row in zip(bars, stats_df.itertuples()):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            min(row.icc_3_k + 0.018, 1.015),
+            f"{row.icc_3_k:.3f}",
+            ha="center",
+            va="bottom",
+            fontweight="bold",
+            fontsize=8,
+        )
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            0.835,
+            f"ICC(3,1)\n{row.icc_3_1:.3f}",
+            ha="center",
+            va="center",
+            fontsize=6.3,
+            color="white",
+            fontweight="bold",
+        )
+    ax.set_xticks(x, stats_df.source)
+    ax.set_ylim(0.80, 1.03)
+    ax.set_ylabel("Average-measure ICC(3,k)")
+    ax.set_title("Machine-rating consistency by ICC", fontweight="bold")
+    ax.text(
+        0.50,
+        -0.20,
+        "Two-way mixed consistency ICC; k=4 machine runs. Bars show average-measure ICC.",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=6.2,
+        color=UROMAS_BASE_COLORS["text"],
+    )
     style_axes(ax)
     save_pdf(fig, "Figure2F_run_consistency.pdf")
 
@@ -1681,12 +1807,22 @@ def adjusted_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, str]:
                 "n_responses": len(data),
                 "model_formula": formula,
                 "covariance": "cluster-robust by student",
+                "adjustment_note": (
+                    "Adjusted for block position, training setting/campus, "
+                    "training year, randomized form, and topic."
+                ),
             }
         )
     return pd.DataFrame(adjusted_rows), pd.DataFrame(contrast_rows), formula
 
 
-def figure3d_adjusted_unused() -> None:
+def figure3d_adjusted() -> None:
+    for obsolete in [
+        DERIVED / "fig3D_student_level_source_cognitive_rates.csv",
+        DERIVED / "fig3D_source_cognitive_paired_comparisons.csv",
+    ]:
+        if obsolete.exists():
+            obsolete.unlink()
     adjusted, contrasts, _ = adjusted_interaction_data()
     write_csv(DERIVED / "fig3D_adjusted_student_probabilities.csv", adjusted)
     write_csv(DERIVED / "fig3D_source_cognitive_interaction_contrasts.csv", contrasts)
@@ -1745,11 +1881,21 @@ def figure3d_adjusted_unused() -> None:
     ax.set_ylabel("Adjusted correct-answer probability")
     ax.set_title("Adjusted source × cognitive-level interaction", fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower left")
+    ax.text(
+        0.98,
+        0.04,
+        "Adjusted for block position, campus, training year,\nform, and topic; SE clustered by student.",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=6.2,
+        color=UROMAS_BASE_COLORS["text"],
+    )
     style_axes(ax)
     save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf")
 
 
-def figure3d() -> None:
+def figure3d_paired_unused() -> None:
     for obsolete in [
         DERIVED / "fig3D_adjusted_student_probabilities.csv",
         DERIVED / "fig3D_source_cognitive_interaction_contrasts.csv",
@@ -1883,6 +2029,10 @@ def figure3d() -> None:
     save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf")
 
 
+def figure3d() -> None:
+    figure3d_adjusted()
+
+
 def ctt_upper_lower_data() -> pd.DataFrame:
     responses = pd.read_csv(DERIVED / "responses.csv")
     item = pd.read_csv(DERIVED / "item_master.csv")[
@@ -1983,7 +2133,7 @@ def figure3e_old_boxplots_unused() -> None:
     save_pdf(fig, "Figure3E_ctt_by_cognitive_level.pdf")
 
 
-def figure3e() -> None:
+def figure3e_upper_lower_unused() -> None:
     ctt = ctt_upper_lower_data()
     ctt["item_type_group"] = np.select(
         [
@@ -2080,6 +2230,103 @@ def figure3e() -> None:
         0.98,
         0.05,
         f"Fit: y = {intercept:.2f} {slope_text}\nr={correlation.statistic:.2f}",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=6.6,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    style_axes(ax)
+    save_pdf(fig, "Figure3E_ctt_by_cognitive_level.pdf")
+
+
+def figure3e() -> None:
+    ctt = pd.read_csv(DERIVED / "fig3E_ctt_scatter_item_data.csv")
+    ctt = ctt.dropna(subset=["difficulty", "discrimination"]).copy()
+    ctt["item_type_group"] = pd.Categorical(
+        ctt["item_type_group"],
+        ["A1/B", "A2/A3/A4", "X"],
+        ordered=True,
+    )
+    summary = (
+        ctt.groupby(["source_true", "item_type_group"], observed=True)
+        .agg(
+            n_items=("item_id", "count"),
+            mean_difficulty=("difficulty", "mean"),
+            sd_difficulty=("difficulty", "std"),
+            mean_item_rest_discrimination=("discrimination", "mean"),
+            sd_item_rest_discrimination=("discrimination", "std"),
+        )
+        .reset_index()
+    )
+    write_csv(DERIVED / "fig3E_ctt_scatter_summary.csv", summary)
+
+    x = ctt.difficulty.to_numpy(float)
+    y = ctt.discrimination.to_numpy(float)
+    proportional_slope = float(np.dot(x, y) / np.dot(x, x))
+    correlation = stats.pearsonr(x, y)
+    write_csv(
+        DERIVED / "fig3E_ctt_linear_fit.csv",
+        [
+            {
+                "model": "positive proportional least-squares line through origin",
+                "formula": "item_rest_discrimination = k * difficulty",
+                "slope_k": proportional_slope,
+                "intercept": 0.0,
+                "pearson_r": correlation.statistic,
+                "pearson_p_value": correlation.pvalue,
+                "n_items": len(ctt),
+                "data_source": "fig3E_ctt_scatter_item_data.csv from 0612 workflow",
+            }
+        ],
+    )
+
+    fig, ax = plt.subplots(figsize=(7.0, 4.2))
+    add_panel_label(fig, "E")
+    marker_map = {"A1/B": "o", "A2/A3/A4": "s", "X": "^"}
+    for source in ["MAS", "Human"]:
+        for marker_group, marker in marker_map.items():
+            sub = ctt[ctt.source_true.eq(source) & ctt.item_type_group.eq(marker_group)]
+            ax.scatter(
+                sub.difficulty,
+                sub.discrimination,
+                marker=marker,
+                s=40,
+                color=CORE_COLORS[source],
+                alpha=0.72,
+                edgecolors="white",
+                linewidths=0.25,
+            )
+    x_line = np.linspace(0, 1.0, 200)
+    ax.plot(
+        x_line,
+        proportional_slope * x_line,
+        color=UROMAS_BASE_COLORS["text_dark"],
+        linewidth=1.3,
+        linestyle="-",
+        zorder=3,
+    )
+    ax.axhline(0.20, color=UROMAS_BASE_COLORS["spine"], linestyle=":", linewidth=1.3)
+    ax.axvline(0.50, color=UROMAS_BASE_COLORS["spine"], linestyle=":", linewidth=1.3)
+    ax.set_xlim(0, 1.02)
+    ax.set_ylim(-0.36, 0.62)
+    ax.set_xlabel("Item difficulty (prop. correct)")
+    ax.set_ylabel("Discrimination (item-rest $r$)")
+    ax.set_title("Exploratory CTT (objective items)", fontweight="bold")
+    source_handles = [
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["MAS"], markeredgecolor="white", markersize=6.5, label="MAS"),
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["Human"], markeredgecolor="white", markersize=6.5, label="Human"),
+    ]
+    marker_handles = [
+        Line2D([0], [0], marker=marker, color=UROMAS_BASE_COLORS["tick"], linestyle="none", markersize=6.5, label=label)
+        for label, marker in marker_map.items()
+    ]
+    fit_handle = Line2D([0], [0], color=UROMAS_BASE_COLORS["text_dark"], linewidth=1.3, label="Fit: y = kx")
+    ax.legend(handles=source_handles + marker_handles + [fit_handle], frameon=False, loc="lower left")
+    ax.text(
+        0.98,
+        0.05,
+        f"Fit: y = {proportional_slope:.2f}x\nr={correlation.statistic:.2f}",
         transform=ax.transAxes,
         ha="right",
         va="bottom",
