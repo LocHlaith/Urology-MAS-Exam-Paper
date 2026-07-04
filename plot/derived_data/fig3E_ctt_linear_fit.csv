@@ -1,2 +1,2 @@
-﻿model,formula,slope_k,intercept,pearson_r,pearson_p_value,n_items,data_source
-positive proportional least-squares line through origin,item_rest_discrimination = k * difficulty,0.39119605692468046,0.0,0.30464062254018726,0.0020581834744512963,100,fig3E_ctt_scatter_item_data.csv from 0612 workflow
+﻿model,formula,slope_k,intercept_b,pearson_r,pearson_p_value,n_fit_points,n_items_underlying,fit_data_source
+ordinary least-squares line with intercept fitted to source x item-type mean points,mean_item_rest_discrimination = k * mean_difficulty + b,0.2612869927817942,0.09326124856993862,0.7165043873547383,0.1091624060703406,6,100,fig3E_ctt_scatter_summary.csv; grouped by source_true x item_type_group

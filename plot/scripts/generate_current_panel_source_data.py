@@ -58,9 +58,9 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig2E_expert_quality_interaction_fixed_effects.csv",
     ],
     "Figure2F": [
-        "fig2F_machine_rating_icc_item_scores.csv",
-        "fig2F_machine_rating_icc_stats.csv",
-        "fig2F_machine_rating_icc_bootstrap.csv",
+        "fig2F_expert_inter_rater_item_scores.csv",
+        "fig2F_expert_inter_rater_icc_stats.csv",
+        "fig2F_expert_inter_rater_icc_bootstrap.csv",
     ],
     "Figure3B": ["fig3B_student_correct_rate_raw.csv", "fig3B_student_correct_rate_stats.csv"],
     "Figure3C": [
@@ -68,7 +68,8 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig3C_student_accuracy_student_rates.csv",
     ],
     "Figure3D": [
-        "fig3D_adjusted_student_probabilities.csv",
+        "fig3D_adjusted_item_probabilities.csv",
+        "fig3D_adjusted_probability_summary.csv",
         "fig3D_source_cognitive_interaction_contrasts.csv",
     ],
     "Figure3E": [
@@ -106,13 +107,16 @@ PANEL_NOTES: dict[str, str] = {
         "has_vignette + (1|rater_id) + (1|item_id)."
     ),
     "Figure2F": (
-        "Consistency panel uses two-way mixed-effects consistency ICC. The plotted "
-        "statistic is average-measure ICC(3,k) across four machine runs."
+        "Inter-rater reliability panel uses two-way random-effects absolute-agreement "
+        "ICC. The plotted statistic is average-measure ICC(2,k) across three experts."
     ),
     "Figure3D": (
-        "Figure 3D uses an adjusted response-level binomial model controlling for "
-        "block position, training setting/campus, training year, randomized form, "
-        "and topic; standard errors are clustered by student."
+        "Figure 3D uses a covariate-standardized item-level program: a binomial "
+        "GLM estimates item fixed effects while controlling for block position, "
+        "training setting/campus, training year, and randomized form. Each item "
+        "is standardized over all students and both block positions; boxes show "
+        "adjusted item probabilities with min-max whiskers, and P values come "
+        "from source-label permutation tests within each cognitive level."
     ),
     "Figure4B": "Wilson 95% confidence intervals.",
     "Figure4E": "Wilson 95% confidence interval.",

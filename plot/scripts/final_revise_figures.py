@@ -8,6 +8,7 @@ editable PDFs to plot/panels.
 from __future__ import annotations
 
 import csv
+import itertools
 import json
 import math
 import posixpath
@@ -1340,42 +1341,65 @@ def figure2e() -> None:
     save_pdf(fig, "Figure2E_expert_quality_source_cognitive_interaction.pdf")
 
 
-def icc_3_consistency(values: np.ndarray) -> dict[str, float]:
+def icc_2_absolute_agreement(values: np.ndarray) -> dict[str, float]:
     matrix = np.asarray(values, dtype=float)
     matrix = matrix[~np.isnan(matrix).any(axis=1)]
-    n_items, n_runs = matrix.shape
-    if n_items < 2 or n_runs < 2:
+    n_targets, n_raters = matrix.shape
+    if n_targets < 2 or n_raters < 2:
         return {
-            "n_items": n_items,
-            "n_runs": n_runs,
-            "ms_item": float("nan"),
+            "n_targets": n_targets,
+            "n_raters": n_raters,
+            "ms_target": float("nan"),
+            "ms_rater": float("nan"),
             "ms_error": float("nan"),
-            "icc_3_1": float("nan"),
-            "icc_3_k": float("nan"),
+            "icc_2_1": float("nan"),
+            "icc_2_k": float("nan"),
+            "icc_c_1": float("nan"),
+            "icc_c_k": float("nan"),
         }
-    item_means = matrix.mean(axis=1, keepdims=True)
-    run_means = matrix.mean(axis=0, keepdims=True)
+    target_means = matrix.mean(axis=1, keepdims=True)
+    rater_means = matrix.mean(axis=0, keepdims=True)
     grand_mean = matrix.mean()
-    ss_item = n_runs * ((item_means - grand_mean) ** 2).sum()
-    ss_run = n_items * ((run_means - grand_mean) ** 2).sum()
+    ss_target = n_raters * ((target_means - grand_mean) ** 2).sum()
+    ss_rater = n_targets * ((rater_means - grand_mean) ** 2).sum()
     ss_total = ((matrix - grand_mean) ** 2).sum()
-    ss_error = ss_total - ss_item - ss_run
-    ms_item = ss_item / (n_items - 1)
-    ms_error = ss_error / ((n_items - 1) * (n_runs - 1))
-    icc_3_1 = (ms_item - ms_error) / (ms_item + (n_runs - 1) * ms_error)
-    icc_3_k = (ms_item - ms_error) / ms_item
+    ss_error = ss_total - ss_target - ss_rater
+    ms_target = ss_target / (n_targets - 1)
+    ms_rater = ss_rater / (n_raters - 1)
+    ms_error = ss_error / ((n_targets - 1) * (n_raters - 1))
+    icc_2_1 = (ms_target - ms_error) / (
+        ms_target
+        + (n_raters - 1) * ms_error
+        + n_raters * (ms_rater - ms_error) / n_targets
+    )
+    icc_2_k = (ms_target - ms_error) / (
+        ms_target + (ms_rater - ms_error) / n_targets
+    )
+    icc_c_1 = (ms_target - ms_error) / (
+        ms_target + (n_raters - 1) * ms_error
+    )
+    icc_c_k = (ms_target - ms_error) / ms_target
     return {
-        "n_items": int(n_items),
-        "n_runs": int(n_runs),
-        "ms_item": float(ms_item),
+        "n_targets": int(n_targets),
+        "n_raters": int(n_raters),
+        "ms_target": float(ms_target),
+        "ms_rater": float(ms_rater),
         "ms_error": float(ms_error),
-        "icc_3_1": float(icc_3_1),
-        "icc_3_k": float(icc_3_k),
+        "icc_2_1": float(icc_2_1),
+        "icc_2_k": float(icc_2_k),
+        "icc_c_1": float(icc_c_1),
+        "icc_c_k": float(icc_c_k),
     }
 
 
-def machine_rating_icc_data(reps: int = 3000, seed: int = 20260627) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    ratings = pd.read_csv(DERIVED / "machine_ratings.csv")
+def expert_inter_rater_icc_data(reps: int = 3000, seed: int = 20260628) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    ratings = pd.read_csv(DERIVED / "expert_ratings_updated.csv")
+    ratings = ratings.dropna(subset=["source_true", "rater_id", "excel_row", "quality_score_5"]).copy()
+    ratings["target_id"] = (
+        ratings["source_true"].astype(str)
+        + "_row_"
+        + ratings["excel_row"].astype(int).astype(str).str.zfill(3)
+    )
     item_score_rows: list[dict[str, Any]] = []
     stat_rows: list[dict[str, Any]] = []
     boot_rows: list[dict[str, Any]] = []
@@ -1383,48 +1407,66 @@ def machine_rating_icc_data(reps: int = 3000, seed: int = 20260627) -> tuple[pd.
     for source in ["Human", "MAS"]:
         wide = (
             ratings[ratings.source_true.eq(source)]
-            .pivot(index="item_id", columns="rater_id", values="machine_proxy_quality_score")
+            .pivot(index="target_id", columns="rater_id", values="quality_score_5")
             .sort_index()
         )
-        for item_id, row in wide.iterrows():
-            for run_id, score in row.items():
+        for target_id, row in wide.iterrows():
+            target_rows = ratings[ratings.target_id.eq(target_id)]
+            item_id = target_rows.item_id.dropna().astype(str).iloc[0] if target_rows.item_id.notna().any() else ""
+            paper_item_no = target_rows.paper_item_no.dropna().iloc[0] if target_rows.paper_item_no.notna().any() else np.nan
+            excel_row = target_rows.excel_row.dropna().iloc[0] if target_rows.excel_row.notna().any() else np.nan
+            for rater_id, score in row.items():
                 item_score_rows.append(
                     {
                         "source": source,
+                        "target_id": target_id,
                         "item_id": item_id,
-                        "machine_run": run_id,
-                        "machine_proxy_quality_score": score,
+                        "paper_item_no_from_match": paper_item_no,
+                        "excel_row": excel_row,
+                        "rater_id": rater_id,
+                        "expert_quality_score_5": score,
                     }
                 )
-        estimate = icc_3_consistency(wide.to_numpy())
-        boot_icc_3_1: list[float] = []
-        boot_icc_3_k: list[float] = []
+        estimate = icc_2_absolute_agreement(wide.to_numpy())
+        boot_icc_2_1: list[float] = []
+        boot_icc_2_k: list[float] = []
+        boot_icc_c_1: list[float] = []
+        boot_icc_c_k: list[float] = []
         matrix = wide.to_numpy(float)
-        n_items = matrix.shape[0]
+        n_targets = matrix.shape[0]
         for rep in range(reps):
-            sampled = matrix[rng.integers(0, n_items, size=n_items), :]
-            boot = icc_3_consistency(sampled)
-            boot_icc_3_1.append(boot["icc_3_1"])
-            boot_icc_3_k.append(boot["icc_3_k"])
+            sampled = matrix[rng.integers(0, n_targets, size=n_targets), :]
+            boot = icc_2_absolute_agreement(sampled)
+            boot_icc_2_1.append(boot["icc_2_1"])
+            boot_icc_2_k.append(boot["icc_2_k"])
+            boot_icc_c_1.append(boot["icc_c_1"])
+            boot_icc_c_k.append(boot["icc_c_k"])
             boot_rows.append(
                 {
                     "source": source,
                     "bootstrap_replicate": rep + 1,
-                    "icc_3_1": boot["icc_3_1"],
-                    "icc_3_k": boot["icc_3_k"],
+                    "icc_2_1": boot["icc_2_1"],
+                    "icc_2_k": boot["icc_2_k"],
+                    "icc_c_1": boot["icc_c_1"],
+                    "icc_c_k": boot["icc_c_k"],
                 }
             )
         stat_rows.append(
             {
                 "source": source,
                 **estimate,
-                "icc_3_1_ci_low": float(np.nanquantile(boot_icc_3_1, 0.025)),
-                "icc_3_1_ci_high": float(np.nanquantile(boot_icc_3_1, 0.975)),
-                "icc_3_k_ci_low": float(np.nanquantile(boot_icc_3_k, 0.025)),
-                "icc_3_k_ci_high": float(np.nanquantile(boot_icc_3_k, 0.975)),
+                "icc_2_1_ci_low": float(np.nanquantile(boot_icc_2_1, 0.025)),
+                "icc_2_1_ci_high": float(np.nanquantile(boot_icc_2_1, 0.975)),
+                "icc_2_k_ci_low": float(np.nanquantile(boot_icc_2_k, 0.025)),
+                "icc_2_k_ci_high": float(np.nanquantile(boot_icc_2_k, 0.975)),
+                "icc_c_1_ci_low": float(np.nanquantile(boot_icc_c_1, 0.025)),
+                "icc_c_1_ci_high": float(np.nanquantile(boot_icc_c_1, 0.975)),
+                "icc_c_k_ci_low": float(np.nanquantile(boot_icc_c_k, 0.025)),
+                "icc_c_k_ci_high": float(np.nanquantile(boot_icc_c_k, 0.975)),
                 "ci_method": f"item bootstrap, {reps} replicates",
-                "icc_model": "two-way mixed-effects consistency ICC; ICC(3,k) is average-measure reliability across four machine runs",
-                "score_column": "machine_proxy_quality_score",
+                "icc_model": "two-way random-effects absolute-agreement ICC; ICC(2,k) is average-measure inter-rater reliability across three experts",
+                "target_alignment": "source-specific expert worksheet rows",
+                "score_column": "quality_score_5",
             }
         )
     return pd.DataFrame(item_score_rows), pd.DataFrame(stat_rows), pd.DataFrame(boot_rows)
@@ -1432,14 +1474,20 @@ def machine_rating_icc_data(reps: int = 3000, seed: int = 20260627) -> tuple[pd.
 
 def figure2f() -> None:
     remove_output("Figure2E_run_consistency.pdf")
-    old_sd = DERIVED / "fig2F_run_consistency_stats.csv"
-    if old_sd.exists():
-        old_sd.unlink()
-    item_scores, stats_df, boot = machine_rating_icc_data()
-    write_csv(DERIVED / "fig2F_machine_rating_icc_item_scores.csv", item_scores)
-    write_csv(DERIVED / "fig2F_machine_rating_icc_stats.csv", stats_df)
-    write_csv(DERIVED / "fig2F_machine_rating_icc_bootstrap.csv", boot)
+    for obsolete in [
+        DERIVED / "fig2F_run_consistency_stats.csv",
+        DERIVED / "fig2F_machine_rating_icc_item_scores.csv",
+        DERIVED / "fig2F_machine_rating_icc_stats.csv",
+        DERIVED / "fig2F_machine_rating_icc_bootstrap.csv",
+    ]:
+        if obsolete.exists():
+            obsolete.unlink()
+    item_scores, stats_df, boot = expert_inter_rater_icc_data()
+    write_csv(DERIVED / "fig2F_expert_inter_rater_item_scores.csv", item_scores)
+    write_csv(DERIVED / "fig2F_expert_inter_rater_icc_stats.csv", stats_df)
+    write_csv(DERIVED / "fig2F_expert_inter_rater_icc_bootstrap.csv", boot)
     remove_output("Figure2F_run_consistency.pdf")
+    remove_output("Figure2F_expert_inter_rater_reliability.pdf")
 
     fig, ax = plt.subplots(figsize=(4.2, 3.1))
     add_panel_label(fig, "F")
@@ -1447,7 +1495,7 @@ def figure2f() -> None:
     colors = [CORE_COLORS[row.source] for row in stats_df.itertuples()]
     bars = ax.bar(
         x,
-        stats_df.icc_3_k,
+        stats_df.icc_2_k,
         width=0.48,
         color=colors,
         alpha=0.88,
@@ -1456,10 +1504,10 @@ def figure2f() -> None:
     )
     ax.errorbar(
         x,
-        stats_df.icc_3_k,
+        stats_df.icc_2_k,
         yerr=[
-            stats_df.icc_3_k - stats_df.icc_3_k_ci_low,
-            stats_df.icc_3_k_ci_high - stats_df.icc_3_k,
+            stats_df.icc_2_k - stats_df.icc_2_k_ci_low,
+            stats_df.icc_2_k_ci_high - stats_df.icc_2_k,
         ],
         fmt="none",
         ecolor=UROMAS_BASE_COLORS["text_dark"],
@@ -1469,8 +1517,8 @@ def figure2f() -> None:
     for bar, row in zip(bars, stats_df.itertuples()):
         ax.text(
             bar.get_x() + bar.get_width() / 2,
-            min(row.icc_3_k + 0.018, 1.015),
-            f"{row.icc_3_k:.3f}",
+            min(row.icc_2_k + 0.035, 0.82),
+            f"{row.icc_2_k:.3f}",
             ha="center",
             va="bottom",
             fontweight="bold",
@@ -1478,8 +1526,8 @@ def figure2f() -> None:
         )
         ax.text(
             bar.get_x() + bar.get_width() / 2,
-            0.835,
-            f"ICC(3,1)\n{row.icc_3_1:.3f}",
+            max(row.icc_2_k * 0.55, 0.12),
+            f"ICC(2,1)\n{row.icc_2_1:.3f}",
             ha="center",
             va="center",
             fontsize=6.3,
@@ -1487,13 +1535,14 @@ def figure2f() -> None:
             fontweight="bold",
         )
     ax.set_xticks(x, stats_df.source)
-    ax.set_ylim(0.80, 1.03)
-    ax.set_ylabel("Average-measure ICC(3,k)")
-    ax.set_title("Machine-rating consistency by ICC", fontweight="bold")
+    y_high = max(0.75, float(stats_df.icc_2_k_ci_high.max()) + 0.12)
+    ax.set_ylim(0, min(1.0, y_high))
+    ax.set_ylabel("Average-measure ICC(2,k)")
+    ax.set_title("Expert inter-rater reliability", fontweight="bold")
     ax.text(
         0.50,
         -0.20,
-        "Two-way mixed consistency ICC; k=4 machine runs. Bars show average-measure ICC.",
+        "Two-way random absolute-agreement ICC; k=3 experts. Bars show ICC(2,k).",
         transform=ax.transAxes,
         ha="center",
         va="top",
@@ -1501,7 +1550,7 @@ def figure2f() -> None:
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
-    save_pdf(fig, "Figure2F_run_consistency.pdf")
+    save_pdf(fig, "Figure2F_expert_inter_rater_reliability.pdf")
 
 
 # ---------------------------------------------------------------------------
@@ -1725,6 +1774,42 @@ def figure3c() -> None:
     save_pdf(fig, "Figure3C_student_accuracy_by_cognitive_level.pdf", tight=False)
 
 
+def permutation_mean_difference_pvalue(
+    first: np.ndarray,
+    second: np.ndarray,
+    seed: int,
+    max_exact: int = 200_000,
+    n_resamples: int = 100_000,
+) -> tuple[float, str, int]:
+    first = np.asarray(first, dtype=float)
+    second = np.asarray(second, dtype=float)
+    values = np.concatenate([first, second])
+    n_first = len(first)
+    observed = float(first.mean() - second.mean())
+    total = math.comb(len(values), n_first)
+    tolerance = 1e-12
+
+    if total <= max_exact:
+        count = 0
+        indices = np.arange(len(values))
+        for chosen in itertools.combinations(indices, n_first):
+            mask = np.zeros(len(values), dtype=bool)
+            mask[list(chosen)] = True
+            difference = float(values[mask].mean() - values[~mask].mean())
+            if abs(difference) >= abs(observed) - tolerance:
+                count += 1
+        return count / total, f"exact permutation ({total} labelings)", total
+
+    rng = np.random.default_rng(seed)
+    count = 0
+    for _ in range(n_resamples):
+        permuted = rng.permutation(values)
+        difference = float(permuted[:n_first].mean() - permuted[n_first:].mean())
+        if abs(difference) >= abs(observed) - tolerance:
+            count += 1
+    return (count + 1) / (n_resamples + 1), f"Monte Carlo permutation ({n_resamples} draws)", n_resamples
+
+
 def adjusted_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, str]:
     responses = pd.read_csv(DERIVED / "responses.csv")
     item = pd.read_csv(DERIVED / "item_master.csv")[
@@ -1732,99 +1817,161 @@ def adjusted_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, str]:
     ]
     data = responses.merge(item, on="item_id", how="left")
     formula = (
-        "correct ~ C(source_true) * C(blueprint_cognitive_level)"
-        " + C(block_position) + C(training_setting) + C(training_year)"
-        " + C(form) + C(topic)"
+        "correct ~ C(item_id) + C(block_position) + C(training_setting)"
+        " + C(training_year) + C(form)"
     )
     fit = smf.glm(formula, data=data, family=sm.families.Binomial()).fit(
-        cov_type="cluster",
-        cov_kwds={"groups": data["student_id"]},
+        maxiter=200,
     )
     if not fit.converged:
-        raise RuntimeError("Figure 3D adjusted binomial GLM did not converge.")
-    data = data.copy()
-    data["fitted_probability"] = fit.predict(data)
-    data["response_residual"] = data["correct"] - data["fitted_probability"]
+        raise RuntimeError("Figure 3D covariate-standardized item GLM did not converge.")
 
     adjusted_rows: list[dict[str, Any]] = []
-    contrast_rows: list[dict[str, Any]] = []
-    design_info = fit.model.data.design_info
-    beta = np.asarray(fit.params)
-    covariance = np.asarray(fit.cov_params())
-
-    for level in LEVELS_4:
-        scenario_design: dict[str, np.ndarray] = {}
-        scenario_probability: dict[str, np.ndarray] = {}
-        for source in ["Human", "MAS"]:
-            scenario = data.copy()
-            scenario["source_true"] = source
-            scenario["blueprint_cognitive_level"] = level
-            matrix = np.asarray(build_design_matrices([design_info], scenario)[0])
-            probability = 1.0 / (1.0 + np.exp(-(matrix @ beta)))
-            scenario_design[source] = matrix
-            scenario_probability[source] = probability
-            marginal_by_student = (
-                pd.DataFrame({"student_id": data.student_id, "probability": probability})
-                .groupby("student_id")
-                .probability.mean()
-            )
-            actual = data[
-                data.source_true.eq(source)
-                & data.blueprint_cognitive_level.eq(level)
+    student_covariates = (
+        data[["student_id", "training_setting", "training_year", "form"]]
+        .drop_duplicates()
+        .sort_values("student_id")
+        .reset_index(drop=True)
+    )
+    block_positions = sorted(data.block_position.dropna().unique())
+    item_meta = (
+        data[
+            [
+                "item_id",
+                "paper",
+                "paper_item_no",
+                "source_true",
+                "blueprint_cognitive_level",
+                "topic",
             ]
-            residual_by_student = actual.groupby("student_id").response_residual.mean()
-            adjusted = (marginal_by_student + residual_by_student).clip(0, 1)
-            for student_id, value in adjusted.dropna().items():
-                adjusted_rows.append(
-                    {
-                        "student_id": student_id,
-                        "source_true": source,
-                        "cognitive_level": level,
-                        "adjusted_correct_probability": value,
-                    }
-                )
+        ]
+        .drop_duplicates()
+        .sort_values(["source_true", "paper_item_no", "item_id"])
+    )
+    adjustment_note = (
+        "Item-level probabilities were standardized after a binomial GLM with item "
+        "fixed effects, block position, training setting/campus, training year, "
+        "and randomized form. The standardization averages each item over all "
+        "students and both block positions."
+    )
 
-        p_mas = scenario_probability["MAS"]
-        p_human = scenario_probability["Human"]
-        estimate = float(np.mean(p_mas - p_human))
-        gradient = np.mean(
-            p_mas[:, None] * (1 - p_mas[:, None]) * scenario_design["MAS"]
-            - p_human[:, None] * (1 - p_human[:, None]) * scenario_design["Human"],
-            axis=0,
+    for row in item_meta.itertuples(index=False):
+        scenarios = []
+        for block_position in block_positions:
+            scenario = student_covariates.copy()
+            scenario["item_id"] = row.item_id
+            scenario["block_position"] = block_position
+            scenarios.append(scenario)
+        scenario_data = pd.concat(scenarios, ignore_index=True)
+        probabilities = fit.predict(scenario_data)
+        adjusted_rows.append(
+            {
+                "item_id": row.item_id,
+                "paper": row.paper,
+                "paper_item_no": row.paper_item_no,
+                "source_true": row.source_true,
+                "cognitive_level": row.blueprint_cognitive_level,
+                "topic": row.topic,
+                "adjusted_correct_probability": float(np.mean(probabilities)),
+                "min_standardized_probability": float(np.min(probabilities)),
+                "max_standardized_probability": float(np.max(probabilities)),
+                "n_standardization_students": int(student_covariates.student_id.nunique()),
+                "n_standardization_scenarios": int(len(scenario_data)),
+                "standardized_block_positions": ";".join(map(str, block_positions)),
+                "model_formula": formula,
+                "adjustment_note": adjustment_note,
+            }
         )
-        se = float(math.sqrt(max(gradient @ covariance @ gradient.T, 0.0)))
-        z_value = estimate / se if se > 0 else float("nan")
-        p_value = float(2 * stats.norm.sf(abs(z_value))) if np.isfinite(z_value) else float("nan")
+
+    adjusted = pd.DataFrame(adjusted_rows)
+    contrast_rows: list[dict[str, Any]] = []
+    for level in LEVELS_4:
+        human = adjusted[
+            adjusted.source_true.eq("Human") & adjusted.cognitive_level.eq(level)
+        ].adjusted_correct_probability.to_numpy(float)
+        mas = adjusted[
+            adjusted.source_true.eq("MAS") & adjusted.cognitive_level.eq(level)
+        ].adjusted_correct_probability.to_numpy(float)
+        estimate = float(mas.mean() - human.mean())
+        n_mas = len(mas)
+        n_human = len(human)
+        var_mas = float(np.var(mas, ddof=1)) if n_mas > 1 else 0.0
+        var_human = float(np.var(human, ddof=1)) if n_human > 1 else 0.0
+        se = float(math.sqrt(var_mas / n_mas + var_human / n_human))
+        if se > 0:
+            numerator = (var_mas / n_mas + var_human / n_human) ** 2
+            denominator = 0.0
+            if n_mas > 1 and var_mas > 0:
+                denominator += (var_mas / n_mas) ** 2 / (n_mas - 1)
+            if n_human > 1 and var_human > 0:
+                denominator += (var_human / n_human) ** 2 / (n_human - 1)
+            welch_df = numerator / denominator if denominator > 0 else float("nan")
+            t_value = estimate / se
+            welch_p_value = float(2 * stats.t.sf(abs(t_value), welch_df))
+            t_critical = float(stats.t.ppf(0.975, welch_df))
+        else:
+            welch_df = float("nan")
+            t_value = float("nan")
+            welch_p_value = float("nan")
+            t_critical = float("nan")
+        permutation_p_value, permutation_method, n_permutations = (
+            permutation_mean_difference_pvalue(mas, human, seed=530 + LEVELS_4.index(level))
+        )
         contrast_rows.append(
             {
                 "cognitive_level": level,
                 "estimate_mas_minus_human": estimate,
-                "se": se,
-                "ci_low": estimate - Z_975 * se,
-                "ci_high": estimate + Z_975 * se,
-                "p_value": p_value,
+                "welch_se": se,
+                "welch_df": welch_df,
+                "welch_t": t_value,
+                "welch_ci_low": estimate - t_critical * se if np.isfinite(t_critical) else float("nan"),
+                "welch_ci_high": estimate + t_critical * se if np.isfinite(t_critical) else float("nan"),
+                "welch_p_value": welch_p_value,
+                "p_value": permutation_p_value,
+                "comparison_method": permutation_method,
+                "n_permutation_labelings_or_draws": n_permutations,
+                "n_mas_items": n_mas,
+                "n_human_items": n_human,
                 "n_students": data.student_id.nunique(),
                 "n_responses": len(data),
                 "model_formula": formula,
-                "covariance": "cluster-robust by student",
-                "adjustment_note": (
-                    "Adjusted for block position, training setting/campus, "
-                    "training year, randomized form, and topic."
-                ),
+                "adjustment_note": adjustment_note,
             }
         )
-    return pd.DataFrame(adjusted_rows), pd.DataFrame(contrast_rows), formula
+    return adjusted, pd.DataFrame(contrast_rows), formula
 
 
 def figure3d_adjusted() -> None:
     for obsolete in [
         DERIVED / "fig3D_student_level_source_cognitive_rates.csv",
         DERIVED / "fig3D_source_cognitive_paired_comparisons.csv",
+        DERIVED / "fig3D_adjusted_student_probabilities.csv",
     ]:
         if obsolete.exists():
             obsolete.unlink()
     adjusted, contrasts, _ = adjusted_interaction_data()
-    write_csv(DERIVED / "fig3D_adjusted_student_probabilities.csv", adjusted)
+    summary = (
+        adjusted.groupby(["source_true", "cognitive_level"], observed=True)
+        .agg(
+            n_items=("item_id", "count"),
+            mean_adjusted_correct_probability=("adjusted_correct_probability", "mean"),
+            sd_adjusted_correct_probability=("adjusted_correct_probability", "std"),
+            q1_adjusted_correct_probability=(
+                "adjusted_correct_probability",
+                lambda values: values.quantile(0.25),
+            ),
+            median_adjusted_correct_probability=("adjusted_correct_probability", "median"),
+            q3_adjusted_correct_probability=(
+                "adjusted_correct_probability",
+                lambda values: values.quantile(0.75),
+            ),
+            min_adjusted_correct_probability=("adjusted_correct_probability", "min"),
+            max_adjusted_correct_probability=("adjusted_correct_probability", "max"),
+        )
+        .reset_index()
+    )
+    write_csv(DERIVED / "fig3D_adjusted_item_probabilities.csv", adjusted)
+    write_csv(DERIVED / "fig3D_adjusted_probability_summary.csv", summary)
     write_csv(DERIVED / "fig3D_source_cognitive_interaction_contrasts.csv", contrasts)
 
     fig, ax = plt.subplots(figsize=(7.0, 4.0))
@@ -1838,7 +1985,7 @@ def figure3d_adjusted() -> None:
             adjusted[
                 adjusted.source_true.eq(source)
                 & adjusted.cognitive_level.eq(level)
-            ].adjusted_correct_probability.to_numpy()
+            ].adjusted_correct_probability.to_numpy(float)
             for level in LEVELS_4
         ]
         positions = x + offsets[source]
@@ -1848,15 +1995,27 @@ def figure3d_adjusted() -> None:
             widths=width,
             patch_artist=True,
             showfliers=False,
-            medianprops={"color": UROMAS_BASE_COLORS["text_dark"], "linewidth": 1},
+            whis=(0, 100),
+            medianprops={"color": CORE_COLORS[source], "linewidth": 0.0},
             whiskerprops={"color": CORE_COLORS[source], "linewidth": 0.8},
             capprops={"color": CORE_COLORS[source], "linewidth": 0.8},
         )
         for patch in box["boxes"]:
             patch.set_facecolor(CORE_FILLS[source])
             patch.set_edgecolor(CORE_COLORS[source])
+            patch.set_alpha(0.94)
+            patch.set_linewidth(1.0)
         means = [float(np.mean(group)) for group in groups]
         mean_lines[source] = means
+        for position, mean in zip(positions, means):
+            ax.hlines(
+                mean,
+                position - width / 2,
+                position + width / 2,
+                color=UROMAS_BASE_COLORS["text_dark"],
+                linewidth=1.15,
+                zorder=4,
+            )
         ax.plot(
             positions,
             means,
@@ -1867,6 +2026,14 @@ def figure3d_adjusted() -> None:
             label=source,
             zorder=4,
         )
+    y_min = max(
+        0.0,
+        float(adjusted.adjusted_correct_probability.min()) - 0.06,
+    )
+    y_max = min(
+        1.10,
+        float(adjusted.adjusted_correct_probability.max()) + 0.10,
+    )
     for index, row in contrasts.iterrows():
         p_value = row["p_value"]
         label = "P<0.001" if p_value < 0.001 else f"P={p_value:.3f}"
@@ -1874,25 +2041,26 @@ def figure3d_adjusted() -> None:
             adjusted[adjusted.cognitive_level.eq(row.cognitive_level)].adjusted_correct_probability.max(),
             mean_lines["Human"][index],
             mean_lines["MAS"][index],
+            summary[summary.cognitive_level.eq(row.cognitive_level)].max_adjusted_correct_probability.max(),
         )
-        ax.text(index, min(1.03, upper + 0.05), label, ha="center", va="bottom", fontsize=7)
+        ax.text(index, min(y_max - 0.03, upper + 0.04), label, ha="center", va="bottom", fontsize=7)
     ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4])
-    ax.set_ylim(0.18, 1.08)
+    ax.set_ylim(y_min, y_max)
     ax.set_ylabel("Adjusted correct-answer probability")
-    ax.set_title("Adjusted source × cognitive-level interaction", fontweight="bold")
+    ax.set_title("Adjusted source x cognitive-level interaction", fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower left")
-    ax.text(
+    fig.text(
         0.98,
-        0.04,
-        "Adjusted for block position, campus, training year,\nform, and topic; SE clustered by student.",
-        transform=ax.transAxes,
+        0.035,
+        "Item-level boxes use min-max whiskers; dark bars and connected dots are means.",
         ha="right",
         va="bottom",
         fontsize=6.2,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
-    save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf")
+    fig.tight_layout(rect=[0, 0.08, 1, 0.96])
+    save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf", tight=False)
 
 
 def figure3d_paired_unused() -> None:
@@ -2261,22 +2429,22 @@ def figure3e() -> None:
     )
     write_csv(DERIVED / "fig3E_ctt_scatter_summary.csv", summary)
 
-    x = ctt.difficulty.to_numpy(float)
-    y = ctt.discrimination.to_numpy(float)
-    proportional_slope = float(np.dot(x, y) / np.dot(x, x))
-    correlation = stats.pearsonr(x, y)
+    fit_x = summary.mean_difficulty.to_numpy(float)
+    fit_y = summary.mean_item_rest_discrimination.to_numpy(float)
+    fit_result = stats.linregress(fit_x, fit_y)
     write_csv(
         DERIVED / "fig3E_ctt_linear_fit.csv",
         [
             {
-                "model": "positive proportional least-squares line through origin",
-                "formula": "item_rest_discrimination = k * difficulty",
-                "slope_k": proportional_slope,
-                "intercept": 0.0,
-                "pearson_r": correlation.statistic,
-                "pearson_p_value": correlation.pvalue,
-                "n_items": len(ctt),
-                "data_source": "fig3E_ctt_scatter_item_data.csv from 0612 workflow",
+                "model": "ordinary least-squares line with intercept fitted to source x item-type mean points",
+                "formula": "mean_item_rest_discrimination = k * mean_difficulty + b",
+                "slope_k": fit_result.slope,
+                "intercept_b": fit_result.intercept,
+                "pearson_r": fit_result.rvalue,
+                "pearson_p_value": fit_result.pvalue,
+                "n_fit_points": len(summary),
+                "n_items_underlying": len(ctt),
+                "fit_data_source": "fig3E_ctt_scatter_summary.csv; grouped by source_true x item_type_group",
             }
         ],
     )
@@ -2297,10 +2465,22 @@ def figure3e() -> None:
                 edgecolors="white",
                 linewidths=0.25,
             )
+    for source in ["MAS", "Human"]:
+        sub_summary = summary[summary.source_true.eq(source)]
+        ax.scatter(
+            sub_summary.mean_difficulty,
+            sub_summary.mean_item_rest_discrimination,
+            marker="D",
+            s=68,
+            facecolors="white",
+            edgecolors=CORE_COLORS[source],
+            linewidths=1.1,
+            zorder=5,
+        )
     x_line = np.linspace(0, 1.0, 200)
     ax.plot(
         x_line,
-        proportional_slope * x_line,
+        fit_result.intercept + fit_result.slope * x_line,
         color=UROMAS_BASE_COLORS["text_dark"],
         linewidth=1.3,
         linestyle="-",
@@ -2321,12 +2501,22 @@ def figure3e() -> None:
         Line2D([0], [0], marker=marker, color=UROMAS_BASE_COLORS["tick"], linestyle="none", markersize=6.5, label=label)
         for label, marker in marker_map.items()
     ]
-    fit_handle = Line2D([0], [0], color=UROMAS_BASE_COLORS["text_dark"], linewidth=1.3, label="Fit: y = kx")
-    ax.legend(handles=source_handles + marker_handles + [fit_handle], frameon=False, loc="lower left")
+    mean_handle = Line2D(
+        [0],
+        [0],
+        marker="D",
+        color=UROMAS_BASE_COLORS["text_dark"],
+        markerfacecolor="white",
+        linestyle="none",
+        markersize=6,
+        label="Group means",
+    )
+    fit_handle = Line2D([0], [0], color=UROMAS_BASE_COLORS["text_dark"], linewidth=1.3, label="Fit: y = kx + b")
+    ax.legend(handles=source_handles + marker_handles + [mean_handle, fit_handle], frameon=False, loc="lower left")
     ax.text(
         0.98,
         0.05,
-        f"Fit: y = {proportional_slope:.2f}x\nr={correlation.statistic:.2f}",
+        f"Group-mean fit: y = {fit_result.slope:.2f}x + {fit_result.intercept:.2f}\nr={fit_result.rvalue:.2f}",
         transform=ax.transAxes,
         ha="right",
         va="bottom",
