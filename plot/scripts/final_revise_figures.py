@@ -959,6 +959,32 @@ DIMENSIONS = [
     ("ULM", "Explanation score", 5, 25),
 ]
 
+DIMENSION_SCORE_COLUMNS = [
+    ("QGval", "Fluency", 5, "qg_fluency"),
+    ("QGval", "Clarity", 5, "qg_clarity"),
+    ("QGval", "Conciseness", 5, "qg_conciseness"),
+    ("QGval", "Relevance", 5, "qg_relevance"),
+    ("QGval", "Consistency", 5, "qg_consistency"),
+    ("QGval", "Answerability", 5, "qg_answerability"),
+    ("QGval", "Answer consistency", 5, "qg_answer_consistency"),
+    ("ULM", "Fluency", 5, "llm_fluency"),
+    ("ULM", "Exclusiveness", 5, "llm_exclusiveness"),
+    ("ULM", "Explicitness", 4, "llm_explicitness"),
+    ("ULM", "Goal alignment", 5, "llm_goal_alignment"),
+    ("ULM", "Comprehensiveness", 5, "llm_comprehensiveness"),
+    ("ULM", "Focus", 5, "llm_focus"),
+    ("ULM", "Guess resistance", 5, "llm_guess_resistance"),
+    ("ULM", "Completeness", 5, "llm_completeness"),
+    ("ULM", "Correctness", 5, "llm_correctness"),
+    ("ULM", "Solvability", 5, "llm_solvability"),
+    ("ULM", "Absoluteness", 5, "llm_absoluteness"),
+    ("ULM", "Plausibility", 5, "llm_plausibility"),
+    ("ULM", "Reasoning", 4, "llm_reasoning"),
+    ("ULM", "Feedback", 5, "llm_feedback"),
+    ("ULM", "Fairness", 3, "llm_fairness"),
+    ("ULM", "Explanation score", 5, "llm_explanation_score"),
+]
+
 
 def figure2c() -> None:
     records: list[dict[str, Any]] = []
@@ -1367,18 +1393,26 @@ def icc_2_absolute_agreement(values: np.ndarray) -> dict[str, float]:
     ms_target = ss_target / (n_targets - 1)
     ms_rater = ss_rater / (n_raters - 1)
     ms_error = ss_error / ((n_targets - 1) * (n_raters - 1))
-    icc_2_1 = (ms_target - ms_error) / (
+    def safe_ratio(numerator: float, denominator: float) -> float:
+        if not np.isfinite(denominator) or abs(denominator) < 1e-12:
+            return float("nan")
+        return float(numerator / denominator)
+
+    icc_2_1 = safe_ratio(
+        ms_target - ms_error,
         ms_target
         + (n_raters - 1) * ms_error
-        + n_raters * (ms_rater - ms_error) / n_targets
+        + n_raters * (ms_rater - ms_error) / n_targets,
     )
-    icc_2_k = (ms_target - ms_error) / (
-        ms_target + (ms_rater - ms_error) / n_targets
+    icc_2_k = safe_ratio(
+        ms_target - ms_error,
+        ms_target + (ms_rater - ms_error) / n_targets,
     )
-    icc_c_1 = (ms_target - ms_error) / (
-        ms_target + (n_raters - 1) * ms_error
+    icc_c_1 = safe_ratio(
+        ms_target - ms_error,
+        ms_target + (n_raters - 1) * ms_error,
     )
-    icc_c_k = (ms_target - ms_error) / ms_target
+    icc_c_k = safe_ratio(ms_target - ms_error, ms_target)
     return {
         "n_targets": int(n_targets),
         "n_raters": int(n_raters),
@@ -1392,7 +1426,18 @@ def icc_2_absolute_agreement(values: np.ndarray) -> dict[str, float]:
     }
 
 
-def expert_inter_rater_icc_data(reps: int = 3000, seed: int = 20260628) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def nanquantile_or_nan(values: Sequence[float], quantile: float) -> float:
+    array = np.asarray(values, dtype=float)
+    array = array[np.isfinite(array)]
+    if array.size == 0:
+        return float("nan")
+    return float(np.quantile(array, quantile))
+
+
+def expert_inter_rater_icc_data(
+    reps: int = 3000,
+    seed: int = 20260628,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     ratings = pd.read_csv(DERIVED / "expert_ratings_updated.csv")
     ratings = ratings.dropna(subset=["source_true", "rater_id", "excel_row", "quality_score_5"]).copy()
     ratings["target_id"] = (
@@ -1400,13 +1445,37 @@ def expert_inter_rater_icc_data(reps: int = 3000, seed: int = 20260628) -> tuple
         + "_row_"
         + ratings["excel_row"].astype(int).astype(str).str.zfill(3)
     )
+    raw_score_columns = [
+        "source_true",
+        "target_id",
+        "item_id",
+        "paper_item_no",
+        "excel_row",
+        "rater_id",
+        "source_file",
+        "sheet",
+        "match_score",
+        "item_type_from_sheet",
+        "quality_score_5",
+        *[column for _, _, _, column in DIMENSION_SCORE_COLUMNS],
+    ]
+    raw_scores = ratings[[column for column in raw_score_columns if column in ratings.columns]].rename(
+        columns={
+            "source_true": "source",
+            "paper_item_no": "paper_item_no_from_match",
+        }
+    )
     item_score_rows: list[dict[str, Any]] = []
     stat_rows: list[dict[str, Any]] = []
     boot_rows: list[dict[str, Any]] = []
+    dimension_score_rows: list[dict[str, Any]] = []
+    dimension_stat_rows: list[dict[str, Any]] = []
+    dimension_boot_rows: list[dict[str, Any]] = []
     rng = np.random.default_rng(seed)
     for source in ["Human", "MAS"]:
+        source_ratings = ratings[ratings.source_true.eq(source)]
         wide = (
-            ratings[ratings.source_true.eq(source)]
+            source_ratings
             .pivot(index="target_id", columns="rater_id", values="quality_score_5")
             .sort_index()
         )
@@ -1455,21 +1524,108 @@ def expert_inter_rater_icc_data(reps: int = 3000, seed: int = 20260628) -> tuple
             {
                 "source": source,
                 **estimate,
-                "icc_2_1_ci_low": float(np.nanquantile(boot_icc_2_1, 0.025)),
-                "icc_2_1_ci_high": float(np.nanquantile(boot_icc_2_1, 0.975)),
-                "icc_2_k_ci_low": float(np.nanquantile(boot_icc_2_k, 0.025)),
-                "icc_2_k_ci_high": float(np.nanquantile(boot_icc_2_k, 0.975)),
-                "icc_c_1_ci_low": float(np.nanquantile(boot_icc_c_1, 0.025)),
-                "icc_c_1_ci_high": float(np.nanquantile(boot_icc_c_1, 0.975)),
-                "icc_c_k_ci_low": float(np.nanquantile(boot_icc_c_k, 0.025)),
-                "icc_c_k_ci_high": float(np.nanquantile(boot_icc_c_k, 0.975)),
+                "icc_2_1_ci_low": nanquantile_or_nan(boot_icc_2_1, 0.025),
+                "icc_2_1_ci_high": nanquantile_or_nan(boot_icc_2_1, 0.975),
+                "icc_2_k_ci_low": nanquantile_or_nan(boot_icc_2_k, 0.025),
+                "icc_2_k_ci_high": nanquantile_or_nan(boot_icc_2_k, 0.975),
+                "icc_c_1_ci_low": nanquantile_or_nan(boot_icc_c_1, 0.025),
+                "icc_c_1_ci_high": nanquantile_or_nan(boot_icc_c_1, 0.975),
+                "icc_c_k_ci_low": nanquantile_or_nan(boot_icc_c_k, 0.025),
+                "icc_c_k_ci_high": nanquantile_or_nan(boot_icc_c_k, 0.975),
                 "ci_method": f"item bootstrap, {reps} replicates",
                 "icc_model": "two-way random-effects absolute-agreement ICC; ICC(2,k) is average-measure inter-rater reliability across three experts",
                 "target_alignment": "source-specific expert worksheet rows",
                 "score_column": "quality_score_5",
             }
         )
-    return pd.DataFrame(item_score_rows), pd.DataFrame(stat_rows), pd.DataFrame(boot_rows)
+    dimension_rng = np.random.default_rng(seed + 1)
+    for source in ["Human", "MAS"]:
+        source_ratings = ratings[ratings.source_true.eq(source)]
+        for family, dimension, max_score, score_column in DIMENSION_SCORE_COLUMNS:
+            dimension_wide = (
+                source_ratings
+                .pivot(index="target_id", columns="rater_id", values=score_column)
+                .sort_index()
+            )
+            for target_id, row in dimension_wide.iterrows():
+                target_rows = source_ratings[source_ratings.target_id.eq(target_id)]
+                item_id = target_rows.item_id.dropna().astype(str).iloc[0] if target_rows.item_id.notna().any() else ""
+                paper_item_no = target_rows.paper_item_no.dropna().iloc[0] if target_rows.paper_item_no.notna().any() else np.nan
+                excel_row = target_rows.excel_row.dropna().iloc[0] if target_rows.excel_row.notna().any() else np.nan
+                for rater_id, score in row.items():
+                    dimension_score_rows.append(
+                        {
+                            "source": source,
+                            "target_id": target_id,
+                            "item_id": item_id,
+                            "paper_item_no_from_match": paper_item_no,
+                            "excel_row": excel_row,
+                            "rater_id": rater_id,
+                            "family": family,
+                            "dimension": dimension,
+                            "score_column": score_column,
+                            "max_score": max_score,
+                            "expert_dimension_score_raw": score,
+                            "expert_dimension_score_5": float(score) / max_score * 5 if pd.notna(score) else np.nan,
+                        }
+                    )
+            estimate = icc_2_absolute_agreement(dimension_wide.to_numpy())
+            boot_icc_2_1 = []
+            boot_icc_2_k = []
+            boot_icc_c_1 = []
+            boot_icc_c_k = []
+            matrix = dimension_wide.to_numpy(float)
+            n_targets = matrix.shape[0]
+            for rep in range(reps):
+                sampled = matrix[dimension_rng.integers(0, n_targets, size=n_targets), :]
+                boot = icc_2_absolute_agreement(sampled)
+                boot_icc_2_1.append(boot["icc_2_1"])
+                boot_icc_2_k.append(boot["icc_2_k"])
+                boot_icc_c_1.append(boot["icc_c_1"])
+                boot_icc_c_k.append(boot["icc_c_k"])
+                dimension_boot_rows.append(
+                    {
+                        "source": source,
+                        "family": family,
+                        "dimension": dimension,
+                        "score_column": score_column,
+                        "bootstrap_replicate": rep + 1,
+                        "icc_2_1": boot["icc_2_1"],
+                        "icc_2_k": boot["icc_2_k"],
+                        "icc_c_1": boot["icc_c_1"],
+                        "icc_c_k": boot["icc_c_k"],
+                    }
+                )
+            dimension_stat_rows.append(
+                {
+                    "source": source,
+                    "family": family,
+                    "dimension": dimension,
+                    "score_column": score_column,
+                    "max_score": max_score,
+                    **estimate,
+                    "icc_2_1_ci_low": nanquantile_or_nan(boot_icc_2_1, 0.025),
+                    "icc_2_1_ci_high": nanquantile_or_nan(boot_icc_2_1, 0.975),
+                    "icc_2_k_ci_low": nanquantile_or_nan(boot_icc_2_k, 0.025),
+                    "icc_2_k_ci_high": nanquantile_or_nan(boot_icc_2_k, 0.975),
+                    "icc_c_1_ci_low": nanquantile_or_nan(boot_icc_c_1, 0.025),
+                    "icc_c_1_ci_high": nanquantile_or_nan(boot_icc_c_1, 0.975),
+                    "icc_c_k_ci_low": nanquantile_or_nan(boot_icc_c_k, 0.025),
+                    "icc_c_k_ci_high": nanquantile_or_nan(boot_icc_c_k, 0.975),
+                    "ci_method": f"item bootstrap, {reps} replicates",
+                    "icc_model": "two-way random-effects absolute-agreement ICC; ICC(2,k) is average-measure inter-rater reliability across three experts",
+                    "target_alignment": "source-specific expert worksheet rows",
+                }
+            )
+    return (
+        raw_scores,
+        pd.DataFrame(item_score_rows),
+        pd.DataFrame(stat_rows),
+        pd.DataFrame(boot_rows),
+        pd.DataFrame(dimension_score_rows),
+        pd.DataFrame(dimension_stat_rows),
+        pd.DataFrame(dimension_boot_rows),
+    )
 
 
 def figure2f() -> None:
@@ -1482,10 +1638,14 @@ def figure2f() -> None:
     ]:
         if obsolete.exists():
             obsolete.unlink()
-    item_scores, stats_df, boot = expert_inter_rater_icc_data()
+    raw_scores, item_scores, stats_df, boot, dimension_scores, dimension_stats, dimension_boot = expert_inter_rater_icc_data()
+    write_csv(DERIVED / "fig2F_expert_inter_rater_raw_scores.csv", raw_scores)
     write_csv(DERIVED / "fig2F_expert_inter_rater_item_scores.csv", item_scores)
     write_csv(DERIVED / "fig2F_expert_inter_rater_icc_stats.csv", stats_df)
     write_csv(DERIVED / "fig2F_expert_inter_rater_icc_bootstrap.csv", boot)
+    write_csv(DERIVED / "fig2F_subdimension_inter_rater_item_scores.csv", dimension_scores)
+    write_csv(DERIVED / "fig2F_subdimension_inter_rater_icc_stats.csv", dimension_stats)
+    write_csv(DERIVED / "fig2F_subdimension_inter_rater_icc_bootstrap.csv", dimension_boot)
     remove_output("Figure2F_run_consistency.pdf")
     remove_output("Figure2F_expert_inter_rater_reliability.pdf")
 

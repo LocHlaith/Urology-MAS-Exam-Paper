@@ -58,9 +58,13 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig2E_expert_quality_interaction_fixed_effects.csv",
     ],
     "Figure2F": [
+        "fig2F_expert_inter_rater_raw_scores.csv",
         "fig2F_expert_inter_rater_item_scores.csv",
         "fig2F_expert_inter_rater_icc_stats.csv",
         "fig2F_expert_inter_rater_icc_bootstrap.csv",
+        "fig2F_subdimension_inter_rater_item_scores.csv",
+        "fig2F_subdimension_inter_rater_icc_stats.csv",
+        "fig2F_subdimension_inter_rater_icc_bootstrap.csv",
     ],
     "Figure3B": ["fig3B_student_correct_rate_raw.csv", "fig3B_student_correct_rate_stats.csv"],
     "Figure3C": [
@@ -108,7 +112,9 @@ PANEL_NOTES: dict[str, str] = {
     ),
     "Figure2F": (
         "Inter-rater reliability panel uses two-way random-effects absolute-agreement "
-        "ICC. The plotted statistic is average-measure ICC(2,k) across three experts."
+        "ICC. The plotted statistic is average-measure ICC(2,k) across three experts. "
+        "The workbook also includes source-data tables for the 23 rubric subdimension "
+        "inter-rater reliability estimates."
     ),
     "Figure3D": (
         "Figure 3D uses a covariate-standardized item-level program: a binomial "
