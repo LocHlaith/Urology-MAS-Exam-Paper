@@ -33,6 +33,18 @@ LLM_COMPONENTS = [
     "llm_reasoning", "llm_feedback", "llm_fairness", "llm_explanation_score",
 ]
 
+KNOWN_CELL_CORRECTIONS = [
+    {
+        "source_file": "expert3_ai_expert_ratings_cleaned.xlsx",
+        "sheet": "P",
+        "excel_row": 48,
+        "source_true": "Human",
+        "field": "llm_explanation_score",
+        "value": 5,
+        "reason": "The original review worksheet has 5 in the ULM explanation-score cell; 70 is the adjacent ULM total.",
+    }
+]
+
 def norm_text(x: object) -> str:
     if x is None:
         return ""
@@ -120,7 +132,30 @@ def ingest_workbooks() -> pd.DataFrame:
                     out[name] = val
                 rows.append(out)
     df = pd.DataFrame(rows)
+    apply_known_cell_corrections(df)
     return df
+
+def recompute_score_fields(df: pd.DataFrame, mask: pd.Series) -> None:
+    qg = df.loc[mask, QG_COMPONENTS].apply(pd.to_numeric, errors="coerce")
+    llm = df.loc[mask, LLM_COMPONENTS].apply(pd.to_numeric, errors="coerce")
+    df.loc[mask, "qgeval_total"] = qg.sum(axis=1)
+    df.loc[mask, "qgeval_score_5"] = df.loc[mask, "qgeval_total"] / 7
+    df.loc[mask, "llm_total"] = llm.sum(axis=1)
+    df.loc[mask, "llm_score_5"] = df.loc[mask, "llm_total"] / 16
+    df.loc[mask, "quality_score_5"] = pd.concat([qg, llm], axis=1).mean(axis=1)
+
+def apply_known_cell_corrections(df: pd.DataFrame) -> None:
+    for correction in KNOWN_CELL_CORRECTIONS:
+        mask = (
+            df["source_file"].eq(correction["source_file"])
+            & df["sheet"].eq(correction["sheet"])
+            & df["excel_row"].eq(correction["excel_row"])
+            & df["source_true"].eq(correction["source_true"])
+        )
+        if not mask.any():
+            continue
+        df.loc[mask, correction["field"]] = correction["value"]
+        recompute_score_fields(df, mask)
 
 def ingest_critical_defect_taxonomy() -> pd.DataFrame:
     docx = DATA_DIR / "critical_defect.docx"

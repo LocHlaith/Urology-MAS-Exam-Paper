@@ -1533,7 +1533,7 @@ def expert_inter_rater_icc_data(
                 "icc_c_k_ci_low": nanquantile_or_nan(boot_icc_c_k, 0.025),
                 "icc_c_k_ci_high": nanquantile_or_nan(boot_icc_c_k, 0.975),
                 "ci_method": f"item bootstrap, {reps} replicates",
-                "icc_model": "two-way random-effects absolute-agreement ICC; ICC(2,k) is average-measure inter-rater reliability across three experts",
+                "icc_model": "two-way random-effects ICC; icc_2_* columns are absolute agreement, icc_c_* columns are consistency; plotted statistic is average-measure consistency ICC(C,k) across three experts",
                 "target_alignment": "source-specific expert worksheet rows",
                 "score_column": "quality_score_5",
             }
@@ -1613,7 +1613,7 @@ def expert_inter_rater_icc_data(
                     "icc_c_k_ci_low": nanquantile_or_nan(boot_icc_c_k, 0.025),
                     "icc_c_k_ci_high": nanquantile_or_nan(boot_icc_c_k, 0.975),
                     "ci_method": f"item bootstrap, {reps} replicates",
-                    "icc_model": "two-way random-effects absolute-agreement ICC; ICC(2,k) is average-measure inter-rater reliability across three experts",
+                    "icc_model": "two-way random-effects ICC; icc_2_* columns are absolute agreement, icc_c_* columns are consistency; plotted statistic is average-measure consistency ICC(C,k) across three experts",
                     "target_alignment": "source-specific expert worksheet rows",
                 }
             )
@@ -1655,7 +1655,7 @@ def figure2f() -> None:
     colors = [CORE_COLORS[row.source] for row in stats_df.itertuples()]
     bars = ax.bar(
         x,
-        stats_df.icc_2_k,
+        stats_df.icc_c_k,
         width=0.48,
         color=colors,
         alpha=0.88,
@@ -1664,10 +1664,10 @@ def figure2f() -> None:
     )
     ax.errorbar(
         x,
-        stats_df.icc_2_k,
+        stats_df.icc_c_k,
         yerr=[
-            stats_df.icc_2_k - stats_df.icc_2_k_ci_low,
-            stats_df.icc_2_k_ci_high - stats_df.icc_2_k,
+            stats_df.icc_c_k - stats_df.icc_c_k_ci_low,
+            stats_df.icc_c_k_ci_high - stats_df.icc_c_k,
         ],
         fmt="none",
         ecolor=UROMAS_BASE_COLORS["text_dark"],
@@ -1677,8 +1677,8 @@ def figure2f() -> None:
     for bar, row in zip(bars, stats_df.itertuples()):
         ax.text(
             bar.get_x() + bar.get_width() / 2,
-            min(row.icc_2_k + 0.035, 0.82),
-            f"{row.icc_2_k:.3f}",
+            min(row.icc_c_k + 0.035, 0.92),
+            f"{row.icc_c_k:.3f}",
             ha="center",
             va="bottom",
             fontweight="bold",
@@ -1686,8 +1686,8 @@ def figure2f() -> None:
         )
         ax.text(
             bar.get_x() + bar.get_width() / 2,
-            max(row.icc_2_k * 0.55, 0.12),
-            f"ICC(2,1)\n{row.icc_2_1:.3f}",
+            max(row.icc_c_k * 0.55, 0.12),
+            f"ICC(C,1)\n{row.icc_c_1:.3f}",
             ha="center",
             va="center",
             fontsize=6.3,
@@ -1695,14 +1695,14 @@ def figure2f() -> None:
             fontweight="bold",
         )
     ax.set_xticks(x, stats_df.source)
-    y_high = max(0.75, float(stats_df.icc_2_k_ci_high.max()) + 0.12)
+    y_high = max(0.75, float(stats_df.icc_c_k_ci_high.max()) + 0.12)
     ax.set_ylim(0, min(1.0, y_high))
-    ax.set_ylabel("Average-measure ICC(2,k)")
+    ax.set_ylabel("Average-measure consistency ICC(C,k)")
     ax.set_title("Expert inter-rater reliability", fontweight="bold")
     ax.text(
         0.50,
         -0.20,
-        "Two-way random absolute-agreement ICC; k=3 experts. Bars show ICC(2,k).",
+        "Two-way random consistency ICC; k=3 experts. Bars show ICC(C,k).",
         transform=ax.transAxes,
         ha="center",
         va="top",

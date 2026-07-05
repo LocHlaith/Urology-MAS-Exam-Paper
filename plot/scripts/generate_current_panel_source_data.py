@@ -111,8 +111,8 @@ PANEL_NOTES: dict[str, str] = {
         "has_vignette + (1|rater_id) + (1|item_id)."
     ),
     "Figure2F": (
-        "Inter-rater reliability panel uses two-way random-effects absolute-agreement "
-        "ICC. The plotted statistic is average-measure ICC(2,k) across three experts. "
+        "Inter-rater reliability panel uses two-way random-effects consistency ICC. "
+        "The plotted statistic is average-measure consistency ICC(C,k) across three experts. "
         "The workbook also includes source-data tables for the 23 rubric subdimension "
         "inter-rater reliability estimates."
     ),
