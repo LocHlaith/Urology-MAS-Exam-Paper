@@ -18,7 +18,11 @@ from pathlib import Path
 from difflib import SequenceMatcher
 import pandas as pd
 from openpyxl import load_workbook
-from docx import Document
+
+try:
+    from docx import Document
+except ModuleNotFoundError:
+    Document = None
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data" / "first_author_update"
@@ -32,6 +36,26 @@ LLM_COMPONENTS = [
     "llm_correctness", "llm_solvability", "llm_absoluteness", "llm_plausibility",
     "llm_reasoning", "llm_feedback", "llm_fairness", "llm_explanation_score",
 ]
+QG_COMPONENT_MAX_SCORES = {name: 5 for name in QG_COMPONENTS}
+LLM_COMPONENT_MAX_SCORES = {
+    "llm_fluency": 5,
+    "llm_exclusiveness": 5,
+    "llm_explicitness": 4,
+    "llm_goal_alignment": 5,
+    "llm_comprehensiveness": 5,
+    "llm_focus": 5,
+    "llm_guess_resistance": 5,
+    "llm_completeness": 5,
+    "llm_correctness": 5,
+    "llm_solvability": 5,
+    "llm_absoluteness": 5,
+    "llm_plausibility": 5,
+    "llm_reasoning": 4,
+    "llm_feedback": 5,
+    "llm_fairness": 3,
+    "llm_explanation_score": 5,
+}
+COMPONENT_MAX_SCORES = {**QG_COMPONENT_MAX_SCORES, **LLM_COMPONENT_MAX_SCORES}
 
 KNOWN_CELL_CORRECTIONS = [
     {
@@ -42,6 +66,15 @@ KNOWN_CELL_CORRECTIONS = [
         "field": "llm_explanation_score",
         "value": 5,
         "reason": "The original review worksheet has 5 in the ULM explanation-score cell; 70 is the adjacent ULM total.",
+    },
+    {
+        "source_file": "expert3_ai_expert_ratings_cleaned.xlsx",
+        "sheet": "P",
+        "excel_row": 48,
+        "source_true": "Human",
+        "field": "llm_fairness",
+        "value": 3,
+        "reason": "ULM fairness is scored on a 1-3 rubric; this cell exceeded the rubric maximum.",
     }
 ]
 
@@ -84,10 +117,27 @@ def parse_yes_no_guess(x: object) -> str | None:
         return "Human"
     return None
 
+def standardized_component_scores(component_names: list[str], values: list[object]) -> list[float]:
+    scores = []
+    for name, value in zip(component_names, values):
+        if isinstance(value, (int, float)):
+            max_score = COMPONENT_MAX_SCORES[name]
+            bounded_value = min(float(value), float(max_score))
+            scores.append(bounded_value / max_score * 5.0)
+    return scores
+
 def ingest_workbooks() -> pd.DataFrame:
     item_master = pd.read_csv(ITEM_MASTER)
     rows = []
     xlsx_files = sorted((DATA_DIR / "urology_expert_evaluation_collection").glob("*.xlsx"))
+    if not xlsx_files:
+        existing = DERIVED / "expert_ratings_updated.csv"
+        if existing.exists():
+            df = pd.read_csv(existing)
+            recompute_score_fields(df, pd.Series(True, index=df.index))
+            apply_known_cell_corrections(df)
+            return df
+        return pd.DataFrame()
     for xlsx in xlsx_files:
         wb = load_workbook(xlsx, read_only=True, data_only=True)
         rater_id = clean_rater_id(xlsx)
@@ -106,7 +156,9 @@ def ingest_workbooks() -> pd.DataFrame:
                 llm_vals = values[11:27]
                 qg_total = values[10]
                 llm_total = values[27]
-                comp_vals = [v for v in qg_vals + llm_vals if isinstance(v, (int, float))]
+                qg_scores_5 = standardized_component_scores(QG_COMPONENTS, qg_vals)
+                llm_scores_5 = standardized_component_scores(LLM_COMPONENTS, llm_vals)
+                comp_scores_5 = qg_scores_5 + llm_scores_5
                 out = {
                     "rater_id": rater_id,
                     "source_file": xlsx.name,
@@ -120,10 +172,10 @@ def ingest_workbooks() -> pd.DataFrame:
                     "item_type_from_sheet": values[0],
                     "question_text_from_sheet": qtext,
                     "qgeval_total": qg_total,
-                    "qgeval_score_5": qg_total / 7 if isinstance(qg_total, (int, float)) else None,
+                    "qgeval_score_5": sum(qg_scores_5) / len(qg_scores_5) if qg_scores_5 else None,
                     "llm_total": llm_total,
-                    "llm_score_5": llm_total / 16 if isinstance(llm_total, (int, float)) else None,
-                    "quality_score_5": sum(comp_vals) / len(comp_vals) if comp_vals else None,
+                    "llm_score_5": sum(llm_scores_5) / len(llm_scores_5) if llm_scores_5 else None,
+                    "quality_score_5": sum(comp_scores_5) / len(comp_scores_5) if comp_scores_5 else None,
                     "source_guess": parse_yes_no_guess(values[28] if len(values) > 28 else None),
                 }
                 for name, val in zip(QG_COMPONENTS, qg_vals):
@@ -132,17 +184,22 @@ def ingest_workbooks() -> pd.DataFrame:
                     out[name] = val
                 rows.append(out)
     df = pd.DataFrame(rows)
-    apply_known_cell_corrections(df)
+    if not df.empty:
+        apply_known_cell_corrections(df)
     return df
 
 def recompute_score_fields(df: pd.DataFrame, mask: pd.Series) -> None:
     qg = df.loc[mask, QG_COMPONENTS].apply(pd.to_numeric, errors="coerce")
     llm = df.loc[mask, LLM_COMPONENTS].apply(pd.to_numeric, errors="coerce")
-    df.loc[mask, "qgeval_total"] = qg.sum(axis=1)
-    df.loc[mask, "qgeval_score_5"] = df.loc[mask, "qgeval_total"] / 7
-    df.loc[mask, "llm_total"] = llm.sum(axis=1)
-    df.loc[mask, "llm_score_5"] = df.loc[mask, "llm_total"] / 16
-    df.loc[mask, "quality_score_5"] = pd.concat([qg, llm], axis=1).mean(axis=1)
+    qg_max = pd.Series(QG_COMPONENT_MAX_SCORES)
+    llm_max = pd.Series(LLM_COMPONENT_MAX_SCORES)
+    qg_scores_5 = qg.clip(upper=qg_max, axis=1).divide(qg_max, axis=1) * 5.0
+    llm_scores_5 = llm.clip(upper=llm_max, axis=1).divide(llm_max, axis=1) * 5.0
+    df.loc[mask, "qgeval_total"] = qg.sum(axis=1, min_count=1)
+    df.loc[mask, "qgeval_score_5"] = qg_scores_5.mean(axis=1)
+    df.loc[mask, "llm_total"] = llm.sum(axis=1, min_count=1)
+    df.loc[mask, "llm_score_5"] = llm_scores_5.mean(axis=1)
+    df.loc[mask, "quality_score_5"] = pd.concat([qg_scores_5, llm_scores_5], axis=1).mean(axis=1)
 
 def apply_known_cell_corrections(df: pd.DataFrame) -> None:
     for correction in KNOWN_CELL_CORRECTIONS:
@@ -159,6 +216,11 @@ def apply_known_cell_corrections(df: pd.DataFrame) -> None:
 
 def ingest_critical_defect_taxonomy() -> pd.DataFrame:
     docx = DATA_DIR / "critical_defect.docx"
+    existing = DERIVED / "critical_defect_taxonomy_updated.csv"
+    if Document is None:
+        if existing.exists():
+            return pd.read_csv(existing)
+        return pd.DataFrame(columns=["defect_category", "source_file", "note"])
     if not docx.exists():
         return pd.DataFrame(columns=["defect_category", "source_file", "note"])
     doc = Document(docx)

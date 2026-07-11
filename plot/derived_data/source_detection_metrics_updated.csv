@@ -1,4 +1,4 @@
-﻿metric,estimate,numerator,denominator,inference_note
+metric,estimate,numerator,denominator,inference_note
 accuracy,0.47,94.0,200,first_author_update_expert_judgments
 balanced_accuracy,0.47,,200,mean_of_MAS_sensitivity_and_Human_specificity
 sensitivity_mas,0.2,20.0,100,correctly_identified_MAS

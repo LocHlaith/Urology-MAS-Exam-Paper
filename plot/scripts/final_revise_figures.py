@@ -787,8 +787,10 @@ def parse_primary_quality_records() -> list[dict[str, Any]]:
                         "expert_file": path.name,
                         "source": source,
                         "item_seq": seq,
-                        "qg_total": float(row[9]),
-                        "ulm_total": float(row[26]),
+                        "qg_total": rubric_family_total(row, "QGval"),
+                        "ulm_total": rubric_family_total(row, "ULM"),
+                        "qg_total_from_sheet": float(row[9]),
+                        "ulm_total_from_sheet": float(row[26]),
                     }
                 )
     return records
@@ -986,6 +988,29 @@ DIMENSION_SCORE_COLUMNS = [
 ]
 
 
+def standardized_dimension_score(value: float, max_score: float) -> float:
+    bounded_value = min(float(value), float(max_score))
+    return bounded_value / float(max_score) * 5.0
+
+
+def rubric_family_total(row: Sequence[Any], family_name: str) -> float:
+    scores = [
+        min(float(row[column]), float(max_score))
+        for family, _, max_score, column in DIMENSIONS
+        if family == family_name and isinstance(row[column], (int, float))
+    ]
+    return float(np.sum(scores)) if scores else float("nan")
+
+
+def rubric_family_score_5(row: Sequence[Any], family_name: str) -> float:
+    scores = [
+        standardized_dimension_score(row[column], max_score)
+        for family, _, max_score, column in DIMENSIONS
+        if family == family_name and isinstance(row[column], (int, float))
+    ]
+    return float(np.mean(scores)) if scores else float("nan")
+
+
 def figure2c() -> None:
     records: list[dict[str, Any]] = []
     for path in expert_files():
@@ -1004,14 +1029,32 @@ def figure2c() -> None:
                             "family": family,
                             "dimension": dimension,
                             "max_score": max_score,
-                            "score": float(row[column]),
+                            "raw_score": float(row[column]),
+                            "score_5": standardized_dimension_score(row[column], max_score),
+                            "score_capped_to_max": bool(float(row[column]) > float(max_score)),
                         }
                     )
     data = pd.DataFrame(records)
-    item_level = data.groupby(["source", "item_seq", "family", "dimension"], as_index=False).score.mean()
+    item_level = (
+        data.groupby(["source", "item_seq", "family", "dimension"], as_index=False)
+        .agg(
+            max_score=("max_score", "first"),
+            raw_score=("raw_score", "mean"),
+            score_5=("score_5", "mean"),
+            any_score_capped_to_max=("score_capped_to_max", "any"),
+        )
+    )
     summary = (
         item_level.groupby(["family", "dimension", "source"])
-        .score.agg(["count", "mean", "std"])
+        .agg(
+            max_score=("max_score", "first"),
+            count=("score_5", "count"),
+            mean_raw_score=("raw_score", "mean"),
+            sd_raw_score=("raw_score", "std"),
+            mean_score_5=("score_5", "mean"),
+            sd_score_5=("score_5", "std"),
+            any_score_capped_to_max=("any_score_capped_to_max", "any"),
+        )
         .reset_index()
     )
     write_csv(DERIVED / "fig2C_dimension_scores_item_scores.csv", item_level)
@@ -1030,8 +1073,8 @@ def figure2c() -> None:
                 & summary.dimension.eq(dimension)
                 & summary.source.eq(source)
             ].iloc[0]
-            means.append(float(row["mean"]))
-            sds.append(float(row["std"]))
+            means.append(float(row["mean_score_5"]))
+            sds.append(float(row["sd_score_5"]))
         ax.barh(
             y + offset,
             means,
@@ -1066,7 +1109,7 @@ def figure2c() -> None:
         )
     write_csv(DERIVED / "fig2C_dimension_score_annotations.csv", significance_rows)
     ax.set_xlim(1, 5.85)
-    ax.set_xlabel("Mean expert rating (raw rubric scale)")
+    ax.set_xlabel("Mean expert rating (standardized 5-point scale)")
     ax.set_title("Per-dimension human-expert scores", fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower right")
     style_axes(ax, "x")
@@ -1076,8 +1119,8 @@ def figure2c() -> None:
 def figure2d() -> None:
     level_map = [("记忆", "Knowledge"), ("理解", "Comprehension"), ("应用", "Application"), ("分析", "Analysis")]
     metric_specs = {
-        "QGval": {"column": 9, "scale": 7.0, "margin": -0.30, "pair": OPTIONAL_COLOR_PAIRS[0]},
-        "ULM": {"column": 26, "scale": 16.0, "margin": -0.25, "pair": OPTIONAL_COLOR_PAIRS[1]},
+        "QGval": {"family": "QGval", "margin": -0.30, "pair": OPTIONAL_COLOR_PAIRS[0]},
+        "ULM": {"family": "ULM", "margin": -0.25, "pair": OPTIONAL_COLOR_PAIRS[1]},
     }
     records: list[dict[str, Any]] = []
     for path in expert_files():
@@ -1097,11 +1140,18 @@ def figure2d() -> None:
                                 "cognitive_level": current_level,
                                 "item_seq": seq,
                                 "metric": metric,
-                                "score": float(row[spec["column"]]) / spec["scale"],
+                                "score": rubric_family_score_5(row, spec["family"]),
+                                "score_scale": "mean of component scores standardized to 5 points",
                             }
                         )
     data = pd.DataFrame(records)
-    item_level = data.groupby(["source", "cognitive_level", "item_seq", "metric"], as_index=False).score.mean()
+    item_level = (
+        data.groupby(["source", "cognitive_level", "item_seq", "metric"], as_index=False)
+        .agg(
+            score=("score", "mean"),
+            score_scale=("score_scale", "first"),
+        )
+    )
     stat_rows = []
     for level, label in level_map:
         for metric, spec in metric_specs.items():
@@ -1181,6 +1231,18 @@ def figure2d() -> None:
     save_pdf(fig, "Figure2D_quality_by_cognitive_level.pdf")
 
 
+EXPERT_QUALITY_NI_MARGIN = -0.25
+EXPERT_QUALITY_SCORE_FORMULA = (
+    "quality_score_5 is the unweighted mean of 23 expert rubric component "
+    "scores after each component is standardized to a 5-point scale using its "
+    "own maximum score: 7 QGval components plus 16 ULM components. ULM "
+    "Explicitness and Reasoning have 4-point maxima, and ULM Fairness has a "
+    "3-point maximum; all other components have 5-point maxima. "
+    "qgeval_score_5 and llm_score_5 are the corresponding family-level means "
+    "of standardized component scores."
+)
+
+
 def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, str]:
     ratings = pd.read_csv(DERIVED / "expert_ratings_updated.csv")
     item = pd.read_csv(DERIVED / "item_master.csv")[
@@ -1247,19 +1309,32 @@ def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
         estimate = float(gradient @ beta)
         se = float(math.sqrt(max(gradient @ covariance @ gradient.T, 0.0)))
         z_value = estimate / se if se > 0 else float("nan")
-        p_value = float(2 * stats.norm.sf(abs(z_value))) if np.isfinite(z_value) else float("nan")
+        p_value_two_sided = float(2 * stats.norm.sf(abs(z_value))) if np.isfinite(z_value) else float("nan")
+        z_noninferiority = (estimate - EXPERT_QUALITY_NI_MARGIN) / se if se > 0 else float("nan")
+        p_value_noninferiority = (
+            float(stats.norm.sf(z_noninferiority))
+            if np.isfinite(z_noninferiority)
+            else float("nan")
+        )
+        ci_low = estimate - Z_975 * se
+        ci_high = estimate + Z_975 * se
         contrast_rows.append(
             {
                 "cognitive_level": level,
                 "cognitive_level_label": LEVEL_LABELS_4[level],
                 "estimate_mas_minus_human": estimate,
                 "se": se,
-                "ci_low": estimate - Z_975 * se,
-                "ci_high": estimate + Z_975 * se,
-                "p_value": p_value,
+                "ci_low": ci_low,
+                "ci_high": ci_high,
+                "ni_margin": EXPERT_QUALITY_NI_MARGIN,
+                "noninferior_95ci": bool(ci_low > EXPERT_QUALITY_NI_MARGIN),
+                "z_noninferiority": z_noninferiority,
+                "p_value_noninferiority": p_value_noninferiority,
+                "p_value_two_sided": p_value_two_sided,
                 "model_formula": formula,
                 "covariates": "char_count + has_vignette",
                 "random_effects": "(1|rater_id) + (1|item_id)",
+                "score_formula": EXPERT_QUALITY_SCORE_FORMULA,
             }
         )
 
@@ -1278,6 +1353,7 @@ def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
                 "model_formula": formula,
                 "covariates": "char_count + has_vignette",
                 "random_effects": "(1|rater_id) + (1|item_id)",
+                "score_formula": EXPERT_QUALITY_SCORE_FORMULA,
             }
         )
     plot_data = (
@@ -1298,73 +1374,59 @@ def figure2e() -> None:
     write_csv(DERIVED / "fig2E_expert_quality_interaction_contrasts.csv", contrasts)
     write_csv(DERIVED / "fig2E_expert_quality_interaction_fixed_effects.csv", fixed_effects)
 
-    fig, ax = plt.subplots(figsize=(7.0, 4.0))
+    fig, ax = plt.subplots(figsize=(6.2, 3.8))
     add_panel_label(fig, "E")
-    x = np.arange(len(LEVELS_4), dtype=float)
-    offsets = {"Human": -0.18, "MAS": 0.18}
-    width = 0.30
-    mean_lines: dict[str, list[float]] = {}
-    for source in ["Human", "MAS"]:
-        groups = [
-            plot_data[
-                plot_data.source_true.eq(source)
-                & plot_data.blueprint_cognitive_level.eq(level)
-            ].quality_score.to_numpy()
-            for level in LEVELS_4
-        ]
-        positions = x + offsets[source]
-        box = ax.boxplot(
-            groups,
-            positions=positions,
-            widths=width,
-            patch_artist=True,
-            showfliers=False,
-            medianprops={"color": UROMAS_BASE_COLORS["text_dark"], "linewidth": 1},
-            whiskerprops={"color": CORE_COLORS[source], "linewidth": 0.8},
-            capprops={"color": CORE_COLORS[source], "linewidth": 0.8},
+    y = np.arange(len(contrasts))
+    ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
+    ax.errorbar(
+        contrasts["estimate_mas_minus_human"],
+        y,
+        xerr=[
+            contrasts["estimate_mas_minus_human"] - contrasts["ci_low"],
+            contrasts["ci_high"] - contrasts["estimate_mas_minus_human"],
+        ],
+        fmt="none",
+        ecolor=UROMAS_BASE_COLORS["text_dark"],
+        capsize=3,
+        linewidth=0.9,
+        zorder=2,
+    )
+    ax.scatter(
+        contrasts["estimate_mas_minus_human"],
+        y,
+        s=42,
+        color=CORE_COLORS["MAS"],
+        edgecolor="white",
+        linewidth=0.8,
+        zorder=3,
+    )
+    for ypos, row in enumerate(contrasts.itertuples()):
+        ax.text(
+            min(row.ci_high + 0.018, 0.30),
+            ypos,
+            f"{row.estimate_mas_minus_human:.2f} [{row.ci_low:.2f}, {row.ci_high:.2f}]",
+            ha="left",
+            va="center",
+            fontsize=6.8,
+            color=UROMAS_BASE_COLORS["text_dark"],
         )
-        for patch in box["boxes"]:
-            patch.set_facecolor(CORE_FILLS[source])
-            patch.set_edgecolor(CORE_COLORS[source])
-        means = [float(np.mean(group)) for group in groups]
-        mean_lines[source] = means
-        ax.plot(
-            positions,
-            means,
-            color=CORE_COLORS[source],
-            marker="o",
-            linewidth=1.5,
-            markersize=4,
-            label=source,
-            zorder=4,
-        )
-
-    for index, row in enumerate(contrasts.itertuples()):
-        p_value = row.p_value
-        label = "P<0.001" if p_value < 0.001 else f"P={p_value:.3f}"
-        upper = max(
-            plot_data[plot_data.blueprint_cognitive_level.eq(row.cognitive_level)].quality_score.max(),
-            mean_lines["Human"][index],
-            mean_lines["MAS"][index],
-        )
-        ax.text(index, min(5.05, upper + 0.10), label, ha="center", va="bottom", fontsize=7)
-    ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4], rotation=16, ha="right")
-    ax.set_ylabel("Expert quality score (1–5)")
-    ax.set_ylim(3.55, 5.12)
-    ax.set_title("Expert source × cognitive-level interaction", fontweight="bold")
-    ax.legend(frameon=False, ncol=2, loc="lower left")
-    ax.text(
-        0.98,
-        0.04,
-        "Mixed model: source × cognitive level\n+ char count + vignette; random rater/item intercepts",
-        transform=ax.transAxes,
-        ha="right",
+    ax.set_yticks(y, contrasts["cognitive_level_label"])
+    ax.invert_yaxis()
+    ax.set_xlim(-0.24, 0.34)
+    ax.set_xlabel("Adjusted expert-quality difference (MAS - Human)")
+    ax.set_title("Adjusted expert quality by cognitive level", fontweight="bold")
+    fig.subplots_adjust(left=0.22, right=0.98, bottom=0.27, top=0.88)
+    fig.text(
+        0.60,
+        0.055,
+        "Mixed model adjusted for char count and vignette; random rater/item intercepts. Score is a max-normalized 23-component mean.",
+        ha="center",
         va="bottom",
         fontsize=6.2,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
-    save_pdf(fig, "Figure2E_expert_quality_source_cognitive_interaction.pdf")
+    save_pdf(fig, "Figure2E_expert_quality_source_cognitive_interaction.pdf", tight=False)
 
 
 def icc_2_absolute_agreement(values: np.ndarray) -> dict[str, float]:

@@ -108,7 +108,15 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
 PANEL_NOTES: dict[str, str] = {
     "Figure2E": (
         "Mixed model: quality_score_5 ~ source*cognitive_level + char_count + "
-        "has_vignette + (1|rater_id) + (1|item_id)."
+        "has_vignette + (1|rater_id) + (1|item_id). Figure panel presents "
+        "adjusted MAS-Human differences by cognitive level; the source-data "
+        "contrast table also includes non-inferiority fields using a -0.25 "
+        "margin on the expert-quality composite. "
+        "quality_score_5 is the unweighted mean of 23 expert rubric component "
+        "scores after each component is standardized to a 5-point scale using "
+        "its own maximum score: 7 QGval components plus 16 ULM components. "
+        "ULM Explicitness and Reasoning have 4-point maxima, and ULM Fairness "
+        "has a 3-point maximum; all other components have 5-point maxima."
     ),
     "Figure2F": (
         "Inter-rater reliability panel uses two-way random-effects consistency ICC. "
