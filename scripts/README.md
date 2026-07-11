@@ -37,6 +37,7 @@
 - `scripts/evaluation/verify_by_textstat.py`：为 MAS 题库计算可读性指标。
 - `scripts/evaluation/qgeval.py`：为人类题库或 MAS 题库写入 QGEval 机器评分。命令行中的 `old` 是历史兼容写法，含义为人类题库；`new` 含义为 MAS 题库。
 - `scripts/evaluation/llm.py`：为人类题库或 MAS 题库写入 LLM rubric 机器评分。命令行中的 `old/new` 含义同上。
+- `scripts/evaluation/major_defects.py`：按题型比例抽样，使用 `prompts/evaluation/prompt_for_major_defects.txt` 和 `prompts/evaluation/major_defects.md` 调用 DeepSeek 标注 critical defects，并写入 `outputs/critical_defects/critical_defects_AI标记.xlsx`。D:J 写入 1-7 类 0/1 标记，K:Q 写入对应理由；默认 dry-run，只有 `annotate --run-api` 会调用 API。
 
 ## 试卷质量评价
 
