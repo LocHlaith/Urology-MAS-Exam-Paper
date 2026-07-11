@@ -1378,6 +1378,14 @@ def figure2e() -> None:
     add_panel_label(fig, "E")
     y = np.arange(len(contrasts))
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
+    ni_line_color = UROMAS_BASE_COLORS["tick"]
+    ax.axvline(
+        EXPERT_QUALITY_NI_MARGIN,
+        color=ni_line_color,
+        linestyle="--",
+        linewidth=1,
+        zorder=1,
+    )
     ax.errorbar(
         contrasts["estimate_mas_minus_human"],
         y,
@@ -1412,7 +1420,18 @@ def figure2e() -> None:
         )
     ax.set_yticks(y, contrasts["cognitive_level_label"])
     ax.invert_yaxis()
-    ax.set_xlim(-0.24, 0.34)
+    ax.set_xlim(-0.34, 0.34)
+    ax.text(
+        EXPERT_QUALITY_NI_MARGIN - 0.006,
+        0.02,
+        f"NI margin {EXPERT_QUALITY_NI_MARGIN:.2f}",
+        transform=ax.get_xaxis_transform(),
+        ha="right",
+        va="bottom",
+        rotation=90,
+        color=ni_line_color,
+        fontsize=7.0,
+    )
     ax.set_xlabel("Adjusted expert-quality difference (MAS - Human)")
     ax.set_title("Adjusted expert quality by cognitive level", fontweight="bold")
     fig.subplots_adjust(left=0.22, right=0.98, bottom=0.27, top=0.88)
