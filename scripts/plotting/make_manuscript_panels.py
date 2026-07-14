@@ -2,8 +2,8 @@
 
 脚本用途：为期刊排版生成每个 panel 一个可编辑 PDF。
 流程阶段：论文绘图。
-主要输入：plot/agent_readable/derived_data 下的数据处理结果。
-主要输出：plot/agent_readable/figures/panels 下的 Figure1A-Figure5E PDF。
+主要输入：plot/data/derived 下的数据处理结果。
+主要输出：outputs/figures/panels 下的 Figure1A-Figure5E PDF。
 重要边界：这里不再导出整张 Figure 合并 PDF；Figure 4 按需求保留 A-F 六个 panel。
 """
 

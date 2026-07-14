@@ -1,0 +1,4 @@
+contrast,estimate,ci_low,ci_high,n_students
+Overall,-1.44,-4.08,1.36,50
+Form A (Human -> MAS),-2.24,-5.6019999999999985,1.3599999999999988,25
+Form B (MAS -> Human),-0.6399999999999997,-4.642,3.6000000000000005,25

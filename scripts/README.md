@@ -15,8 +15,8 @@
 
 人类题库来源是 Word。TXT 只是为了便于程序解析而生成的中间文件，不是独立来源，也不是 MAS 出题结果。
 
-- `scripts/generation/word_to_txt.py`：将人类题库 Word 文件转换为 TXT 中间文件。
-- `scripts/generation/txt_to_bank.py`：从 TXT 中解析题干、选项、参考答案、答案解析和病例题结构，生成 `data/banks/bank_*.json`。这些文件统一称为人类题库。
+- `scripts/generation/word_to_txt.py`：将 `data/raw/human_question_documents/` 中的 Word 转换到 `data/intermediate/human_question_text/`。
+- `scripts/generation/txt_to_bank.py`：从 `data/intermediate/human_question_text/执业医师题库.txt` 解析题干、选项、参考答案、答案解析和病例题结构，生成 `data/banks/bank_*.json`。这些文件统一称为人类题库。
 
 ## MAS 出题与内容补全
 
@@ -25,7 +25,16 @@
 - `scripts/generation/bank_to_new_bank.py`：读取 `data/banks/bank_*.json` 和 `prompts/generation/prompts_for_bank_to_new_bank_*.txt`，调用模型生成 MAS 题库。
 - `scripts/generation/add_answer_explanation.py`：为 MAS 题库补充或补齐“答案解析”字段。既有 JSON 字段名为 `analysis` / `analysis1` 等。
 - `scripts/generation/add_test_point.py`：为 MAS 题库补充“考点还原”字段。既有 JSON 字段名为 `test_point`。
-- `scripts/generation/measure_question_generation_time.py`：按题型统计 MAS 出题耗时。该脚本将临时题库写入 `timing_runs/`，并输出绘图用 `plot/agent_readable/derived_data/mas_question_generation_time.csv`。
+- `scripts/generation/measure_question_generation_time.py`：按题型统计 MAS 出题耗时。该脚本将临时题库写入 `timing_runs/`，并输出绘图用 `plot/data/derived/mas_question_generation_time.csv`。
+
+## 论文绘图
+
+- `scripts/plotting/build_plot_datasets.py`：把题库、试卷标注和考生作答整理为 `plot/data/derived/` 中的基础分析表。
+- `scripts/plotting/make_final_figures.py`：当前正式成图入口，读取 `plot/data/derived/`，输出到 `outputs/figures/panels/`。
+- `scripts/plotting/export_panel_source_data.py`：为当前每个 panel 导出 `outputs/figure_source_data/` 中的审稿人源数据工作簿。
+- `scripts/plotting/export_raw_workbooks_to_csv.py`：把 `plot/data/raw/` 中的原始工作簿逐表导出到 `plot/data/derived/source_workbooks/`。
+- `scripts/plotting/ingest_first_author_update.py`：导入第一作者更新材料；只有存在 `plot/data/first_author_update/` 时才需运行。
+- `scripts/plotting/make_manuscript_panels.py` 与 `make_manuscript_figures.py`：较早版绘图实现，仅用于历史复核；当前投稿图以 `make_final_figures.py` 为准。
 
 ## 题库评价
 

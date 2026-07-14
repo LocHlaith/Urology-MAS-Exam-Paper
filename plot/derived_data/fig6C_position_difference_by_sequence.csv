@@ -1,3 +1,0 @@
-﻿form,sequence,n_students,mean_second_minus_first,ci_low,ci_high,source_position_note
-A,Human → MAS,25,-2.24,-5.76,1.28,Source and position are confounded within each sequence.
-B,MAS → Human,25,0.64,-3.68,4.56,Source and position are confounded within each sequence.

@@ -2,8 +2,8 @@
 
 脚本用途：把试卷解析标注、考生作答、来源辨识和题库规模整理为统一 CSV。
 流程阶段：论文绘图前的数据处理。
-主要输入：outputs/report_drafts、plot/agent_readable/data/exam_responses_2、data/banks。
-主要输出：outputs/plot_data 下的 item_master、responses、block_scores、machine_ratings 等表。
+主要输入：outputs/report_drafts、plot/data/derived/source_workbooks、data/banks。
+主要输出：plot/data/derived 下的 item_master、responses、block_scores、machine_ratings 等表。
 重要边界：机器评分只是现有解析标注中的可用评价数据；最终盲法专家表上传后应作为独立 phase 合并。
 """
 
@@ -23,12 +23,12 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
-from project_paths import BANK_DIR, REPORT_DRAFTS_DIR  # noqa: E402
+from project_paths import BANK_DIR, PLOT_DERIVED_DATA_DIR, REPORT_DRAFTS_DIR  # noqa: E402
 
 
 # ===== 输出位置 =====
 
-PLOT_DATA_DIR = PROJECT_ROOT / "plot" / "agent_readable" / "derived_data"
+PLOT_DATA_DIR = PLOT_DERIVED_DATA_DIR
 
 
 # ===== 固定口径 =====
@@ -45,18 +45,18 @@ ITEM_ID_PREFIX = {
 
 SCORE_FILES = {
     "M": {
-        "A1": "06_m_a1.csv",
-        "A2": "07_m_a2.csv",
-        "A3/A4": "08_m_a3_4.csv",
-        "B": "09_m_b.csv",
-        "X": "10_m_x.csv",
+        "A1": "exam_responses_workbook_2__06__M卷分析A1汇总.csv",
+        "A2": "exam_responses_workbook_2__07__M卷分析A2汇总.csv",
+        "A3/A4": "exam_responses_workbook_2__08__M卷分析A3-4汇总.csv",
+        "B": "exam_responses_workbook_2__09__M卷分析B汇总.csv",
+        "X": "exam_responses_workbook_2__10__M卷分析X汇总.csv",
     },
     "P": {
-        "A1": "16_p_a1.csv",
-        "A2": "17_p_a2.csv",
-        "A3/A4": "18_p_a3_4.csv",
-        "B": "19_p_b.csv",
-        "X": "20_p_x.csv",
+        "A1": "exam_responses_workbook_2__16__P卷分析_A1汇总.csv",
+        "A2": "exam_responses_workbook_2__17__P卷分析_A2汇总.csv",
+        "A3/A4": "exam_responses_workbook_2__18__P卷分析_A3-4汇总.csv",
+        "B": "exam_responses_workbook_2__19__P卷分析_B汇总.csv",
+        "X": "exam_responses_workbook_2__20__P卷分析_X汇总.csv",
     },
 }
 
@@ -514,7 +514,7 @@ def parse_exam_time_file(path: Path) -> Dict[str, Dict[str, Any]]:
 
 
 def build_response_tables() -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[Dict[str, Any]], List[Dict[str, Any]], List[Dict[str, Any]]]:
-    data_dir = PROJECT_ROOT / "plot" / "agent_readable" / "data" / "exam_responses_2"
+    data_dir = PLOT_DATA_DIR / "source_workbooks"
     all_responses: List[Dict[str, Any]] = []
     answer_rows: Dict[str, Dict[str, Any]] = {}
 
@@ -525,7 +525,9 @@ def build_response_tables() -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]],
             for answer in answers:
                 answer_rows[answer["item_id"]] = answer
 
-    time_by_student = parse_exam_time_file(data_dir / "22_source.csv")
+    time_by_student = parse_exam_time_file(
+        data_dir / "exam_responses_workbook_2__22__疲劳性探索与总时长.csv"
+    )
 
     assignment_by_student: Dict[str, Dict[str, Any]] = {}
     for row in all_responses:
@@ -1225,7 +1227,11 @@ def main() -> None:
     safety_item_summary, safety_source_summary = aggregate_machine_safety_screening(safety_screen_rows)
     ctt_rows = build_ctt_rows(responses)
     item_level = add_item_level_summaries(item_master, machine_summary, ctt_rows)
-    source_detection = parse_source_detection(PROJECT_ROOT / "plot" / "agent_readable" / "data" / "exam_responses" / "17_source.csv")
+    source_detection = parse_source_detection(
+        PLOT_DATA_DIR
+        / "source_workbooks"
+        / "exam_responses_workbook_1__17__评价系统与图灵测试.csv"
+    )
     source_detection_item_level = expand_source_detection_pairs(source_detection)
     source_detection_confusion = source_detection_confusion_rows(source_detection_item_level)
     source_detection_metrics = source_detection_metric_rows(source_detection_item_level)
@@ -1566,9 +1572,9 @@ def main() -> None:
         "cognitive_level": "A1=recall, B=comprehension, A2=application, A3/A4/X=analysis; 论文三层映射为 recall/comprehension->knowledge, application->application, analysis->reasoning。",
         "score_phase": "解析标注版中的四轮 QGEval/LLM 写入 rater_phase=machine_annotation；原始细则经 machine_rating_domain_crosswalk.csv 归一化并映射为 machine_proxy_* 字段，仅作QC/探索性代理。",
         "ai_safety_screening": "machine_safety_screening_by_run.csv 将23项 QGEval/LLM 评分归一化到1-5分，并加权转换为指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义控制和 critical defect flag；machine_safety_screening_crosswalk.csv 记录函数关系。",
-        "source_detection": "17_source.csv 只记录成对来源判断是否成功；source_detection_confusion_matrix.csv 按 forced-pair 成功/失败反推，不能替代逐题 source_guess 原始表。",
-        "workflow_efficiency": "当前仓库未包含 workflow_total_time_cost.csv；脚本保留输出位置和图面占位，不用考生考试时长冒充工作流人力时间。",
-        "expert_scores": "最终盲法专家质量复合评分尚未进入仓库；machine_proxy_quality_score 不进入主终点。",
+        "source_detection": "原始工作簿的‘评价系统与图灵测试’工作表只记录成对来源判断是否成功；source_detection_confusion_matrix.csv 按 forced-pair 成功/失败反推，不能替代逐题 source_guess 原始表。",
+        "workflow_efficiency": "Figure 5 的人工时间来自 source_workbooks/efficiency_analysis__01__Sheet1.csv；原始效率分析工作簿未保存在仓库，必须在论文材料中披露该来源缺口。考生考试时长仅用于 Figure 6，不作为工作流人力时间。",
+        "expert_scores": "盲法专家评分来自 plot/data/raw/expert_rating_workbooks；expert_ratings_updated.csv 是结构化派生表。machine_proxy_quality_score 仅作 QC/探索性代理，不进入专家评分主终点。",
         "missing_responses": "考生作答空值按预设规则记为 incorrect，并用 response_missing=1 标记。",
     }
     write_json(PLOT_DATA_DIR / "consistency_resolutions.json", consistency_notes)

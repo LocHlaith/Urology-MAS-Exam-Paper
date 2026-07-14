@@ -1,2 +1,0 @@
-﻿n_students,first_mean,first_sd,second_mean,second_sd,second_minus_first_mean,method,p_value,significance_label
-50,61.56,11.060427714355795,60.76,15.396209446033216,-0.8,Paired t-test,0.5708801152612588,n.s.

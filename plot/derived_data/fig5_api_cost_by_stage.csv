@@ -1,6 +1,0 @@
-﻿stage,model,input_tokens_estimated,output_tokens_estimated,input_cost_usd,output_cost_usd,total_cost_usd,pricing_source,pricing_checked_date
-Answer explanation,deepseek-v4-pro,9525.92900000056,9393.599999999995,0.004143779115000244,0.008172431999999995,0.012316211115000239,https://api-docs.deepseek.com/quick_start/pricing,2026-06-22
-Generation,deepseek-v4-pro,42603.01310901195,5868.899999999994,0.018532310702420198,0.005105942999999995,0.023638253702420193,https://api-docs.deepseek.com/quick_start/pricing,2026-06-22
-QGval ×4,deepseek-v4-pro,90254.4000000001,1199.9999999999995,0.03926066400000004,0.0010439999999999996,0.04030466400000004,https://api-docs.deepseek.com/quick_start/pricing,2026-06-22
-Test-point restoration,deepseek-v4-flash,6481.829,411.29999999999995,0.00090745606,0.00011516399999999998,0.00102262006,https://api-docs.deepseek.com/quick_start/pricing,2026-06-22
-ULM ×4,deepseek-v4-pro,116066.39999999721,2280.000000000001,0.05048888399999879,0.001983600000000001,0.05247248399999879,https://api-docs.deepseek.com/quick_start/pricing,2026-06-22

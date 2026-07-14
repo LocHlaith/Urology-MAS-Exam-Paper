@@ -5,7 +5,7 @@
 ## 实验流程
 
 1. 获得人类题库
-邀请人类专家命制了人类题库。因为医学专家习惯使用Word，而Word不便于机器处理，所以先将Word转换为TXT，再结构化为JSON，位于datasets。
+邀请人类专家命制了人类题库。因为医学专家习惯使用 Word，而 Word 不便于机器处理，所以先将 Word 转换为 TXT，再结构化为 JSON。原始 Word 位于 `data/raw/human_question_documents`，TXT 与结构化中间文件位于 `data/intermediate`，最终人类题库位于 `data/banks/bank_*.json`。
 
 2. 获得MAS题库
 调用Deepseek API，学习人类题库和命题规范，生成JSON格式的MAS题库。第一轮生成题干、选项，第二轮生成答案解析，第三轮生成考点还原。
@@ -18,7 +18,7 @@
 从人类题库和MAS题库中随机抽取题目，组成人类试卷（P卷）和MAS试卷（M卷）。为了便于第一作者查看试卷，我将试卷转换为TXT文件，即outputs\report_drafts中的P卷解析标注版和M卷解析标注版。因为QGEval评分和LLM评分具有随机性，所以对于每道题，调用四次Deepseek API，获得了四组QGEval评分和LLM评分，所以P卷解析标注版和M卷解析标注版各有四份。
 
 5. 模拟考试
-为了消除考生疲劳的影响，将“P卷在前、M卷在后”的考试称为A卷，将“M卷在前、P卷在后”的考试称为B卷，得到了考生的作答数据，即plot\raw_data\试卷作答情况.xlsx、plot\raw_data\试卷作答情况 - 2.xlsx，我将它们处理成plot\raw_data\exam_responses和plot\raw_data\exam_responses_2。其中，plot\raw_data\exam_responses未标注题型，而plot\raw_data\exam_responses_2标注了题型。
+为了消除考生疲劳的影响，将“P卷在前、M卷在后”的考试称为 A 卷，将“M卷在前、P卷在后”的考试称为 B 卷，得到了考生的作答数据。原始工作簿位于 `plot/data/raw/exam_response_workbooks`；逐工作表导出的 CSV 位于 `plot/data/derived/source_workbooks`，其中工作簿 1 未标注题型，工作簿 2 标注了题型；进一步统一后的作答明细为 `plot/data/derived/responses.csv`。
 
 6. 专家评价试卷
 邀请三位人类专家评价试卷、猜测各个题目来自人类还是MAS（即图灵测试）等。

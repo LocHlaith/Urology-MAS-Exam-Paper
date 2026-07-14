@@ -1,0 +1,9 @@
+defect_category,source_file,note
+临床事实错误（与指南不一致）,critical_defect.docx,categories requested for item-flow exclusion reporting
+答案不唯一,critical_defect.docx,categories requested for item-flow exclusion reporting
+答案键错误，缺少或过多（答案键必须只有ABCDE）,critical_defect.docx,categories requested for item-flow exclusion reporting
+题干信息不足,critical_defect.docx,categories requested for item-flow exclusion reporting
+与蓝图不符,critical_defect.docx,categories requested for item-flow exclusion reporting
+诱导危险临床行为,critical_defect.docx,categories requested for item-flow exclusion reporting
+超出住培/出科考试范围,critical_defect.docx,categories requested for item-flow exclusion reporting
+选项质量不合格,critical_defect.docx,categories requested for item-flow exclusion reporting

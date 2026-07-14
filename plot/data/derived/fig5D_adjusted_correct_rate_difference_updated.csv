@@ -1,0 +1,4 @@
+contrast,estimate,ci_low,ci_high,n_students,n_responses,method
+Overall adjusted,-1.3515638197979463,-4.136676325661483,1.4335486860655902,50,5000,correct ~ is_mas + C(block_position) + C(form) + C(training_setting) + C(training_year) + C(item_type_model) + C(cognitive_level) + C(topic); cluster-robust SE by student
+Form A (Human -> MAS),-2.24,-5.599999999999999,1.2800000000000002,25,2500,within-participant paired block-score contrast; source and block position are aliased within each sequence
+Form B (MAS -> Human),-0.6399999999999997,-4.559999999999999,3.76,25,2500,within-participant paired block-score contrast; source and block position are aliased within each sequence

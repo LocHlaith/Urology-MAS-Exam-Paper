@@ -1,7 +1,0 @@
-scope,generated_items,total_generation_seconds,seconds_per_item,api_cost_total_cny,time_source,note
-A1,99,269.674032,2.723980,,mas_question_generation_time.csv script_wall_clock,observed generation time only
-A2,50,310.552686,6.211054,,mas_question_generation_time.csv script_wall_clock,observed generation time only
-A3/4,99,924.888442,9.342307,,mas_question_generation_time.csv script_wall_clock,observed generation time only
-B,50,721.377225,14.427545,,mas_question_generation_time.csv script_wall_clock,observed generation time only
-X,100,472.782916,4.727829,,mas_question_generation_time.csv script_wall_clock,observed generation time only
-TOTAL,398,2699.275301,6.782099,28.83,mas_question_generation_time.csv script_wall_clock; user-provided API cost,no observed final-exam inclusion time

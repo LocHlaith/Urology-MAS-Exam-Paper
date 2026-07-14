@@ -2,7 +2,7 @@
 
 脚本用途：集中保存 Figure panel 绘图风格、数据读取和 bootstrap 工具。
 流程阶段：论文绘图。
-主要输入：plot/agent_readable/derived_data 下的 CSV。
+主要输入：plot/data/derived 下的 CSV。
 主要输出：被 make_manuscript_panels.py 调用的 Matplotlib 对象。
 重要边界：这里只提供通用绘图函数，不改变任何分析数据。
 """
@@ -13,6 +13,7 @@ import csv
 import hashlib
 import math
 import statistics
+import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -24,8 +25,11 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DATA_DIR = PROJECT_ROOT / "plot" / "agent_readable" / "derived_data"
-FIGURE_DIR = PROJECT_ROOT / "plot" / "agent_readable" / "figures"
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+
+from project_paths import FIGURE_DIR, PLOT_DERIVED_DATA_DIR  # noqa: E402
+
+DATA_DIR = PLOT_DERIVED_DATA_DIR
 
 mpl.rcParams.update(
     {

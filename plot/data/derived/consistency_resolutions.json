@@ -1,0 +1,12 @@
+{
+  "form_order": "Form A = Human -> MAS; Form B = MAS -> Human.",
+  "paper_source": "P卷 is encoded as Human; M卷 is encoded as MAS.",
+  "training_setting": "原始院区 A/B 保留为 training_setting_code；绘图口径映射为 A=main, B=non_main。",
+  "cognitive_level": "A1=recall, B=comprehension, A2=application, A3/A4/X=analysis; 论文三层映射为 recall/comprehension->knowledge, application->application, analysis->reasoning。",
+  "score_phase": "解析标注版中的四轮 QGEval/LLM 写入 rater_phase=machine_annotation；原始细则经 machine_rating_domain_crosswalk.csv 归一化并映射为 machine_proxy_* 字段，仅作QC/探索性代理。",
+  "ai_safety_screening": "machine_safety_screening_by_run.csv 将23项 QGEval/LLM 评分归一化到1-5分，并加权转换为指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义控制和 critical defect flag；machine_safety_screening_crosswalk.csv 记录函数关系。",
+  "source_detection": "原始工作簿的‘评价系统与图灵测试’工作表只记录成对来源判断是否成功；source_detection_confusion_matrix.csv 按 forced-pair 成功/失败反推，不能替代逐题 source_guess 原始表。",
+  "workflow_efficiency": "Figure 5 的人工时间来自 source_workbooks/efficiency_analysis__01__Sheet1.csv；原始效率分析工作簿未保存在仓库，必须在论文材料中披露该来源缺口。考生考试时长仅用于 Figure 6，不作为工作流人力时间。",
+  "expert_scores": "盲法专家评分来自 plot/data/raw/expert_rating_workbooks；expert_ratings_updated.csv 是结构化派生表。machine_proxy_quality_score 仅作 QC/探索性代理，不进入专家评分主终点。",
+  "missing_responses": "考生作答空值按预设规则记为 incorrect，并用 response_missing=1 标记。"
+}

@@ -1,0 +1,2 @@
+﻿group,correct,n,accuracy,ci_low,ci_high,ci_method
+Students,25,48,0.5208333333333334,0.38329232303342803,0.655286838230484,Wilson 95% CI

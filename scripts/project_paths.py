@@ -20,7 +20,18 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DATA_DIR = PROJECT_ROOT / "data"
 BANK_DIR = DATA_DIR / "banks"
-RAW_DATASETS_DIR = DATA_DIR / "raw" / "datasets"
+RAW_DATA_DIR = DATA_DIR / "raw"
+RAW_HUMAN_QUESTION_DIR = RAW_DATA_DIR / "human_question_documents"
+INTERMEDIATE_DATA_DIR = DATA_DIR / "intermediate"
+HUMAN_QUESTION_TEXT_DIR = INTERMEDIATE_DATA_DIR / "human_question_text"
+STRUCTURED_QUESTION_BANK_DIR = INTERMEDIATE_DATA_DIR / "structured_question_bank"
+
+PLOT_DIR = PROJECT_ROOT / "plot"
+PLOT_DATA_DIR = PLOT_DIR / "data"
+PLOT_RAW_DATA_DIR = PLOT_DATA_DIR / "raw"
+PLOT_EXAM_WORKBOOK_DIR = PLOT_RAW_DATA_DIR / "exam_response_workbooks"
+PLOT_EXPERT_WORKBOOK_DIR = PLOT_RAW_DATA_DIR / "expert_rating_workbooks"
+PLOT_DERIVED_DATA_DIR = PLOT_DATA_DIR / "derived"
 
 PROMPT_DIR = PROJECT_ROOT / "prompts"
 GENERATION_PROMPT_DIR = PROMPT_DIR / "generation"
@@ -29,6 +40,8 @@ EVALUATION_PROMPT_DIR = PROMPT_DIR / "evaluation"
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 LOG_DIR = OUTPUT_DIR / "logs"
 FIGURE_DIR = OUTPUT_DIR / "figures"
+PANEL_FIGURE_DIR = FIGURE_DIR / "panels"
+FIGURE_SOURCE_DATA_DIR = OUTPUT_DIR / "figure_source_data"
 REPORT_DRAFTS_DIR = OUTPUT_DIR / "report_drafts"
 REPORT_EXPORTS_DIR = OUTPUT_DIR / "report_exports"
 
@@ -112,7 +125,7 @@ def answer_explanation_prompt_files() -> Dict[str, str]:
 # ===== 输出目录 =====
 
 def ensure_output_dirs(extra_dirs: Iterable[Path] = ()) -> None:
-    for path in [OUTPUT_DIR, LOG_DIR, FIGURE_DIR, REPORT_DRAFTS_DIR, REPORT_EXPORTS_DIR, *extra_dirs]:
+    for path in [OUTPUT_DIR, LOG_DIR, FIGURE_DIR, PANEL_FIGURE_DIR, FIGURE_SOURCE_DATA_DIR, REPORT_DRAFTS_DIR, REPORT_EXPORTS_DIR, *extra_dirs]:
         path.mkdir(parents=True, exist_ok=True)
 
 

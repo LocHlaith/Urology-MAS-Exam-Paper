@@ -1,5 +1,0 @@
-﻿contrast,estimate,ci_low,ci_high,method
-Adjusted second − first,-0.8000000000000043,-3.5895625665883513,1.9895625665883427,score ~ is_mas + is_second + C(training_year) + C(campus); cluster-robust SE by student
-Adjusted MAS − Human,-1.4399999999999946,-4.229562566588341,1.349562566588352,score ~ is_mas + is_second + C(training_year) + C(campus); cluster-robust SE by student
-Form A observed second − first,-2.24,-5.601999999999994,1.3620000000000074,Participant bootstrap; source and position confounded within sequence
-Form B observed second − first,0.64,-3.6,4.642000000000007,Participant bootstrap; source and position confounded within sequence

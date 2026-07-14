@@ -1,3 +1,0 @@
-﻿form,order,n_students,training_setting_counts,training_year_counts,mean_total_time_seconds
-A,Human->MAS,25,"{""main"": 15, ""non_main"": 10}","{""1"": 9, ""2"": 10, ""3"": 6}",2202.36
-B,MAS->Human,25,"{""main"": 17, ""non_main"": 8}","{""1"": 10, ""3"": 5, ""2"": 10}",2241.64

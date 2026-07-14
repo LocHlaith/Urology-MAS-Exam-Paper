@@ -1,0 +1,4 @@
+﻿workflow,cost_component,cost_cny,cost_usd,source,plotted,human_to_ai_cost_ratio_for_plotted_values,usd_to_cny_display_rate_for_token_estimate
+Human,labor,9562.0,,efficiency analysis workbook,True,331.6684009712106,6.8
+AI,total_api_cost_user_provided,28.83,,plot/data/derived/ai_efficiency_filled_from_update.csv,True,331.6684009712106,6.8
+AI,total_api_cost_token_estimated,0.8823287835664511,0.12975423287741927,https://api-docs.deepseek.com/quick_start/pricing,False,331.6684009712106,6.8

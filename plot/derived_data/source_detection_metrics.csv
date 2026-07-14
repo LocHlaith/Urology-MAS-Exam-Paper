@@ -1,5 +1,0 @@
-﻿metric,estimate,numerator,denominator,inference_note
-accuracy,0.5208333333333334,50,96,pair_success
-balanced_accuracy,0.5208333333333334,,,inferred_from_forced_pair_success
-sensitivity_mas,0.5208333333333334,25,48,inferred_from_forced_pair_success
-specificity_human,0.5208333333333334,25,48,inferred_from_forced_pair_success

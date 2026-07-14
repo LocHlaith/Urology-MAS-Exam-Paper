@@ -1,0 +1,4 @@
+cognitive_level,estimate,ci_low,ci_high,n_mas,n_human
+knowledge,0.0,0.0,0.0,10,10
+application,0.0,0.0,0.0,18,18
+reasoning,13.636363636363637,0.0,31.818181818181817,22,22

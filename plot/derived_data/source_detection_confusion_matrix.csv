@@ -1,5 +1,0 @@
-﻿source_true,source_guess,n,row_percent,inference_note
-Human,Human,25,52.083333333333336,inferred_from_forced_pair_success
-Human,MAS,23,47.91666666666667,inferred_from_forced_pair_success
-MAS,Human,23,47.91666666666667,inferred_from_forced_pair_success
-MAS,MAS,25,52.083333333333336,inferred_from_forced_pair_success

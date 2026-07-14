@@ -1,5 +1,0 @@
-﻿endpoint,estimate,contrast,interpretation_level
-machine_proxy_quality_score_5_qc_only,0.015,MAS-Human,machine_annotation_qc_only
-examinee_block_score_difference,-1.44,MAS-Human paired score,student_block
-source_detection_accuracy,0.521,correct source decision,source_detection
-source_detection_balanced_accuracy_inferred,0.521,correct source decision,source_detection_inferred_from_pair_success

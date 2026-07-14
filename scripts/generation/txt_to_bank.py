@@ -2,7 +2,7 @@
 
 脚本用途：从 Word 导出的 TXT 中提取题干、选项、参考答案、答案解析和病例题结构。
 流程阶段：人类题库结构化。
-主要输入：`data/raw/datasets/执业医师题库.txt`。
+主要输入：`data/intermediate/human_question_text/执业医师题库.txt`。
 主要输出：`data/banks/bank_*.json`，即人类题库。
 重要边界：本脚本不调用模型，不生成 MAS 题库；当前 TXT 中没有的题型不会被凭空生成。
 """
@@ -17,11 +17,11 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from project_paths import BANK_DIR, RAW_DATASETS_DIR
+from project_paths import BANK_DIR, HUMAN_QUESTION_TEXT_DIR
 
 
 # ===== 路径与常量 =====
-INPUT_PATH = RAW_DATASETS_DIR / "执业医师题库.txt"
+INPUT_PATH = HUMAN_QUESTION_TEXT_DIR / "执业医师题库.txt"
 
 
 # ===== 正则规则 =====

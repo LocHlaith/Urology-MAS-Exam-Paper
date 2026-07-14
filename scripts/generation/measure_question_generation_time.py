@@ -3,7 +3,7 @@
 脚本用途：按题型重复生成若干 batch 新题，并统计单题出题耗时。
 流程阶段：MAS 出题效率统计。
 主要输入：`scripts/generation/bank_to_new_bank.py`、`add_answer_explanation.py`、`add_test_point.py`。
-主要输出：`plot/agent_readable/derived_data/mas_question_generation_time.csv` 与运行明细 CSV。
+主要输出：`plot/data/derived/mas_question_generation_time.csv` 与运行明细 CSV。
 重要边界：只计入出题、答案解析、考点还原三个脚本；临时题库写入 timing_runs，不覆盖正式 new_bank。
 """
 
@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from project_paths import BANK_FILE_STEMS, PROJECT_ROOT
+from project_paths import BANK_FILE_STEMS, PLOT_DERIVED_DATA_DIR, PROJECT_ROOT
 
 
 # ===== 路径与常量 =====
@@ -32,7 +32,6 @@ BANK_TO_NEW_BANK_SCRIPT = GENERATION_SCRIPT_DIR / "bank_to_new_bank.py"
 ADD_ANSWER_EXPLANATION_SCRIPT = GENERATION_SCRIPT_DIR / "add_answer_explanation.py"
 ADD_TEST_POINT_SCRIPT = GENERATION_SCRIPT_DIR / "add_test_point.py"
 
-PLOT_DERIVED_DATA_DIR = PROJECT_ROOT / "plot" / "agent_readable" / "derived_data"
 DEFAULT_SUMMARY_CSV = PLOT_DERIVED_DATA_DIR / "mas_question_generation_time.csv"
 DEFAULT_WORK_ROOT = PROJECT_ROOT / "timing_runs"
 

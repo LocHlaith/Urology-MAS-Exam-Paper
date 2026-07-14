@@ -1,0 +1,2 @@
+﻿model,formula,slope_k,intercept_b,pearson_r,pearson_p_value,n_fit_points,n_items_underlying,fit_data_source
+ordinary least-squares line with intercept fitted to source x item-type mean points,mean_item_rest_discrimination = k * mean_difficulty + b,0.2612869927817944,0.09326124856993848,0.7165043873547384,0.10916240607034051,6,100,fig3E_ctt_scatter_summary.csv; grouped by source_true x item_type_group

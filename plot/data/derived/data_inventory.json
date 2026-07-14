@@ -1,0 +1,33 @@
+{
+  "bank_a1": 267,
+  "bank_a2": 422,
+  "bank_a3": 48,
+  "bank_a4": 20,
+  "bank_b": 12,
+  "bank_x": 6,
+  "new_bank_a1": 480,
+  "new_bank_a2": 323,
+  "new_bank_a3": 647,
+  "new_bank_a4": 679,
+  "new_bank_b": 788,
+  "new_bank_x": 759,
+  "human_bank_records_total": 775,
+  "mas_bank_records_total": 3676,
+  "n_final_items": 100,
+  "n_final_human_items": 50,
+  "n_final_mas_items": 50,
+  "n_students": 50,
+  "form_counts": {
+    "A": 25,
+    "B": 25
+  },
+  "training_setting_counts": {
+    "main": 32,
+    "non_main": 18
+  },
+  "n_responses": 5000,
+  "n_missing_responses_scored_incorrect": 3,
+  "n_machine_rating_rows": 400,
+  "n_machine_safety_screening_rows": 400,
+  "n_machine_safety_screening_item_rows": 100
+}

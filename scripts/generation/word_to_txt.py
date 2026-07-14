@@ -3,14 +3,19 @@
 脚本用途：把人类题库 Word 文档导出为纯文本，供结构化解析脚本读取。
 流程阶段：人类题库结构化。
 主要输入：用户在文件选择窗口中选定的 `.docx` 或 `.doc` 文件。
-主要输出：与 Word 文件同名的 `.txt` 中间文件。
+主要输出：仓库原始文档转换到 `data/intermediate/human_question_text/`；仓库外文档默认与原文件同目录。
 重要边界：人类题库来源是 Word；TXT 只是解析中间文件，不是独立来源，也不是 MAS 出题结果。
 """
 
 import os
 import sys
 import tkinter as tk
+from pathlib import Path
 from tkinter import filedialog, messagebox
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from project_paths import HUMAN_QUESTION_TEXT_DIR, RAW_HUMAN_QUESTION_DIR  # noqa: E402
 
 
 # ===== Word 转 TXT =====
@@ -108,6 +113,16 @@ def pick_file() -> str:
     return file_path
 
 
+def output_path_for(input_path: str) -> Path:
+    source = Path(input_path).resolve()
+    try:
+        source.relative_to(RAW_HUMAN_QUESTION_DIR.resolve())
+    except ValueError:
+        return source.with_suffix(".txt")
+    HUMAN_QUESTION_TEXT_DIR.mkdir(parents=True, exist_ok=True)
+    return HUMAN_QUESTION_TEXT_DIR / f"{source.stem}.txt"
+
+
 # ===== 程序入口 =====
 
 def main():
@@ -116,13 +131,13 @@ def main():
         return
 
     ext = os.path.splitext(input_path)[1].lower()
-    output_path = os.path.splitext(input_path)[0] + ".txt"
+    output_path = output_path_for(input_path)
 
     try:
         if ext == ".docx":
-            convert_docx_to_txt(input_path, output_path)
+            convert_docx_to_txt(input_path, str(output_path))
         elif ext == ".doc":
-            convert_doc_to_txt_windows(input_path, output_path)
+            convert_doc_to_txt_windows(input_path, str(output_path))
         else:
             raise RuntimeError(f"不支持的文件类型：{ext}")
 
