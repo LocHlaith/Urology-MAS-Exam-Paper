@@ -1077,7 +1077,7 @@ def figure2c() -> None:
     write_csv(DERIVED / "fig2C_dimension_score_annotations.csv", significance_rows)
     ax.set_xlim(1, 5.85)
     ax.set_xlabel("Mean expert rating (native dimension scale)")
-    ax.set_title("Per-dimension human-expert scores", fontweight="bold")
+    fig.suptitle("Per-dimension human-expert scores", y=0.99, fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower right")
     ax.text(
         0.50,
@@ -1175,7 +1175,7 @@ def figure2d() -> None:
         )
         ax.text(
             spec["margin"],
-            1.015,
+            0.90,
             f"{metric} NI {spec['margin']:.2f}",
             transform=ax.get_xaxis_transform(),
             ha="right",
@@ -1199,7 +1199,7 @@ def figure2d() -> None:
     ax.invert_yaxis()
     ax.set_xlim(-0.43, 0.60)
     ax.set_xlabel("Mean quality-score difference (MAS − Human)")
-    ax.set_title("Expert quality gap by cognitive level", fontweight="bold")
+    fig.suptitle("Expert quality gap by cognitive level", y=0.99, fontweight="bold")
     ax.legend(
         frameon=False,
         ncol=2,
@@ -1207,7 +1207,10 @@ def figure2d() -> None:
         bbox_to_anchor=(0.50, -0.13),
     )
     style_axes(ax, "x")
-    save_pdf(fig, "Figure2D_quality_by_cognitive_level.pdf")
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    # Figure 2D and 2E share the same two assembled columns.
+    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.18, top=0.88)
+    save_pdf(fig, "Figure2D_quality_by_cognitive_level.pdf", tight=False)
 
 
 EXPERT_QUALITY_NI_MARGIN = -0.25
@@ -1417,7 +1420,7 @@ def figure2e() -> None:
     ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4])
     ax.set_ylabel("Expert quality score (standardized 5-point mean)")
     ax.set_ylim(max(1.0, y_min - 0.12), annotation_base + 0.16)
-    ax.set_title("Expert quality by source and cognitive level", fontweight="bold")
+    fig.suptitle("Expert quality by source and cognitive level", y=0.99, fontweight="bold")
     # Match Figure 3D's compact arrangement: keep the legend inside the data
     # area and place the model note directly beneath the axis.
     ax.legend(frameon=False, ncol=2, loc="lower left")
@@ -1425,7 +1428,7 @@ def figure2e() -> None:
     fig.subplots_adjust(left=0.12, right=0.985, bottom=0.20, top=0.88)
     fig.text(
         0.985,
-        0.025,
+        0.045,
         "Mixed model: source × cognitive level + rating order, with crossed random rater and item intercepts; stars show adjusted source contrasts.",
         ha="right",
         va="bottom",
@@ -1828,7 +1831,7 @@ def figure2f() -> None:
     ax.set_yticks(y, stats_df.endpoint)
     ax.set_xlim(-0.05, 1.05)
     ax.set_xlabel("Average-measure consistency ICC(C,k), 95% CI")
-    ax.set_title("Expert inter-rater reliability", fontweight="bold")
+    fig.suptitle("Expert inter-rater reliability", y=0.99, fontweight="bold")
     ax.text(
         0.50,
         -0.20,
@@ -1840,7 +1843,10 @@ def figure2f() -> None:
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
-    save_pdf(fig, "Figure2F_expert_inter_rater_reliability.pdf")
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    # Match adjacent Figure 2E at both the top and bottom of the data area.
+    fig.subplots_adjust(bottom=0.20, top=0.88)
+    save_pdf(fig, "Figure2F_expert_inter_rater_reliability.pdf", tight=False)
 
 
 # ---------------------------------------------------------------------------
@@ -1991,7 +1997,9 @@ def figure3b() -> None:
         loc="upper right",
         bbox_to_anchor=(0.995, 0.965),
     )
-    fig.subplots_adjust(left=0.08, right=0.94, bottom=0.22, top=0.78, wspace=0.34)
+    # Figure 3B, 3D, and 3F occupy the same assembled columns; align their
+    # left and right plot bounds while retaining the three internal panels.
+    fig.subplots_adjust(left=0.148, right=0.985, bottom=0.22, top=0.78, wspace=0.34)
     save_pdf(fig, "Figure3B_student_correct_rate.pdf", tight=False)
 
 
@@ -2091,6 +2099,8 @@ def figure3c() -> None:
     fig.legend(handles=handles, frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 0.005))
     fig.suptitle("Student correct rate by cognitive level", y=0.99, fontweight="bold")
     fig.tight_layout(rect=[0, 0.08, 1, 0.93])
+    # Figure 3C and 3E share the same assembled columns.
+    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.182)
     save_pdf(fig, "Figure3C_student_accuracy_by_cognitive_level.pdf", tight=False)
 
 
@@ -2367,7 +2377,7 @@ def figure3d_adjusted() -> None:
     ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4])
     ax.set_ylim(y_min, y_max)
     ax.set_ylabel("Adjusted correct-answer probability")
-    ax.set_title("Adjusted source x cognitive-level interaction", fontweight="bold")
+    fig.suptitle("Adjusted source x cognitive-level interaction", y=0.99, fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower left")
     fig.text(
         0.98,
@@ -2379,9 +2389,9 @@ def figure3d_adjusted() -> None:
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
-    fig.tight_layout(rect=[0, 0.08, 1, 0.96])
-    # Align the horizontal axis with adjacent Figure 3C.
-    fig.subplots_adjust(bottom=0.182)
+    fig.tight_layout(rect=[0, 0.08, 1, 0.93])
+    # Align with Figure 3C horizontally and with Figure 3B/3F vertically.
+    fig.subplots_adjust(left=0.148, right=0.985, bottom=0.182)
     save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf", tight=False)
 
 
@@ -2863,7 +2873,9 @@ def figure3e() -> None:
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
-    save_pdf(fig, "Figure3E_ctt_by_cognitive_level.pdf")
+    fig.tight_layout()
+    fig.subplots_adjust(left=0.12, right=0.985)
+    save_pdf(fig, "Figure3E_ctt_by_cognitive_level.pdf", tight=False)
 
 
 def cronbach_alpha(matrix: np.ndarray) -> float:
@@ -2940,7 +2952,9 @@ def figure3f() -> None:
     ax.set_xlabel("KR-20 / Cronbach's alpha (95% bootstrap CI)")
     ax.set_title("Internal consistency reliability", fontweight="bold")
     style_axes(ax, "x")
-    save_pdf(fig, "Figure3F_reliability.pdf")
+    fig.tight_layout()
+    fig.subplots_adjust(left=0.148, right=0.985)
+    save_pdf(fig, "Figure3F_reliability.pdf", tight=False)
 
 
 # ---------------------------------------------------------------------------
@@ -3041,7 +3055,7 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
     table.set_fontsize(6.5)
     table.scale(1.0, 1.35)
     # Match the horizontal-axis baseline of adjacent Figure 4C.
-    fig.subplots_adjust(bottom=0.22)
+    fig.subplots_adjust(bottom=0.22, top=0.93)
     save_pdf(fig, "Figure4B_expert_source_identification_accuracy.pdf", tight=False)
 
 
@@ -3076,7 +3090,10 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
     ax.set_title("Expert source-judgment confusion matrix", fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="upper center", bbox_to_anchor=(0.5, -0.18))
     style_axes(ax)
-    save_pdf(fig, "Figure4C_expert_source_confusion_matrix.pdf")
+    fig.tight_layout()
+    # Figure 4C and 4F share a column; reserve the same left/right bounds.
+    fig.subplots_adjust(left=0.227, right=0.973, bottom=0.22, top=0.93)
+    save_pdf(fig, "Figure4C_expert_source_confusion_matrix.pdf", tight=False)
 
 
 def figure4d(expert_judgments: pd.DataFrame) -> None:
@@ -3215,7 +3232,7 @@ def figure4e() -> None:
     table.set_fontsize(6.5)
     table.scale(1.0, 1.4)
     # Figure 4D-F form one row; keep their horizontal axes collinear.
-    fig.subplots_adjust(bottom=0.20)
+    fig.subplots_adjust(bottom=0.20, top=0.88)
     save_pdf(fig, "Figure4E_student_source_identification_accuracy.pdf", tight=False)
 
 
@@ -3239,7 +3256,7 @@ def figure4f() -> None:
     ax.set_title("MAS timing sensitivity", fontweight="bold")
     style_axes(ax, "x")
     fig.tight_layout()
-    fig.subplots_adjust(bottom=0.20)
+    fig.subplots_adjust(left=0.227, right=0.973, bottom=0.20, top=0.88)
     save_pdf(fig, "Figure4F_efficiency_sensitivity.pdf", tight=False)
 
 
@@ -3707,7 +3724,10 @@ def figure5a() -> None:
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
-    save_pdf(fig, "Figure5A_total_workflow_time.pdf")
+    fig.tight_layout()
+    # Figure 5A and 5D share the same assembled columns.
+    fig.subplots_adjust(left=0.155, right=0.985, bottom=0.155)
+    save_pdf(fig, "Figure5A_total_workflow_time.pdf", tight=False)
 
 
 def figure5b() -> None:
@@ -3867,7 +3887,7 @@ def figure5d() -> None:
     )
     ax.text(
         0.50,
-        -0.18,
+        -0.22,
         "DeepSeek V4 cache-miss prices checked 2026-06-22",
         transform=ax.transAxes,
         ha="center",
@@ -3879,7 +3899,7 @@ def figure5d() -> None:
     style_axes(ax, "x")
     fig.tight_layout()
     # Match the horizontal-axis baseline of adjacent Figure 5E.
-    fig.subplots_adjust(bottom=0.216)
+    fig.subplots_adjust(left=0.155, right=0.985, bottom=0.216)
     save_pdf(fig, "Figure5D_api_cost.pdf", tight=False)
 
 
@@ -4038,7 +4058,7 @@ def figure6a() -> None:
     ax.axis("off")
     rounded_box(ax, (0.25, 3.15), (3.5, 1.0), "Form A", f"Human → MAS  (n={counts.get('A', 0)})", FORM_COLORS["A"]["fill"], FORM_COLORS["A"]["color"])
     rounded_box(ax, (0.25, 1.20), (3.5, 1.0), "Form B", f"MAS → Human  (n={counts.get('B', 0)})", FORM_COLORS["B"]["fill"], FORM_COLORS["B"]["color"])
-    ax.set_title("Randomized examination order", fontweight="bold")
+    fig.suptitle("Randomized examination order", y=0.99, fontweight="bold")
     save_pdf(fig, "Figure6A_order_schema.pdf", tight=False)
 
 
@@ -4078,6 +4098,11 @@ def figure6b() -> None:
     ax.text(0.5, ymax + 0.8, label, ha="center", fontweight="bold")
     ax.text(0.5, 24, f"{method}\nP={p_value:.3f}", ha="center", va="bottom", fontsize=6.5)
     ax.set_xticks([0, 1], ["First block", "Second block"])
+    # Keep the endpoint labels inside the square panel without changing the
+    # aligned axis bounds: the left label grows rightward and the right label
+    # grows leftward from their ticks.
+    ax.get_xticklabels()[0].set_ha("left")
+    ax.get_xticklabels()[1].set_ha("right")
     ax.set_ylabel("Block score (%)")
     ax.set_ylim(20, min(105, ymax + 7))
     ax.set_title("Student scores by block position", fontweight="bold")
@@ -4085,7 +4110,7 @@ def figure6b() -> None:
     style_axes(ax)
     fig.tight_layout()
     # Match the horizontal-axis baseline of adjacent Figure 6C.
-    fig.subplots_adjust(bottom=0.093)
+    fig.subplots_adjust(left=0.133, right=0.973, bottom=0.093)
     save_pdf(fig, "Figure6B_scores_by_block_position.pdf", tight=False)
 
 
@@ -4253,7 +4278,7 @@ def figure6e() -> None:
     fig.tight_layout()
     # Figure 6C and 6E share a column; align their left axes. The bottom
     # matches adjacent Figure 6D without moving any annotation off-canvas.
-    fig.subplots_adjust(left=0.135, bottom=0.104)
+    fig.subplots_adjust(left=0.133, right=0.973, bottom=0.104)
     save_pdf(fig, "Figure6E_total_duration_by_sequence.pdf", tight=False)
 
 
