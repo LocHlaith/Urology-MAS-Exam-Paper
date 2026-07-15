@@ -17,6 +17,7 @@
 | `plot/data/derived/source_workbooks/` | 派生数据 | 原始或历史工作簿逐工作表导出的 CSV；由 manifest 记录来源。 |
 | `plot/data/derived/` | 派生数据 | 统一作答表、题目表、统计模型输入、统计结果及各 panel 数据。 |
 | `outputs/figures/panels/` | 输出 | 当前 25 个代码生成的可编辑 PDF panel；Figure 1A、1B、2A、3A、4A 改由 GPT 构图后在 PPT 手工临摹。 |
+| `outputs/figures/assembled/` | 输出 | Figure 1–6 的矩形拼版 PDF；未完成的 PPT 流程图以等尺寸占位框保留位置。 |
 | `outputs/figure_source_data/` | 输出 | 与 25 个代码生成 panel 一一对应的审稿人源数据工作簿。 |
 | `outputs/report_drafts/` | 输出 | P 卷、M 卷四轮机器评分的解析标注文本。 |
 
@@ -28,6 +29,7 @@
 python scripts/plotting/export_raw_workbooks_to_csv.py
 python scripts/plotting/build_plot_datasets.py
 python scripts/plotting/make_final_figures.py
+python scripts/plotting/assemble_final_figures.py
 python scripts/plotting/export_panel_source_data.py
 ```
 

@@ -31,6 +31,7 @@
 
 - `scripts/plotting/build_plot_datasets.py`：把题库、试卷标注和考生作答整理为 `plot/data/derived/` 中的基础分析表。
 - `scripts/plotting/make_final_figures.py`：当前正式成图入口，读取 `plot/data/derived/`，输出到 `outputs/figures/panels/`。
+- `scripts/plotting/assemble_final_figures.py`：把正式 panel 拼接为 `outputs/figures/assembled/` 中的 Figure 1–6；流程图 PDF 缺失时保留等尺寸占位框。
 - `scripts/plotting/export_panel_source_data.py`：为当前每个 panel 导出 `outputs/figure_source_data/` 中的审稿人源数据工作簿。
 - `scripts/plotting/export_raw_workbooks_to_csv.py`：把 `plot/data/raw/` 中的原始工作簿逐表导出到 `plot/data/derived/source_workbooks/`。
 - `scripts/plotting/ingest_first_author_update.py`：导入第一作者更新材料；只有存在 `plot/data/first_author_update/` 时才需运行。

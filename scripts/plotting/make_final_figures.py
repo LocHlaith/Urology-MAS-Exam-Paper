@@ -14,7 +14,10 @@ import json
 import math
 import posixpath
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 import warnings
 from collections import Counter, defaultdict, deque
 from pathlib import Path
@@ -164,8 +167,64 @@ def add_panel_label(fig: plt.Figure, label: str, x: float = 0.012, y: float = 0.
 def save_pdf(fig: plt.Figure, filename: str, *, tight: bool = True) -> None:
     if tight:
         fig.tight_layout()
-    fig.savefig(OUT / filename, bbox_inches="tight", facecolor="white")
+    # Keep the declared canvas dimensions exact.  ``bbox_inches='tight'``
+    # changes the PDF media box when annotations extend beyond an axis and was
+    # the reason the nominal 4.5 x 9.0 Figure 2C was not a strict 1:2 panel.
+    fig.savefig(OUT / filename, facecolor="white")
     plt.close(fig)
+
+
+def save_pdf_rotated_clockwise(fig: plt.Figure, filename: str) -> None:
+    """Save one intact 9 x 4.5 panel, then rotate the vector page to 4.5 x 9."""
+    pdflatex = shutil.which("pdflatex")
+    if pdflatex is None:
+        raise RuntimeError("pdflatex is required to rotate Figure 2B without rasterizing it.")
+    with tempfile.TemporaryDirectory(prefix="uromas_rotate_panel_") as temp_name:
+        temp_dir = Path(temp_name)
+        source = temp_dir / "source_landscape.pdf"
+        fig.tight_layout()
+        fig.savefig(source, facecolor="white")
+        plt.close(fig)
+        source_tex_path = source.as_posix()
+        tex = rf"""\documentclass{{article}}
+\usepackage[paperwidth=4.5in,paperheight=9in,margin=0in]{{geometry}}
+\usepackage{{graphicx}}
+\usepackage{{eso-pic}}
+\pagestyle{{empty}}
+\begin{{document}}
+\thispagestyle{{empty}}
+\AddToShipoutPictureFG*{{
+  \AtPageLowerLeft{{
+    \setlength{{\unitlength}}{{1in}}
+    \begin{{picture}}(0,0)
+      \put(2.25,4.5){{\makebox(0,0){{\includegraphics[width=9in,height=4.5in,angle=-90,origin=c]{{\detokenize{{{source_tex_path}}}}}}}}}
+    \end{{picture}}
+  }}
+}}
+\null
+\end{{document}}
+"""
+        tex_path = temp_dir / "rotated.tex"
+        tex_path.write_text(tex, encoding="utf-8")
+        process = subprocess.run(
+            [
+                pdflatex,
+                "-interaction=nonstopmode",
+                "-halt-on-error",
+                f"-output-directory={temp_dir}",
+                str(tex_path),
+            ],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+        if process.returncode != 0:
+            tail = "\n".join(process.stdout.splitlines()[-30:])
+            raise RuntimeError(f"Could not rotate {filename}:\n{tail}")
+        shutil.copy2(temp_dir / "rotated.pdf", OUT / filename)
 
 
 def remove_output(filename: str) -> None:
@@ -713,6 +772,8 @@ def figure2b() -> None:
     write_csv(DERIVED / "fig2B_quality_difference_item_scores.csv", item_score_rows)
     write_csv(DERIVED / "fig2B_quality_difference_stats.csv", stats_df)
 
+    # Draw the original single 9 x 4.5 panel without deleting or rearranging
+    # any element, then rotate the complete vector page for the portrait slot.
     fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "B")
     y = np.array([1.0, 0.0])
@@ -795,7 +856,7 @@ def figure2b() -> None:
         color=UROMAS_BASE_COLORS["text_dark"],
     )
     style_axes(ax, "x")
-    save_pdf(fig, "Figure2B_quality_difference.pdf")
+    save_pdf_rotated_clockwise(fig, "Figure2B_quality_difference.pdf")
 
 
 DIMENSIONS = [
@@ -996,8 +1057,9 @@ def figure2c() -> None:
     ax.legend(frameon=False, ncol=2, loc="lower right")
     ax.text(
         0.50,
-        -0.055,
-        "Annotations flag adverse MAS differences that are both statistically significant and exceed the prespecified scale-specific margin.",
+        -0.058,
+        "Stars: adverse MAS differences significant at P < .05\n"
+        "and beyond the prespecified scale-specific margin.",
         transform=ax.transAxes,
         ha="center",
         va="top",
@@ -1005,7 +1067,8 @@ def figure2c() -> None:
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax, "x")
-    save_pdf(fig, "Figure2C_dimension_scores.pdf")
+    fig.subplots_adjust(left=0.40, right=0.96, bottom=0.10, top=0.94)
+    save_pdf(fig, "Figure2C_dimension_scores.pdf", tight=False)
 
 
 def figure2d() -> None:
@@ -1331,13 +1394,15 @@ def figure2e() -> None:
     ax.set_ylabel("Expert quality score (standardized 5-point mean)")
     ax.set_ylim(max(1.0, y_min - 0.12), annotation_base + 0.16)
     ax.set_title("Expert quality by source and cognitive level", fontweight="bold")
-    ax.legend(frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.27))
-    fig.subplots_adjust(left=0.10, right=0.98, bottom=0.30, top=0.88)
+    # Match Figure 3D's compact arrangement: keep the legend inside the data
+    # area and place the model note directly beneath the axis.
+    ax.legend(frameon=False, ncol=2, loc="lower left")
+    fig.subplots_adjust(left=0.10, right=0.98, bottom=0.14, top=0.88)
     fig.text(
-        0.50,
-        0.035,
+        0.985,
+        0.025,
         "Mixed model: source × cognitive level + rating order, with crossed random rater and item intercepts; stars show adjusted source contrasts.",
-        ha="center",
+        ha="right",
         va="bottom",
         fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
@@ -3037,7 +3102,7 @@ def figure4d(expert_judgments: pd.DataFrame) -> None:
     write_csv(DERIVED / "fig4D_expert_guessed_mas_model_input.csv", expert_judgments)
     write_csv(DERIVED / "fig4D_expert_guessed_mas_model_forest.csv", forest)
 
-    fig, ax = plt.subplots(figsize=(9.0, 4.5))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "D")
     plot = forest.iloc[::-1].reset_index(drop=True)
     y = np.arange(len(plot))
@@ -3054,10 +3119,19 @@ def figure4d(expert_judgments: pd.DataFrame) -> None:
     )
     ax.set_xscale("log")
     ax.set_yticks(y, plot.label)
-    ax.set_xlabel("Odds ratio for being guessed as MAS (95% credible interval)")
+    plt.setp(
+        ax.get_yticklabels(),
+        rotation=25,
+        ha="right",
+        va="center",
+        rotation_mode="anchor",
+        fontsize=6.5,
+    )
+    ax.set_xlabel("Odds ratio for being guessed as MAS\n(95% credible interval)")
     ax.set_title("Expert guessed-MAS mixed model", fontweight="bold")
     style_axes(ax, "x")
-    save_pdf(fig, "Figure4D_expert_guessed_MAS_model_forest.pdf")
+    fig.subplots_adjust(left=0.42, right=0.96, bottom=0.20, top=0.88)
+    save_pdf(fig, "Figure4D_expert_guessed_MAS_model_forest.pdf", tight=False)
 
 
 def figure4e() -> None:
@@ -3142,13 +3216,12 @@ def figure4f() -> None:
 
 EFFICIENCY_TYPES = ["A1", "A2", "A3/A4", "B", "X"]
 EFFICIENCY_TYPE_COLORS = {
-    # Figure 5A encodes item type, not source. Keep every segment clearly
-    # outside the MAS terracotta and Human blue families.
-    "A1": {"color": "#B8954B", "fill": "#F1E6C8"},     # ochre
-    "A2": {"color": "#4F7A4E", "fill": "#DFEADB"},     # forest green
-    "A3/A4": {"color": "#6F6F6F", "fill": "#E8E8E8"}, # neutral gray
-    "B": {"color": "#A66A2C", "fill": "#EAD8C3"},      # brown
-    "X": {"color": "#7A742F", "fill": "#E8E5C8"},      # olive
+    # Figure 5A uses an ordered monochromatic green ramp for item types.
+    "A1": {"color": "#0B4F3A", "fill": "#DCEFE7"},
+    "A2": {"color": "#197257", "fill": "#D5EAE1"},
+    "A3/A4": {"color": "#2F9470", "fill": "#C8E2D5"},
+    "B": {"color": "#66B58D", "fill": "#D8EBDD"},
+    "X": {"color": "#A7D7BC", "fill": "#E8F4ED"},
 }
 FINAL_ITEM_COUNTS = {"A1": 7, "A2": 18, "A3/A4": 14, "B": 3, "X": 8}
 DEEPSEEK_PRICING_SOURCE = "https://api-docs.deepseek.com/quick_start/pricing"
@@ -3554,6 +3627,7 @@ def figure5a() -> None:
             ),
         )
         if values[0] > 35:
+            label_color = "white" if item_type != "X" else UROMAS_BASE_COLORS["text_dark"]
             ax.text(
                 0,
                 bottoms[0] + values[0] / 2,
@@ -3561,7 +3635,7 @@ def figure5a() -> None:
                 ha="center",
                 va="center",
                 fontsize=8,
-                color="white",
+                color=label_color,
                 fontweight="bold",
             )
         bottoms += values
@@ -3684,17 +3758,18 @@ def figure5c() -> None:
     ax.set_ylabel("Total workflow time per exam (min, log)")
     ax.set_title("Sensitivity: workflow time ±20%", fontweight="bold")
     ax.text(
-        0.98,
-        0.92,
+        0.50,
+        0.50,
         (
             "Worst case: Human −20% vs MAS +20%\n"
             f"{human*0.8:.0f} vs {mas*1.2:.0f} min ≈ {worst_ratio:.0f}×"
         ),
         transform=ax.transAxes,
-        ha="right",
-        va="top",
+        ha="center",
+        va="center",
         bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": UROMAS_BASE_COLORS["border"]},
     )
+    ax.set_xlim(-0.15, 1.30)
     style_axes(ax, "")
     save_pdf(fig, "Figure5C_time_sensitivity.pdf")
 
