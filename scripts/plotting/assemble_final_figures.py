@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assemble manuscript panels into rectangular, vector-preserving PDFs.
 
-脚本用途：把正式 panel PDF 拼接为 Figure 1–6，并为 PPT 手工流程图保留固定位置。
+脚本用途：把正式 panel PDF 拼接为 Figure 1–6，并为流程图保留固定位置。
 流程阶段：论文绘图与最终拼版。
 主要输入：outputs/figures/panels 下的正式 PDF panel。
 主要输出：outputs/figures/assembled/Figure1.pdf 至 Figure6.pdf。
@@ -9,6 +9,7 @@
 """
 from __future__ import annotations
 
+import argparse
 import shutil
 import subprocess
 import tempfile
@@ -153,13 +154,13 @@ def latex_document(name: str, layout: FigureLayout) -> str:
 \pagestyle{{empty}}
 \begin{{document}}
 \thispagestyle{{empty}}
-\AddToShipoutPictureFG*{{
-  \AtPageLowerLeft{{
-    \setlength{{\unitlength}}{{1in}}
-    \begin{{picture}}(0,0)
+\AddToShipoutPictureFG*{{%
+  \AtPageLowerLeft{{%
+    \setlength{{\unitlength}}{{1in}}%
+    \begin{{picture}}(0,0)%
 {graphics}
-    \end{{picture}}
-  }}
+    \end{{picture}}%
+  }}%
 }}
 \null
 \end{{document}}
@@ -196,10 +197,23 @@ def compile_layout(name: str, layout: FigureLayout, pdflatex: str) -> Path:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "figures",
+        nargs="*",
+        metavar="FIGURE",
+        help="Figures to rebuild (for example: Figure1 Figure4); default: all figures.",
+    )
+    args = parser.parse_args()
+    names = args.figures or list(LAYOUTS)
+    unknown = [name for name in names if name not in LAYOUTS]
+    if unknown:
+        parser.error(f"unknown figure name(s): {', '.join(unknown)}")
+
     pdflatex = shutil.which("pdflatex")
     if pdflatex is None:
         raise RuntimeError("pdflatex is required to preserve vector panels during assembly.")
-    outputs = [compile_layout(name, layout, pdflatex) for name, layout in LAYOUTS.items()]
+    outputs = [compile_layout(name, LAYOUTS[name], pdflatex) for name in names]
     for output in outputs:
         print(f"Wrote {output.relative_to(REPO_ROOT)}")
 

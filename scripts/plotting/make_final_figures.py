@@ -4,7 +4,7 @@
 Figure 5 contains workflow-efficiency analyses and Figure 6 contains the
 randomized examination-order/fatigue analyses. All figures are written as
 editable PDFs to outputs/figures/panels. Workflow panels 1A, 1B, 2A, 3A,
-and 4A are reserved for manual PowerPoint rendering.
+and 4A are rebuilt separately by ``make_workflow_panels.py``.
 """
 from __future__ import annotations
 
@@ -656,17 +656,12 @@ def parse_expert_judgments() -> pd.DataFrame:
 # Figure 1
 
 
-def remove_manual_workflow_outputs() -> None:
-    """Keep manually rendered workflow panels out of generated outputs."""
+def remove_stale_workflow_outputs() -> None:
+    """Remove legacy panel names without deleting the current workflow PDFs."""
     filenames = [
-        "Figure1A_workflow_inputs.pdf",
-        "Figure1B_safety_gate.pdf",
         "Figure2A_quality_difference.pdf",
-        "Figure2A_expert_quality_evaluation_workflow.pdf",
         "Figure3A_quality_by_cognitive_level.pdf",
-        "Figure3A_student_testing_workflow.pdf",
         "Figure4A_source_detection_accuracy.pdf",
-        "Figure4A_turing_test_workflow.pdf",
     ]
     for filename in filenames:
         remove_output(filename)
@@ -4305,7 +4300,7 @@ def cleanup_obsolete_outputs() -> None:
 
 def main() -> None:
     setup_style()
-    remove_manual_workflow_outputs()
+    remove_stale_workflow_outputs()
     expert_judgments = parse_expert_judgments()
 
     figure1c()
