@@ -35,6 +35,8 @@
 - `scripts/plotting/export_raw_workbooks_to_csv.py`：把 `plot/data/raw/` 中的原始工作簿逐表导出到 `plot/data/derived/source_workbooks/`。
 - `scripts/plotting/ingest_first_author_update.py`：导入第一作者更新材料；只有存在 `plot/data/first_author_update/` 时才需运行。
 - `scripts/plotting/make_manuscript_panels.py` 与 `make_manuscript_figures.py`：较早版绘图实现，仅用于历史复核；当前投稿图以 `make_final_figures.py` 为准。
+- Figure 1A、1B、2A、3A、4A 不再由代码绘制；GPT 官网构图提示词在 `prompts/figures/GPT官网流程图提示词.md`，最终由 PPT 手工临摹。
+- Figure 2E、2F 直接读取 `plot/data/raw/expert_rating_workbooks/`；Figure 5 的 Human 时间和成本直接读取 `plot/data/raw/效率分析.xlsx`。
 
 ## 题库评价
 

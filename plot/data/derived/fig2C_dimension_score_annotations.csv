@@ -1,24 +1,24 @@
-﻿family,dimension,annotation
-QGval,Fluency,n.s.
-QGval,Clarity,n.s.
-QGval,Conciseness,n.s.
-QGval,Relevance,n.s.
-QGval,Consistency,n.s.
-QGval,Answerability,n.s.
-QGval,Answer consistency,n.s.
-ULM,Fluency,n.s.
-ULM,Exclusiveness,n.s.
-ULM,Explicitness,n.s.
-ULM,Goal alignment,n.s.
-ULM,Comprehensiveness,n.s.
-ULM,Focus,n.s.
-ULM,Guess resistance,n.s.
-ULM,Completeness,***
-ULM,Correctness,n.s.
-ULM,Solvability,n.s.
-ULM,Absoluteness,n.s.
-ULM,Plausibility,n.s.
-ULM,Reasoning,n.s.
-ULM,Feedback,n.s.
-ULM,Fairness,n.s.
-ULM,Explanation score,n.s.
+﻿family,dimension,max_score,n_mas,n_human,difference_mas_minus_human,adverse_difference_margin,welch_t_statistic,p_value_two_sided,materially_worse_than_human,annotation_rule,annotation
+QGval,Fluency,5,70,70,0.03333333333333233,-0.3,1.2121720782657721,0.22760364872548647,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+QGval,Clarity,5,70,70,0.05238095238095308,-0.3,1.6837382614608,0.09617725033428902,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+QGval,Conciseness,5,70,70,-0.08095238095238244,-0.3,-2.123798008841024,0.03564345637724641,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+QGval,Relevance,5,70,70,0.0333333333333341,-0.3,1.2649484780628064,0.20851244735633317,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+QGval,Consistency,5,70,70,0.02857142857142847,-0.3,1.7577122172886974,0.08323165719254416,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+QGval,Answerability,5,70,70,0.01904761904761898,-0.3,1.653079933737844,0.10285789832324314,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+QGval,Answer consistency,5,70,70,0.05714285714285605,-0.3,1.3971624344968903,0.1646480901074217,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Fluency,5,70,70,-0.0333333333333341,-0.3,-1.1018183110950412,0.27247702400976925,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Exclusiveness,5,70,70,-0.04285714285714448,-0.3,-1.0588500793178888,0.2915334270020203,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Explicitness,4,70,70,-0.03333333333333366,-0.25,-0.8047217485013227,0.4224084316976734,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Goal alignment,5,70,70,-0.20476190476190315,-0.3,-5.312216267453347,7.20964073359588e-07,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Comprehensiveness,5,70,70,0.30476190476190457,-0.3,2.7277475270244236,0.007224516376429894,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Focus,5,70,70,0.0619047619047608,-0.3,1.03598396240652,0.3020660056803489,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Guess resistance,5,70,70,0.2190476190476156,-0.3,5.652287931638252,8.834502626736058e-08,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Completeness,5,70,70,-0.38571428571428523,-0.3,-4.070328669816398,0.00011363856168149728,True,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,***
+ULM,Correctness,5,70,70,0.00952380952380949,-0.3,0.6324555320336737,0.5288041054338313,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Solvability,5,70,70,-0.014285714285713347,-0.3,-0.6564683759790685,0.5130312829576804,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Absoluteness,5,70,70,0.028571428571427582,-0.3,1.6706319869902124,0.09718457845620632,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Plausibility,5,70,70,0.3047619047619041,-0.3,4.1064591998343865,7.190149785844471e-05,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Reasoning,4,70,70,0.11428571428571432,-0.25,1.0852692699674606,0.2797043242360293,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Feedback,5,70,70,0.352380952380952,-0.3,6.164185609770153,1.2247850850723898e-08,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Fairness,3,70,70,-0.009523809523809934,-0.2,-1.0000000000000433,0.32080459351248386,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.
+ULM,Explanation score,5,70,70,0.16190476190476222,-0.3,2.6222522564680446,0.00985772617698751,False,Welch two-sample t-test stars are displayed only when MAS is lower than Human by at least the prespecified scale-specific margin,n.s.

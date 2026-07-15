@@ -34,13 +34,6 @@ SOURCE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 PANEL_SOURCE_MAP: dict[str, list[str]] = {
-    "Figure1A": [
-        "item_master.csv",
-        "mas_question_generation_time.csv",
-        "table1_item_blueprint_textual_characteristics.csv",
-    ],
-    "Figure1B": [],
-    "Figure2A": [],
     "Figure2B": ["fig2B_quality_difference_item_scores.csv", "fig2B_quality_difference_stats.csv"],
     "Figure2C": [
         "fig2C_dimension_scores_item_scores.csv",
@@ -62,12 +55,8 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig2F_expert_inter_rater_item_scores.csv",
         "fig2F_expert_inter_rater_icc_stats.csv",
         "fig2F_expert_inter_rater_icc_bootstrap.csv",
-        "fig2F_subdimension_inter_rater_item_scores.csv",
-        "fig2F_subdimension_inter_rater_icc_stats.csv",
-        "fig2F_subdimension_inter_rater_icc_bootstrap.csv",
     ],
     "Figure3B": ["fig3B_student_correct_rate_raw.csv", "fig3B_student_correct_rate_stats.csv"],
-    "Figure3A": ["exam_form_assignment.csv"],
     "Figure3C": [
         "fig3C_student_accuracy_horizontal_stats.csv",
         "fig3C_student_accuracy_student_rates.csv",
@@ -84,7 +73,6 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
     ],
     "Figure3F": ["fig3F_reliability_bootstrap_ci.csv", "responses.csv", "item_master.csv"],
     "Figure4B": ["fig4B_expert_source_identification_accuracy.csv"],
-    "Figure4A": [],
     "Figure4C": ["fig4C_expert_source_confusion_counts.csv"],
     "Figure4D": ["fig4D_expert_guessed_mas_model_input.csv", "fig4D_expert_guessed_mas_model_forest.csv"],
     "Figure4E": ["fig4E_student_source_identification_accuracy.csv", "source_detection.csv"],
@@ -108,28 +96,16 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
 
 
 PANEL_NOTES: dict[str, str] = {
-    "Figure1B": (
-        "Workflow-only panel based on Codex必读.md and the seven-domain critical-defect "
-        "rubric in prompts/evaluation/major_defects.md; it contains no plotted numeric result."
-    ),
-    "Figure2A": (
-        "Workflow-only panel based on the raw expert-rating workbook structure and the "
-        "QGEval, ULM, source-identification, and critical-defect evaluation protocol."
-    ),
-    "Figure3A": (
-        "Workflow panel for the two-sequence student examination; participant allocation "
-        "comes from exam_form_assignment.csv."
-    ),
-    "Figure4A": (
-        "Workflow-only panel. Expert judgments are item level, whereas the student workbook "
-        "records pair-level source-identification success only."
+    "Figure2C": (
+        "All dimensions remain on their native 5-, 4-, or 3-point scales. Labels are "
+        "computed from Welch two-sample t-tests and flag only adverse MAS differences "
+        "that also exceed the prespecified scale-specific margin."
     ),
     "Figure2E": (
-        "Mixed model: quality_score_5 ~ source*cognitive_level + char_count + "
-        "has_vignette + (1|rater_id) + (1|item_id). Figure panel presents "
-        "adjusted MAS-Human differences by cognitive level; the source-data "
-        "contrast table also includes non-inferiority fields using a -0.25 "
-        "margin on the expert-quality composite. "
+        "Raw-workbook mixed model: quality_score_5 ~ source*cognitive_level + "
+        "rating_order + (1|rater_id) + (1|item_key). The panel combines item-level "
+        "box plots with lines through source-specific means; stars are adjusted source "
+        "contrasts within cognitive level. "
         "quality_score_5 is the unweighted mean of 23 expert rubric component "
         "scores after each component is standardized to a 5-point scale using "
         "its own maximum score: 7 QGval components plus 16 ULM components. "
@@ -137,10 +113,8 @@ PANEL_NOTES: dict[str, str] = {
         "has a 3-point maximum; all other components have 5-point maxima."
     ),
     "Figure2F": (
-        "Inter-rater reliability panel uses two-way random-effects consistency ICC. "
-        "The plotted statistic is average-measure consistency ICC(C,k) across three experts. "
-        "The workbook also includes source-data tables for the 23 rubric subdimension "
-        "inter-rater reliability estimates."
+        "Raw-workbook inter-rater reliability uses two-way random-effects consistency ICC. "
+        "The two plotted rows are QGEval and ULM average-measure ICC(C,k) across three experts."
     ),
     "Figure3D": (
         "Figure 3D uses a covariate-standardized item-level program: a binomial "
@@ -150,8 +124,8 @@ PANEL_NOTES: dict[str, str] = {
         "adjusted item probabilities with min-max whiskers, and P values come "
         "from source-label permutation tests within each cognitive level."
     ),
-    "Figure4B": "Wilson 95% confidence intervals.",
-    "Figure4E": "Wilson 95% confidence interval.",
+    "Figure4B": "Wilson 90% confidence intervals; every expert denominator is 140 item judgments.",
+    "Figure4E": "Wilson 90% confidence interval for 48 student pair-level judgments.",
     "Figure5B": "All MAS items are treated as usable: denominator is 50/50.",
     "Figure5E": (
         "Primary AI cost uses the user-provided API total (CNY 28.83); token "
@@ -298,6 +272,10 @@ def main() -> None:
         )
     manifest = pd.DataFrame(manifest_rows)
     manifest.to_csv(SOURCE_DIR / "source_data_manifest.csv", index=False, encoding="utf-8-sig")
+    expected_workbooks = {Path(row["source_data_workbook"]).name for row in manifest_rows}
+    for obsolete in SOURCE_DIR.glob("source_data_fig_*.xlsx"):
+        if obsolete.name not in expected_workbooks:
+            obsolete.unlink()
     print(f"Wrote {len(manifest_rows)} source-data workbooks to {SOURCE_DIR}")
 
 

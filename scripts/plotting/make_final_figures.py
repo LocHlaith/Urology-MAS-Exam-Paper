@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Generate every manuscript panel from one authoritative plotting script.
+"""Generate every code-rendered manuscript panel from one plotting script.
 
 Figure 5 contains workflow-efficiency analyses and Figure 6 contains the
 randomized examination-order/fatigue analyses. All figures are written as
-editable PDFs to outputs/figures/panels.
+editable PDFs to outputs/figures/panels. Workflow panels 1A, 1B, 2A, 3A,
+and 4A are reserved for manual PowerPoint rendering.
 """
 from __future__ import annotations
 
@@ -30,7 +31,7 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from matplotlib.lines import Line2D
-from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Patch, Rectangle
+from matplotlib.patches import FancyBboxPatch, Patch, Rectangle
 from patsy import build_design_matrices
 from scipy import stats
 from statsmodels.genmod.bayes_mixed_glm import BinomialBayesMixedGLM
@@ -202,6 +203,16 @@ def bootstrap_mean_ci(
     )
 
 
+def significance_stars(p_value: float) -> str:
+    if not np.isfinite(p_value) or p_value >= 0.05:
+        return "n.s."
+    if p_value < 0.001:
+        return "***"
+    if p_value < 0.01:
+        return "**"
+    return "*"
+
+
 def rounded_box(
     ax: plt.Axes,
     xy: tuple[float, float],
@@ -240,29 +251,9 @@ def rounded_box(
             body,
             ha="left",
             va="center",
-            fontsize=7,
+            fontsize=8,
             color=UROMAS_BASE_COLORS["text"],
         )
-
-
-def arrow(
-    ax: plt.Axes,
-    start: tuple[float, float],
-    end: tuple[float, float],
-    color: str = UROMAS_BASE_COLORS["tick"],
-) -> None:
-    ax.add_patch(
-        FancyArrowPatch(
-            start,
-            end,
-            arrowstyle="-|>",
-            mutation_scale=10,
-            linewidth=0.9,
-            color=color,
-            shrinkA=0,
-            shrinkB=0,
-        )
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -569,9 +560,15 @@ def parse_expert_judgments() -> pd.DataFrame:
                     for value in list(row[2:9]) + list(row[10:26])
                     if isinstance(value, (int, float))
                 ]
+                normalized_component_values = [
+                    standardized_dimension_score(row[column], max_score)
+                    for _, _, max_score, column in DIMENSIONS
+                    if isinstance(row[column], (int, float))
+                ]
                 records.append(
                     {
                         "expert": expert,
+                        "rater_id": expert,
                         "source_true": source,
                         "item_key": item_key,
                         "item_no": item_no,
@@ -583,6 +580,11 @@ def parse_expert_judgments() -> pd.DataFrame:
                             or (source == "Human" and guessed_mas == 0)
                         ),
                         "quality_score": float(np.mean(component_values)),
+                        "quality_score_5": float(np.mean(normalized_component_values)),
+                        "qgeval_total": rubric_family_total(row, "QGval"),
+                        "qgeval_score_5": rubric_family_score_5(row, "QGval"),
+                        "ulm_total": rubric_family_total(row, "ULM"),
+                        "ulm_score_5": rubric_family_score_5(row, "ULM"),
                     }
                 )
     result = pd.DataFrame(records)
@@ -596,182 +598,20 @@ def parse_expert_judgments() -> pd.DataFrame:
 # Figure 1
 
 
-def figure1a() -> None:
-    inventory = json.loads((DERIVED / "data_inventory.json").read_text(encoding="utf-8"))
-    fig, ax = plt.subplots(figsize=(6.6, 3.5))
-    add_panel_label(fig, "A")
-    ax.set_xlim(0, 13)
-    ax.set_ylim(0, 6)
-    ax.axis("off")
-    rounded_box(
-        ax,
-        (0.3, 4.55),
-        (3.0, 0.9),
-        "Human expert bank",
-        f"n={inventory['human_bank_records_total']}",
-        CORE_FILLS["Human"],
-        CORE_COLORS["Human"],
-    )
-    rounded_box(
-        ax,
-        (0.3, 3.15),
-        (3.0, 0.9),
-        "Authorized references",
-        "Guidelines, textbook, syllabus",
-        OPTIONAL_COLOR_PAIRS[1]["fill"],
-        OPTIONAL_COLOR_PAIRS[1]["color"],
-    )
-    rounded_box(
-        ax,
-        (0.3, 1.75),
-        (3.0, 0.9),
-        "Blueprint constraints",
-        "Item type and cognitive level",
-        OPTIONAL_COLOR_PAIRS[3]["fill"],
-        OPTIONAL_COLOR_PAIRS[3]["color"],
-    )
-    rounded_box(
-        ax,
-        (4.25, 4.1),
-        (2.6, 0.9),
-        "Batch builder",
-        "Prompted item generation",
-        CORE_FILLS["MAS"],
-        CORE_COLORS["MAS"],
-    )
-    rounded_box(
-        ax,
-        (7.55, 4.1),
-        (2.5, 0.9),
-        "MAS generation",
-        "Structured JSON output",
-        CORE_FILLS["MAS"],
-        CORE_COLORS["MAS"],
-    )
-    rounded_box(
-        ax,
-        (5.0, 2.65),
-        (4.3, 0.9),
-        "Answer, explanation, and test-point pass",
-        "Traceable item IDs",
-        OPTIONAL_COLOR_PAIRS[2]["fill"],
-        OPTIONAL_COLOR_PAIRS[2]["color"],
-    )
-    rounded_box(
-        ax,
-        (5.0, 1.15),
-        (4.3, 0.9),
-        "MAS candidate bank",
-        f"n={inventory['mas_bank_records_total']}",
-        CORE_FILLS["MAS"],
-        CORE_COLORS["MAS"],
-    )
-    for start, end, color in [
-        ((3.35, 5.0), (4.18, 4.65), CORE_COLORS["Human"]),
-        ((3.35, 3.6), (4.18, 4.55), OPTIONAL_COLOR_PAIRS[1]["color"]),
-        ((3.35, 2.2), (4.18, 4.45), OPTIONAL_COLOR_PAIRS[3]["color"]),
-        ((6.9, 4.55), (7.48, 4.55), CORE_COLORS["MAS"]),
-        ((8.8, 4.05), (7.8, 3.6), CORE_COLORS["MAS"]),
-        ((7.15, 2.6), (7.15, 2.1), CORE_COLORS["MAS"]),
-    ]:
-        arrow(ax, start, end, color)
-    ax.set_title("Inputs and MAS generation workflow", pad=8, fontweight="bold")
-    save_pdf(fig, "Figure1A_workflow_inputs.pdf", tight=False)
-
-
-def figure1b() -> None:
-    fig, ax = plt.subplots(figsize=(7.4, 3.8))
-    add_panel_label(fig, "B")
-    ax.set_xlim(0, 15)
-    ax.set_ylim(0, 7)
-    ax.axis("off")
-
-    rounded_box(
-        ax,
-        (0.25, 4.90),
-        (2.35, 0.95),
-        "Human candidates",
-        "First-round sample",
-        CORE_FILLS["Human"],
-        CORE_COLORS["Human"],
-    )
-    rounded_box(
-        ax,
-        (0.25, 2.95),
-        (2.35, 0.95),
-        "MAS candidates",
-        "First-round sample",
-        CORE_FILLS["MAS"],
-        CORE_COLORS["MAS"],
-    )
-    rounded_box(
-        ax,
-        (3.35, 3.92),
-        (2.30, 0.95),
-        "Blinded review set",
-        "Source labels withheld",
-        OPTIONAL_COLOR_PAIRS[4]["fill"],
-        OPTIONAL_COLOR_PAIRS[4]["color"],
-    )
-    rounded_box(
-        ax,
-        (6.35, 5.18),
-        (2.85, 0.95),
-        "Model rubric review",
-        "Seven critical-defect domains",
-        OPTIONAL_COLOR_PAIRS[0]["fill"],
-        OPTIONAL_COLOR_PAIRS[0]["color"],
-    )
-    rounded_box(
-        ax,
-        (6.35, 2.67),
-        (2.85, 0.95),
-        "Human expert review",
-        "Independent defect judgments",
-        OPTIONAL_COLOR_PAIRS[1]["fill"],
-        OPTIONAL_COLOR_PAIRS[1]["color"],
-    )
-    rounded_box(
-        ax,
-        (10.00, 3.92),
-        (2.55, 0.95),
-        "Reconciliation",
-        "Discordance review",
-        OPTIONAL_COLOR_PAIRS[3]["fill"],
-        OPTIONAL_COLOR_PAIRS[3]["color"],
-    )
-    rounded_box(
-        ax,
-        (13.20, 3.82),
-        (1.55, 1.15),
-        "Decision",
-        "Retain /\nrevise / reject",
-        "white",
-        UROMAS_BASE_COLORS["border"],
-    )
-
-    for start, end, color in [
-        ((2.60, 5.37), (3.30, 4.55), CORE_COLORS["Human"]),
-        ((2.60, 3.42), (3.30, 4.22), CORE_COLORS["MAS"]),
-        ((5.65, 4.52), (6.30, 5.55), OPTIONAL_COLOR_PAIRS[0]["color"]),
-        ((5.65, 4.27), (6.30, 3.14), OPTIONAL_COLOR_PAIRS[1]["color"]),
-        ((9.20, 5.55), (9.95, 4.55), OPTIONAL_COLOR_PAIRS[0]["color"]),
-        ((9.20, 3.14), (9.95, 4.22), OPTIONAL_COLOR_PAIRS[1]["color"]),
-        ((12.55, 4.39), (13.15, 4.39), UROMAS_BASE_COLORS["tick"]),
-    ]:
-        arrow(ax, start, end, color)
-
-    ax.text(
-        7.70,
-        1.45,
-        "Defect domains: stem, options, format, scoring, fairness, clinical currency, and linked-item structure",
-        ha="center",
-        va="center",
-        fontsize=7,
-        color=UROMAS_BASE_COLORS["text"],
-    )
-    ax.set_title("Safety-review workflow", pad=8, fontweight="bold")
-    save_pdf(fig, "Figure1B_safety_gate.pdf", tight=False)
+def remove_manual_workflow_outputs() -> None:
+    """Keep manually rendered workflow panels out of generated outputs."""
+    filenames = [
+        "Figure1A_workflow_inputs.pdf",
+        "Figure1B_safety_gate.pdf",
+        "Figure2A_quality_difference.pdf",
+        "Figure2A_expert_quality_evaluation_workflow.pdf",
+        "Figure3A_quality_by_cognitive_level.pdf",
+        "Figure3A_student_testing_workflow.pdf",
+        "Figure4A_source_detection_accuracy.pdf",
+        "Figure4A_turing_test_workflow.pdf",
+    ]
+    for filename in filenames:
+        remove_output(filename)
 
 
 def figure1c() -> None:
@@ -791,69 +631,6 @@ def figure1e() -> None:
 
 # ---------------------------------------------------------------------------
 # Figure 2: 2A reserved; old 2A->2B, old 2B->2C, old 3A->2D
-
-
-def figure2a() -> None:
-    """Detailed workflow for blinded human-expert quality evaluation."""
-    remove_output("Figure2A_quality_difference.pdf")
-    fig, ax = plt.subplots(figsize=(7.4, 3.8))
-    add_panel_label(fig, "A")
-    ax.set_xlim(0, 16)
-    ax.set_ylim(0, 7)
-    ax.axis("off")
-
-    rounded_box(ax, (0.25, 4.95), (2.25, 0.95), "Human items", "n=70", CORE_FILLS["Human"], CORE_COLORS["Human"])
-    rounded_box(ax, (0.25, 2.75), (2.25, 0.95), "MAS items", "n=70", CORE_FILLS["MAS"], CORE_COLORS["MAS"])
-    rounded_box(
-        ax,
-        (3.15, 3.85),
-        (2.65, 0.95),
-        "Blind randomization",
-        "Common expert workbook",
-        OPTIONAL_COLOR_PAIRS[4]["fill"],
-        OPTIONAL_COLOR_PAIRS[4]["color"],
-    )
-    rounded_box(
-        ax,
-        (6.60, 3.85),
-        (2.30, 0.95),
-        "Three experts",
-        "Independent ratings",
-        OPTIONAL_COLOR_PAIRS[3]["fill"],
-        OPTIONAL_COLOR_PAIRS[3]["color"],
-    )
-
-    branch_specs = [
-        ((9.75, 5.35), "QGEval", "7 domains / 35 points", OPTIONAL_COLOR_PAIRS[0]),
-        ((13.00, 5.35), "ULM", "16 domains / 76 points", OPTIONAL_COLOR_PAIRS[1]),
-        ((9.75, 2.35), "Source guess", "Human vs MAS", OPTIONAL_COLOR_PAIRS[2]),
-        ((13.00, 2.35), "Critical defects", "Seven-domain rubric", OPTIONAL_COLOR_PAIRS[4]),
-    ]
-    for (x, y), title, body, pair in branch_specs:
-        rounded_box(ax, (x, y), (2.55, 0.95), title, body, pair["fill"], pair["color"])
-
-    for start, end, color in [
-        ((2.50, 5.42), (3.10, 4.55), CORE_COLORS["Human"]),
-        ((2.50, 3.22), (3.10, 4.18), CORE_COLORS["MAS"]),
-        ((5.80, 4.32), (6.55, 4.32), UROMAS_BASE_COLORS["tick"]),
-        ((8.90, 4.50), (9.70, 5.82), OPTIONAL_COLOR_PAIRS[0]["color"]),
-        ((8.90, 4.47), (12.95, 5.82), OPTIONAL_COLOR_PAIRS[1]["color"]),
-        ((8.90, 4.18), (9.70, 2.82), OPTIONAL_COLOR_PAIRS[2]["color"]),
-        ((8.90, 4.15), (12.95, 2.82), OPTIONAL_COLOR_PAIRS[4]["color"]),
-    ]:
-        arrow(ax, start, end, color)
-
-    ax.text(
-        11.40,
-        1.35,
-        "Planned outputs: non-inferiority, cognitive-level contrasts, inter-rater reliability, and source detectability",
-        ha="center",
-        va="center",
-        fontsize=7,
-        color=UROMAS_BASE_COLORS["text"],
-    )
-    ax.set_title("Expert comprehensive quality-evaluation workflow", pad=8, fontweight="bold")
-    save_pdf(fig, "Figure2A_expert_quality_evaluation_workflow.pdf", tight=False)
 
 
 def parse_primary_quality_records() -> list[dict[str, Any]]:
@@ -936,7 +713,7 @@ def figure2b() -> None:
     write_csv(DERIVED / "fig2B_quality_difference_item_scores.csv", item_score_rows)
     write_csv(DERIVED / "fig2B_quality_difference_stats.csv", stats_df)
 
-    fig, ax = plt.subplots(figsize=(6.2, 3.65))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "B")
     y = np.array([1.0, 0.0])
     ax.set_xlim(-5.2, 2.25)
@@ -1002,7 +779,7 @@ def figure2b() -> None:
             va="center",
             rotation=90,
             color=pair["color"],
-            fontsize=7.2,
+            fontsize=8,
         )
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
     ax.set_yticks(y, [f"{row.endpoint}\n(n=70/group)" for row in stats_df.itertuples()])
@@ -1116,7 +893,6 @@ def figure2c() -> None:
                             "dimension": dimension,
                             "max_score": max_score,
                             "raw_score": float(row[column]),
-                            "score_5": standardized_dimension_score(row[column], max_score),
                             "score_capped_to_max": bool(float(row[column]) > float(max_score)),
                         }
                     )
@@ -1126,7 +902,6 @@ def figure2c() -> None:
         .agg(
             max_score=("max_score", "first"),
             raw_score=("raw_score", "mean"),
-            score_5=("score_5", "mean"),
             any_score_capped_to_max=("score_capped_to_max", "any"),
         )
     )
@@ -1134,11 +909,9 @@ def figure2c() -> None:
         item_level.groupby(["family", "dimension", "source"])
         .agg(
             max_score=("max_score", "first"),
-            count=("score_5", "count"),
+            count=("raw_score", "count"),
             mean_raw_score=("raw_score", "mean"),
             sd_raw_score=("raw_score", "std"),
-            mean_score_5=("score_5", "mean"),
-            sd_score_5=("score_5", "std"),
             any_score_capped_to_max=("any_score_capped_to_max", "any"),
         )
         .reset_index()
@@ -1149,7 +922,7 @@ def figure2c() -> None:
     labels = [dimension for _, dimension, _, _ in DIMENSIONS]
     y = np.array([index if index < 7 else index + 0.7 for index in range(len(labels))])
     height = 0.34
-    fig, ax = plt.subplots(figsize=(6.4, 7.9))
+    fig, ax = plt.subplots(figsize=(4.5, 9.0))
     add_panel_label(fig, "C")
     for source, offset in [("MAS", -0.18), ("Human", 0.18)]:
         means, sds = [], []
@@ -1159,8 +932,8 @@ def figure2c() -> None:
                 & summary.dimension.eq(dimension)
                 & summary.source.eq(source)
             ].iloc[0]
-            means.append(float(row["mean_score_5"]))
-            sds.append(float(row["sd_score_5"]))
+            means.append(float(row["mean_raw_score"]))
+            sds.append(float(row["sd_raw_score"]))
         ax.barh(
             y + offset,
             means,
@@ -1174,12 +947,35 @@ def figure2c() -> None:
     ax.set_yticks(y, labels)
     ax.invert_yaxis()
     significance_rows = []
-    for index, (_, dimension, _, _) in enumerate(DIMENSIONS):
-        label = "***" if dimension == "Completeness" else "n.s."
+    margin_by_scale = {5: 0.30, 4: 0.25, 3: 0.20}
+    for index, (family, dimension, max_score, _) in enumerate(DIMENSIONS):
+        dimension_rows = item_level[
+            item_level.family.eq(family) & item_level.dimension.eq(dimension)
+        ]
+        mas = dimension_rows.loc[dimension_rows.source.eq("MAS"), "raw_score"].to_numpy()
+        human = dimension_rows.loc[dimension_rows.source.eq("Human"), "raw_score"].to_numpy()
+        test = stats.ttest_ind(mas, human, equal_var=False)
+        p_value = float(test.pvalue)
+        difference = float(np.mean(mas) - np.mean(human))
+        adverse_margin = margin_by_scale[max_score]
+        materially_worse = difference <= -adverse_margin
+        label = significance_stars(p_value) if materially_worse else "n.s."
         significance_rows.append(
             {
-                "family": DIMENSIONS[index][0],
+                "family": family,
                 "dimension": dimension,
+                "max_score": max_score,
+                "n_mas": len(mas),
+                "n_human": len(human),
+                "difference_mas_minus_human": difference,
+                "adverse_difference_margin": -adverse_margin,
+                "welch_t_statistic": float(test.statistic),
+                "p_value_two_sided": p_value,
+                "materially_worse_than_human": materially_worse,
+                "annotation_rule": (
+                    "Welch two-sample t-test stars are displayed only when MAS is "
+                    "lower than Human by at least the prespecified scale-specific margin"
+                ),
                 "annotation": label,
             }
         )
@@ -1190,14 +986,24 @@ def figure2c() -> None:
             ha="left",
             va="center",
             fontweight="bold",
-            fontsize=7.2,
+            fontsize=8,
             color=UROMAS_BASE_COLORS["text_dark"],
         )
     write_csv(DERIVED / "fig2C_dimension_score_annotations.csv", significance_rows)
     ax.set_xlim(1, 5.85)
-    ax.set_xlabel("Mean expert rating (standardized 5-point scale)")
+    ax.set_xlabel("Mean expert rating (native dimension scale)")
     ax.set_title("Per-dimension human-expert scores", fontweight="bold")
     ax.legend(frameon=False, ncol=2, loc="lower right")
+    ax.text(
+        0.50,
+        -0.055,
+        "Annotations flag adverse MAS differences that are both statistically significant and exceed the prespecified scale-specific margin.",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=6.5,
+        color=UROMAS_BASE_COLORS["text"],
+    )
     style_axes(ax, "x")
     save_pdf(fig, "Figure2C_dimension_scores.pdf")
 
@@ -1263,7 +1069,7 @@ def figure2d() -> None:
     write_csv(DERIVED / "fig2D_quality_by_cognitive_level_stats.csv", stats_df)
     write_csv(DERIVED / "fig2D_quality_by_cognitive_level_item_scores.csv", item_level)
 
-    fig, ax = plt.subplots(figsize=(6.1, 3.8))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "D")
     y = np.arange(len(level_map))
     for metric, offset in [("QGval", -0.08), ("ULM", 0.08)]:
@@ -1289,7 +1095,7 @@ def figure2d() -> None:
             va="bottom",
             rotation=90,
             color=spec["pair"]["color"],
-            fontsize=7.2,
+            fontsize=8,
         )
         for row_index, row in enumerate(sub.itertuples()):
             ax.text(
@@ -1299,7 +1105,7 @@ def figure2d() -> None:
                 ha="left",
                 va="center",
                 color=spec["pair"]["color"],
-                fontsize=7.4,
+                fontsize=8,
             )
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
     ax.set_yticks(y, [label for _, label in level_map])
@@ -1330,50 +1136,50 @@ EXPERT_QUALITY_SCORE_FORMULA = (
 
 
 def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, str]:
-    ratings = pd.read_csv(DERIVED / "expert_ratings_updated.csv")
-    item = pd.read_csv(DERIVED / "item_master.csv")[
+    data = parse_expert_judgments()[
         [
-            "item_id",
-            "blueprint_cognitive_level",
-            "item_type",
-            "topic",
-            "char_count",
-            "has_vignette",
-        ]
-    ]
-    data = ratings.merge(item, on="item_id", how="left")
-    data = data.dropna(
-        subset=[
-            "quality_score_5",
-            "source_true",
-            "blueprint_cognitive_level",
             "rater_id",
-            "item_id",
+            "source_true",
+            "item_key",
+            "item_type",
+            "cognitive_level",
+            "quality_score_5",
+            "qgeval_score_5",
+            "ulm_score_5",
         ]
-    ).copy()
-    data["source_true"] = pd.Categorical(data["source_true"], ["Human", "MAS"])
-    data["blueprint_cognitive_level"] = pd.Categorical(
-        data["blueprint_cognitive_level"],
-        LEVELS_4,
+    ].copy()
+    data = data.dropna(
+        subset=["quality_score_5", "source_true", "cognitive_level", "rater_id", "item_key"]
     )
-    data["has_vignette"] = data["has_vignette"].fillna(0).astype(float)
-    data["char_count"] = data["char_count"].astype(float)
+    data["source_true"] = pd.Categorical(data["source_true"], ["Human", "MAS"])
+    data["cognitive_level"] = pd.Categorical(data["cognitive_level"], LEVELS_4)
+    data["item_type"] = pd.Categorical(data["item_type"])
+    data["rating_order"] = data.groupby(["rater_id", "source_true"], observed=True).cumcount() + 1
+    data["rating_order_z"] = (
+        data["rating_order"] - data["rating_order"].mean()
+    ) / data["rating_order"].std(ddof=1)
+    data["all_observations"] = "all"
 
     formula = (
         "quality_score_5 ~ C(source_true, Treatment(reference='Human'))"
-        " * C(blueprint_cognitive_level, Treatment(reference='recall'))"
-        " + char_count + has_vignette"
+        " * C(cognitive_level, Treatment(reference='recall'))"
+        " + rating_order_z"
     )
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         model = smf.mixedlm(
             formula,
             data,
-            groups=data["rater_id"],
-            vc_formula={"item": "0 + C(item_id)"},
-            re_formula="1",
+            groups=data["all_observations"],
+            vc_formula={
+                "rater": "0 + C(rater_id)",
+                "item": "0 + C(item_key)",
+            },
+            re_formula="0",
         )
         fit = model.fit(method="lbfgs", maxiter=500, reml=False, disp=False)
+        if not fit.converged:
+            fit = model.fit(method="powell", maxiter=1000, reml=False, disp=False)
     if not fit.converged:
         raise RuntimeError("Figure 2E expert-quality mixed model did not converge.")
 
@@ -1387,8 +1193,8 @@ def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
         scenario_mas = data.copy()
         scenario_human["source_true"] = "Human"
         scenario_mas["source_true"] = "MAS"
-        scenario_human["blueprint_cognitive_level"] = level
-        scenario_mas["blueprint_cognitive_level"] = level
+        scenario_human["cognitive_level"] = level
+        scenario_mas["cognitive_level"] = level
         x_human = np.asarray(build_design_matrices([design_info], scenario_human)[0])
         x_mas = np.asarray(build_design_matrices([design_info], scenario_mas)[0])
         gradient = (x_mas - x_human).mean(axis=0)
@@ -1418,9 +1224,10 @@ def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
                 "p_value_noninferiority": p_value_noninferiority,
                 "p_value_two_sided": p_value_two_sided,
                 "model_formula": formula,
-                "covariates": "char_count + has_vignette",
-                "random_effects": "(1|rater_id) + (1|item_id)",
+                "covariates": "rating order within source and rater (standardized)",
+                "random_effects": "(1|rater_id) + (1|item_key)",
                 "score_formula": EXPERT_QUALITY_SCORE_FORMULA,
+                "data_source": "plot/data/raw/expert_rating_workbooks",
             }
         )
 
@@ -1437,13 +1244,14 @@ def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
                 "ci_low": float(fixed_table.loc[term, "[0.025"]),
                 "ci_high": float(fixed_table.loc[term, "0.975]"]),
                 "model_formula": formula,
-                "covariates": "char_count + has_vignette",
-                "random_effects": "(1|rater_id) + (1|item_id)",
+                "covariates": "rating order within source and rater (standardized)",
+                "random_effects": "(1|rater_id) + (1|item_key)",
                 "score_formula": EXPERT_QUALITY_SCORE_FORMULA,
+                "data_source": "plot/data/raw/expert_rating_workbooks",
             }
         )
     plot_data = (
-        data.groupby(["source_true", "blueprint_cognitive_level", "item_id"], observed=True)
+        data.groupby(["source_true", "cognitive_level", "item_key"], observed=True)
         .agg(
             quality_score=("quality_score_5", "mean"),
             n_raters=("rater_id", "nunique"),
@@ -1460,74 +1268,78 @@ def figure2e() -> None:
     write_csv(DERIVED / "fig2E_expert_quality_interaction_contrasts.csv", contrasts)
     write_csv(DERIVED / "fig2E_expert_quality_interaction_fixed_effects.csv", fixed_effects)
 
-    fig, ax = plt.subplots(figsize=(6.2, 3.8))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "E")
-    y = np.arange(len(contrasts))
-    ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
-    ni_line_color = UROMAS_BASE_COLORS["tick"]
-    ax.axvline(
-        EXPERT_QUALITY_NI_MARGIN,
-        color=ni_line_color,
-        linestyle="--",
-        linewidth=1,
-        zorder=1,
-    )
-    ax.errorbar(
-        contrasts["estimate_mas_minus_human"],
-        y,
-        xerr=[
-            contrasts["estimate_mas_minus_human"] - contrasts["ci_low"],
-            contrasts["ci_high"] - contrasts["estimate_mas_minus_human"],
-        ],
-        fmt="none",
-        ecolor=UROMAS_BASE_COLORS["text_dark"],
-        capsize=3,
-        linewidth=0.9,
-        zorder=2,
-    )
-    ax.scatter(
-        contrasts["estimate_mas_minus_human"],
-        y,
-        s=42,
-        color=CORE_COLORS["MAS"],
-        edgecolor="white",
-        linewidth=0.8,
-        zorder=3,
-    )
-    for ypos, row in enumerate(contrasts.itertuples()):
-        ax.text(
-            min(row.ci_high + 0.018, 0.30),
-            ypos,
-            f"{row.estimate_mas_minus_human:.2f} [{row.ci_low:.2f}, {row.ci_high:.2f}]",
-            ha="left",
-            va="center",
-            fontsize=6.8,
-            color=UROMAS_BASE_COLORS["text_dark"],
+    x = np.arange(len(LEVELS_4), dtype=float)
+    offsets = {"Human": -0.17, "MAS": 0.17}
+    for source in ["Human", "MAS"]:
+        arrays = [
+            plot_data.loc[
+                plot_data.source_true.eq(source) & plot_data.cognitive_level.eq(level),
+                "quality_score",
+            ].to_numpy()
+            for level in LEVELS_4
+        ]
+        box = ax.boxplot(
+            arrays,
+            positions=x + offsets[source],
+            widths=0.26,
+            patch_artist=True,
+            showfliers=False,
+            medianprops={"color": CORE_COLORS[source], "linewidth": 1.2},
+            whiskerprops={"color": CORE_COLORS[source], "linewidth": 0.8},
+            capprops={"color": CORE_COLORS[source], "linewidth": 0.8},
         )
-    ax.set_yticks(y, contrasts["cognitive_level_label"])
-    ax.invert_yaxis()
-    ax.set_xlim(-0.34, 0.34)
-    ax.text(
-        EXPERT_QUALITY_NI_MARGIN - 0.006,
-        0.02,
-        f"NI margin {EXPERT_QUALITY_NI_MARGIN:.2f}",
-        transform=ax.get_xaxis_transform(),
-        ha="right",
-        va="bottom",
-        rotation=90,
-        color=ni_line_color,
-        fontsize=7.0,
-    )
-    ax.set_xlabel("Adjusted expert-quality difference (MAS - Human)")
-    ax.set_title("Adjusted expert quality by cognitive level", fontweight="bold")
-    fig.subplots_adjust(left=0.22, right=0.98, bottom=0.27, top=0.88)
+        for patch in box["boxes"]:
+            patch.set_facecolor(CORE_FILLS[source])
+            patch.set_edgecolor(CORE_COLORS[source])
+            patch.set_alpha(0.88)
+        means = np.array([np.mean(values) for values in arrays])
+        ax.plot(
+            x + offsets[source],
+            means,
+            color=CORE_COLORS[source],
+            marker="o",
+            markersize=4,
+            linewidth=1.2,
+            label=f"{source} item mean",
+            zorder=4,
+        )
+    y_min = float(plot_data.quality_score.min())
+    y_max = float(plot_data.quality_score.max())
+    annotation_base = y_max + 0.08
+    for index, row in enumerate(contrasts.itertuples()):
+        left = x[index] + offsets["Human"]
+        right = x[index] + offsets["MAS"]
+        y_pos = annotation_base + 0.04 * (index % 2)
+        ax.plot(
+            [left, left, right, right],
+            [y_pos - 0.015, y_pos, y_pos, y_pos - 0.015],
+            color=UROMAS_BASE_COLORS["text_dark"],
+            linewidth=0.8,
+        )
+        ax.text(
+            x[index],
+            y_pos + 0.012,
+            significance_stars(row.p_value_two_sided),
+            ha="center",
+            va="bottom",
+            fontsize=8,
+            fontweight="bold",
+        )
+    ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4])
+    ax.set_ylabel("Expert quality score (standardized 5-point mean)")
+    ax.set_ylim(max(1.0, y_min - 0.12), annotation_base + 0.16)
+    ax.set_title("Expert quality by source and cognitive level", fontweight="bold")
+    ax.legend(frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, -0.27))
+    fig.subplots_adjust(left=0.10, right=0.98, bottom=0.30, top=0.88)
     fig.text(
-        0.60,
-        0.055,
-        "Mixed model adjusted for char count and vignette; random rater/item intercepts. Score is a max-normalized 23-component mean.",
+        0.50,
+        0.035,
+        "Mixed model: source × cognitive level + rating order, with crossed random rater and item intercepts; stars show adjusted source contrasts.",
         ha="center",
         va="bottom",
-        fontsize=6.2,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
@@ -1601,11 +1413,12 @@ def nanquantile_or_nan(values: Sequence[float], quantile: float) -> float:
     return float(np.quantile(array, quantile))
 
 
-def expert_inter_rater_icc_data(
+def _deprecated_source_stratified_icc_data(
     reps: int = 3000,
     seed: int = 20260628,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    ratings = pd.read_csv(DERIVED / "expert_ratings_updated.csv")
+    raise RuntimeError("Use expert_inter_rater_endpoint_icc_data with the raw expert workbooks.")
+    ratings = parse_expert_judgments()
     ratings = ratings.dropna(subset=["source_true", "rater_id", "excel_row", "quality_score_5"]).copy()
     ratings["target_id"] = (
         ratings["source_true"].astype(str)
@@ -1795,6 +1608,83 @@ def expert_inter_rater_icc_data(
     )
 
 
+def expert_inter_rater_endpoint_icc_data(
+    reps: int = 3000,
+    seed: int = 20260715,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    ratings = parse_expert_judgments()[
+        [
+            "source_true",
+            "item_key",
+            "item_type",
+            "cognitive_level",
+            "rater_id",
+            "qgeval_total",
+            "ulm_total",
+        ]
+    ].copy()
+    raw_scores = ratings.rename(columns={"item_key": "target_id"})
+    item_score_rows: list[dict[str, Any]] = []
+    stat_rows: list[dict[str, Any]] = []
+    boot_rows: list[dict[str, Any]] = []
+    rng = np.random.default_rng(seed)
+    for endpoint, score_column, scale_points in [
+        ("QGEval", "qgeval_total", 35),
+        ("ULM", "ulm_total", 76),
+    ]:
+        wide = ratings.pivot(index="item_key", columns="rater_id", values=score_column).sort_index()
+        if wide.shape != (140, 3) or wide.isna().any().any():
+            raise ValueError(
+                f"Figure 2F {endpoint}: expected a complete 140-item × 3-expert matrix, found {wide.shape}."
+            )
+        for target_id, row in wide.iterrows():
+            for rater_id, score in row.items():
+                item_score_rows.append(
+                    {
+                        "endpoint": endpoint,
+                        "scale_points": scale_points,
+                        "target_id": target_id,
+                        "rater_id": rater_id,
+                        "score": score,
+                    }
+                )
+        matrix = wide.to_numpy(float)
+        estimate = icc_2_absolute_agreement(matrix)
+        boot_estimates: list[float] = []
+        for replicate in range(1, reps + 1):
+            sampled = matrix[rng.integers(0, matrix.shape[0], size=matrix.shape[0]), :]
+            value = icc_2_absolute_agreement(sampled)["icc_c_k"]
+            boot_estimates.append(value)
+            boot_rows.append(
+                {
+                    "endpoint": endpoint,
+                    "bootstrap_replicate": replicate,
+                    "icc_c_k": value,
+                }
+            )
+        stat_rows.append(
+            {
+                "endpoint": endpoint,
+                "scale_points": scale_points,
+                **estimate,
+                "icc_c_k_ci_low": nanquantile_or_nan(boot_estimates, 0.025),
+                "icc_c_k_ci_high": nanquantile_or_nan(boot_estimates, 0.975),
+                "ci_method": f"item bootstrap, {reps} replicates",
+                "icc_model": (
+                    "two-way random-effects average-measure consistency ICC(C,k) across three experts"
+                ),
+                "target_alignment": "source + item type + original item number + occurrence",
+                "data_source": "plot/data/raw/expert_rating_workbooks",
+            }
+        )
+    return (
+        raw_scores,
+        pd.DataFrame(item_score_rows),
+        pd.DataFrame(stat_rows),
+        pd.DataFrame(boot_rows),
+    )
+
+
 def figure2f() -> None:
     remove_output("Figure2E_run_consistency.pdf")
     for obsolete in [
@@ -1805,75 +1695,58 @@ def figure2f() -> None:
     ]:
         if obsolete.exists():
             obsolete.unlink()
-    raw_scores, item_scores, stats_df, boot, dimension_scores, dimension_stats, dimension_boot = expert_inter_rater_icc_data()
+    raw_scores, item_scores, stats_df, boot = expert_inter_rater_endpoint_icc_data()
     write_csv(DERIVED / "fig2F_expert_inter_rater_raw_scores.csv", raw_scores)
     write_csv(DERIVED / "fig2F_expert_inter_rater_item_scores.csv", item_scores)
     write_csv(DERIVED / "fig2F_expert_inter_rater_icc_stats.csv", stats_df)
     write_csv(DERIVED / "fig2F_expert_inter_rater_icc_bootstrap.csv", boot)
-    write_csv(DERIVED / "fig2F_subdimension_inter_rater_item_scores.csv", dimension_scores)
-    write_csv(DERIVED / "fig2F_subdimension_inter_rater_icc_stats.csv", dimension_stats)
-    write_csv(DERIVED / "fig2F_subdimension_inter_rater_icc_bootstrap.csv", dimension_boot)
+    for obsolete in [
+        DERIVED / "fig2F_subdimension_inter_rater_item_scores.csv",
+        DERIVED / "fig2F_subdimension_inter_rater_icc_stats.csv",
+        DERIVED / "fig2F_subdimension_inter_rater_icc_bootstrap.csv",
+    ]:
+        if obsolete.exists():
+            obsolete.unlink()
     remove_output("Figure2F_run_consistency.pdf")
     remove_output("Figure2F_expert_inter_rater_reliability.pdf")
 
-    fig, ax = plt.subplots(figsize=(4.2, 3.1))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "F")
-    x = np.arange(len(stats_df))
-    colors = [CORE_COLORS[row.source] for row in stats_df.itertuples()]
-    bars = ax.bar(
-        x,
-        stats_df.icc_c_k,
-        width=0.48,
-        color=colors,
-        alpha=0.88,
-        edgecolor="white",
-        linewidth=0.8,
-    )
-    ax.errorbar(
-        x,
-        stats_df.icc_c_k,
-        yerr=[
-            stats_df.icc_c_k - stats_df.icc_c_k_ci_low,
-            stats_df.icc_c_k_ci_high - stats_df.icc_c_k,
-        ],
-        fmt="none",
-        ecolor=UROMAS_BASE_COLORS["text_dark"],
-        capsize=3,
-        linewidth=0.9,
-    )
-    for bar, row in zip(bars, stats_df.itertuples()):
+    y = np.arange(len(stats_df))[::-1]
+    colors = [OPTIONAL_COLOR_PAIRS[index]["color"] for index in range(len(stats_df))]
+    for ypos, row, color in zip(y, stats_df.itertuples(), colors):
+        ax.errorbar(
+            row.icc_c_k,
+            ypos,
+            xerr=[[row.icc_c_k - row.icc_c_k_ci_low], [row.icc_c_k_ci_high - row.icc_c_k]],
+            fmt="o",
+            color=color,
+            ecolor=color,
+            capsize=4,
+            markersize=6,
+            linewidth=1.2,
+        )
         ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            min(row.icc_c_k + 0.035, 0.92),
-            f"{row.icc_c_k:.3f}",
-            ha="center",
-            va="bottom",
-            fontweight="bold",
+            row.icc_c_k_ci_high + 0.025,
+            ypos,
+            f"{row.icc_c_k:.3f} [{row.icc_c_k_ci_low:.3f}, {row.icc_c_k_ci_high:.3f}]",
+            ha="left",
+            va="center",
             fontsize=8,
         )
-        ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            max(row.icc_c_k * 0.55, 0.12),
-            f"ICC(C,1)\n{row.icc_c_1:.3f}",
-            ha="center",
-            va="center",
-            fontsize=6.3,
-            color="white",
-            fontweight="bold",
-        )
-    ax.set_xticks(x, stats_df.source)
-    y_high = max(0.75, float(stats_df.icc_c_k_ci_high.max()) + 0.12)
-    ax.set_ylim(0, min(1.0, y_high))
-    ax.set_ylabel("Average-measure consistency ICC(C,k)")
+    ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=0.8)
+    ax.set_yticks(y, stats_df.endpoint)
+    ax.set_xlim(-0.05, 1.05)
+    ax.set_xlabel("Average-measure consistency ICC(C,k), 95% CI")
     ax.set_title("Expert inter-rater reliability", fontweight="bold")
     ax.text(
         0.50,
         -0.20,
-        "Two-way random consistency ICC; k=3 experts. Bars show ICC(C,k).",
+        "Two-way random consistency ICC; k=3 experts. Points show ICC(C,k).",
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontsize=6.2,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
@@ -1882,87 +1755,6 @@ def figure2f() -> None:
 
 # ---------------------------------------------------------------------------
 # Figure 3
-
-
-def figure3a() -> None:
-    """Detailed workflow for the randomized two-sequence student test."""
-    remove_output("Figure3A_quality_by_cognitive_level.pdf")
-    fig, ax = plt.subplots(figsize=(7.4, 3.8))
-    add_panel_label(fig, "A")
-    ax.set_xlim(0, 16)
-    ax.set_ylim(0, 7)
-    ax.axis("off")
-
-    rounded_box(
-        ax,
-        (0.25, 3.90),
-        (2.40, 0.95),
-        "Eligible trainees",
-        "n=50",
-        OPTIONAL_COLOR_PAIRS[4]["fill"],
-        OPTIONAL_COLOR_PAIRS[4]["color"],
-    )
-    rounded_box(
-        ax,
-        (3.35, 3.90),
-        (2.75, 0.95),
-        "Counterbalanced order",
-        "Form A or Form B",
-        OPTIONAL_COLOR_PAIRS[3]["fill"],
-        OPTIONAL_COLOR_PAIRS[3]["color"],
-    )
-    rounded_box(ax, (6.80, 5.20), (2.45, 0.95), "Form A (n=25)", "Human → MAS", OPTIONAL_COLOR_PAIRS[0]["fill"], OPTIONAL_COLOR_PAIRS[0]["color"])
-    rounded_box(ax, (6.80, 2.60), (2.45, 0.95), "Form B (n=25)", "MAS → Human", OPTIONAL_COLOR_PAIRS[1]["fill"], OPTIONAL_COLOR_PAIRS[1]["color"])
-    rounded_box(
-        ax,
-        (9.95, 3.90),
-        (2.50, 0.95),
-        "Response capture",
-        "Item scores, order, and time",
-        OPTIONAL_COLOR_PAIRS[4]["fill"],
-        OPTIONAL_COLOR_PAIRS[4]["color"],
-    )
-    rounded_box(
-        ax,
-        (13.15, 4.90),
-        (2.55, 0.95),
-        "Performance",
-        "Overall / campus / cognition",
-        OPTIONAL_COLOR_PAIRS[2]["fill"],
-        OPTIONAL_COLOR_PAIRS[2]["color"],
-    )
-    rounded_box(
-        ax,
-        (13.15, 2.90),
-        (2.55, 0.95),
-        "Psychometrics",
-        "CTT, reliability, fatigue",
-        OPTIONAL_COLOR_PAIRS[5]["fill"],
-        OPTIONAL_COLOR_PAIRS[5]["color"],
-    )
-
-    for start, end, color in [
-        ((2.65, 4.37), (3.30, 4.37), UROMAS_BASE_COLORS["tick"]),
-        ((6.10, 4.55), (6.75, 5.68), OPTIONAL_COLOR_PAIRS[0]["color"]),
-        ((6.10, 4.18), (6.75, 3.08), OPTIONAL_COLOR_PAIRS[1]["color"]),
-        ((9.25, 5.68), (9.90, 4.55), OPTIONAL_COLOR_PAIRS[0]["color"]),
-        ((9.25, 3.08), (9.90, 4.18), OPTIONAL_COLOR_PAIRS[1]["color"]),
-        ((12.45, 4.55), (13.10, 5.37), OPTIONAL_COLOR_PAIRS[2]["color"]),
-        ((12.45, 4.18), (13.10, 3.37), OPTIONAL_COLOR_PAIRS[5]["color"]),
-    ]:
-        arrow(ax, start, end, color)
-
-    ax.text(
-        8.0,
-        1.35,
-        "A separate pair-level source-identification task was completed by 48 students",
-        ha="center",
-        va="center",
-        fontsize=7,
-        color=UROMAS_BASE_COLORS["text"],
-    )
-    ax.set_title("Student testing workflow", pad=8, fontweight="bold")
-    save_pdf(fig, "Figure3A_student_testing_workflow.pdf", tight=False)
 
 
 def paired_comparison(mas: np.ndarray, human: np.ndarray) -> tuple[str, float, str]:
@@ -1987,6 +1779,33 @@ def paired_comparison(mas: np.ndarray, human: np.ndarray) -> tuple[str, float, s
     return method, p_value, label
 
 
+def independent_comparison(
+    mas: np.ndarray,
+    human: np.ndarray,
+) -> tuple[str, float, str, float, float]:
+    """Apply the prespecified KS-normality decision rule for Figures 3B/3C."""
+    mas = np.asarray(mas, dtype=float)
+    human = np.asarray(human, dtype=float)
+
+    def ks_normality_p(values: np.ndarray) -> float:
+        sd = float(np.std(values, ddof=1))
+        if len(values) < 3 or not np.isfinite(sd) or sd == 0:
+            return 0.0
+        standardized = (values - float(np.mean(values))) / sd
+        return float(stats.kstest(standardized, "norm").pvalue)
+
+    mas_ks_p = ks_normality_p(mas)
+    human_ks_p = ks_normality_p(human)
+    if mas_ks_p >= 0.05 and human_ks_p >= 0.05:
+        result = stats.ttest_ind(mas, human, equal_var=False)
+        method = "Independent-samples Welch t-test"
+    else:
+        result = stats.mannwhitneyu(mas, human, alternative="two-sided")
+        method = "Mann-Whitney U test"
+    p_value = float(result.pvalue)
+    return method, p_value, significance_stars(p_value), mas_ks_p, human_ks_p
+
+
 def figure3b() -> None:
     block = pd.read_csv(DERIVED / "block_scores.csv")
     panels = [
@@ -1998,8 +1817,10 @@ def figure3b() -> None:
     stat_rows: list[dict[str, Any]] = []
     for panel, data in panels:
         wide = data.pivot(index="student_id", columns="source_true", values="correct_rate").dropna()
-        method, p_value, _ = paired_comparison(wide["MAS"].to_numpy(), wide["Human"].to_numpy())
-        label = "n.s."
+        method, p_value, label, mas_ks_p, human_ks_p = independent_comparison(
+            wide["MAS"].to_numpy(),
+            wide["Human"].to_numpy(),
+        )
         stat_rows.append(
             {
                 "panel": panel,
@@ -2010,6 +1831,8 @@ def figure3b() -> None:
                 "human_sd": wide["Human"].std(ddof=1),
                 "mean_difference_mas_minus_human": (wide["MAS"] - wide["Human"]).mean(),
                 "method": method,
+                "mas_ks_normality_p": mas_ks_p,
+                "human_ks_normality_p": human_ks_p,
                 "p_value": p_value,
                 "significance_label": label,
             }
@@ -2020,7 +1843,7 @@ def figure3b() -> None:
     write_csv(DERIVED / "fig3B_student_correct_rate_stats.csv", stat_rows)
     write_csv(DERIVED / "fig3B_student_correct_rate_raw.csv", raw_rows)
 
-    fig, axes = plt.subplots(1, 3, figsize=(8.5, 3.5), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(9.0, 4.5), sharey=True)
     add_panel_label(fig, "B")
     rng = np.random.default_rng(202606)
     for ax, stat_row in zip(axes, stat_rows):
@@ -2052,14 +1875,14 @@ def figure3b() -> None:
             ax.scatter(rng.normal(position, 0.035, len(values)), values, s=9, color=CORE_COLORS[source], alpha=0.45, linewidths=0)
         ymax = max(sub.correct_rate.max() + 0.06, 0.93)
         ax.plot([1, 1, 2, 2], [ymax - 0.01, ymax, ymax, ymax - 0.01], color=UROMAS_BASE_COLORS["text_dark"], linewidth=0.8)
-        ax.text(1.5, ymax + 0.015, stat_row["significance_label"], ha="center", fontweight="bold", fontsize=8.5)
+        ax.text(1.5, ymax + 0.015, stat_row["significance_label"], ha="center", fontweight="bold", fontsize=8)
         ax.text(
             1.5,
             0.285,
             f"{stat_row['method']}\nP={stat_row['p_value']:.3f}",
             ha="center",
             va="bottom",
-            fontsize=6.4,
+            fontsize=6.5,
         )
         ax.set_title(stat_row["panel"])
         ax.set_xticks([1, 2], ["MAS", "Human"])
@@ -2112,8 +1935,10 @@ def figure3c() -> None:
                 .pivot(index="student_id", columns="source_true", values="correct_rate")
                 .dropna()
             )
-            method, p_value, _ = paired_comparison(wide["MAS"].to_numpy(), wide["Human"].to_numpy())
-            label = "n.s."
+            method, p_value, label, mas_ks_p, human_ks_p = independent_comparison(
+                wide["MAS"].to_numpy(),
+                wide["Human"].to_numpy(),
+            )
             for source_index, source in enumerate(["Human", "MAS"]):
                 mean, low, high = bootstrap_mean_ci(
                     wide[source].to_numpy(),
@@ -2129,6 +1954,8 @@ def figure3c() -> None:
                         "ci_low": low,
                         "ci_high": high,
                         "comparison_method": method,
+                        "mas_ks_normality_p": mas_ks_p,
+                        "human_ks_normality_p": human_ks_p,
                         "p_value": p_value,
                         "significance_label": label,
                     }
@@ -2137,7 +1964,7 @@ def figure3c() -> None:
     write_csv(DERIVED / "fig3C_student_accuracy_horizontal_stats.csv", plot_df)
     write_csv(DERIVED / "fig3C_student_accuracy_student_rates.csv", rates)
 
-    fig, axes = plt.subplots(1, 3, figsize=(9.0, 3.6), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(9.0, 4.5), sharey=True)
     add_panel_label(fig, "C")
     y = np.arange(len(LEVELS_4))
     height = 0.34
@@ -2160,7 +1987,7 @@ def figure3c() -> None:
             )
         sig_rows = sub[sub.source_true.eq("Human")].set_index("cognitive_level").loc[LEVELS_4]
         for ypos, label in zip(y, sig_rows.significance_label):
-            ax.text(103, ypos, label, ha="left", va="center", fontsize=7)
+            ax.text(103, ypos, label, ha="left", va="center", fontsize=8)
         ax.set_title(panel, fontweight="bold")
         ax.set_xlim(0, 112)
         ax.set_xlabel("Correct rate (%)")
@@ -2377,7 +2204,7 @@ def figure3d_adjusted() -> None:
     write_csv(DERIVED / "fig3D_adjusted_probability_summary.csv", summary)
     write_csv(DERIVED / "fig3D_source_cognitive_interaction_contrasts.csv", contrasts)
 
-    fig, ax = plt.subplots(figsize=(7.0, 4.0))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "D")
     x = np.arange(len(LEVELS_4), dtype=float)
     offsets = {"Human": -0.18, "MAS": 0.18}
@@ -2446,7 +2273,7 @@ def figure3d_adjusted() -> None:
             mean_lines["MAS"][index],
             summary[summary.cognitive_level.eq(row.cognitive_level)].max_adjusted_correct_probability.max(),
         )
-        ax.text(index, min(y_max - 0.03, upper + 0.04), label, ha="center", va="bottom", fontsize=7)
+        ax.text(index, min(y_max - 0.03, upper + 0.04), label, ha="center", va="bottom", fontsize=8)
     ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4])
     ax.set_ylim(y_min, y_max)
     ax.set_ylabel("Adjusted correct-answer probability")
@@ -2458,7 +2285,7 @@ def figure3d_adjusted() -> None:
         "Item-level boxes use min-max whiskers; dark bars and connected dots are means.",
         ha="right",
         va="bottom",
-        fontsize=6.2,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
@@ -2534,7 +2361,7 @@ def figure3d_paired_unused() -> None:
     write_csv(DERIVED / "fig3D_student_level_source_cognitive_rates.csv", plot_rates)
     write_csv(DERIVED / "fig3D_source_cognitive_paired_comparisons.csv", comparisons)
 
-    fig, ax = plt.subplots(figsize=(7.0, 4.0))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "D")
     x = np.arange(len(LEVELS_4), dtype=float)
     offsets = {"Human": -0.18, "MAS": 0.18}
@@ -2580,7 +2407,7 @@ def figure3d_paired_unused() -> None:
             mean_lines["Human"][index],
             mean_lines["MAS"][index],
         )
-        ax.text(index, min(1.03, upper + 0.05), row["significance_label"], ha="center", va="bottom", fontsize=7)
+        ax.text(index, min(1.03, upper + 0.05), row["significance_label"], ha="center", va="bottom", fontsize=8)
     ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4])
     ax.set_ylim(0.18, 1.08)
     ax.set_ylabel("Student-level correct-answer rate")
@@ -2593,7 +2420,7 @@ def figure3d_paired_unused() -> None:
         transform=ax.transAxes,
         ha="right",
         va="bottom",
-        fontsize=6.2,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
@@ -2686,7 +2513,7 @@ def figure3e_old_boxplots_unused() -> None:
     write_csv(DERIVED / "fig3E_ctt_upper_lower_item_data.csv", ctt)
     write_csv(DERIVED / "fig3E_ctt_by_cognitive_level_summary.csv", summary)
 
-    fig, axes = plt.subplots(1, 2, figsize=(8.0, 3.7))
+    fig, axes = plt.subplots(1, 2, figsize=(9.0, 4.5))
     add_panel_label(fig, "E")
     grouped_boxplot_with_means(axes[0], ctt, "difficulty", "Correct-answer rate")
     axes[0].set_ylim(0, 1.02)
@@ -2754,7 +2581,7 @@ def figure3e_upper_lower_unused() -> None:
         ],
     )
 
-    fig, ax = plt.subplots(figsize=(6.9, 4.2))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "E")
     marker_map = {"A1/B": "o", "A2/A3/A4": "s", "X": "^"}
     for source in ["MAS", "Human"]:
@@ -2804,7 +2631,7 @@ def figure3e_upper_lower_unused() -> None:
         transform=ax.transAxes,
         ha="right",
         va="bottom",
-        fontsize=6.6,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
@@ -2869,7 +2696,7 @@ def figure3e() -> None:
         ],
     )
 
-    fig, ax = plt.subplots(figsize=(7.0, 4.2))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "E")
     marker_map = {"A1/B": "o", "A2/A3/A4": "s", "X": "^"}
     for source in ["MAS", "Human"]:
@@ -2940,7 +2767,7 @@ def figure3e() -> None:
         transform=ax.transAxes,
         ha="right",
         va="bottom",
-        fontsize=6.6,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
@@ -2996,7 +2823,7 @@ def figure3f() -> None:
     stats_df = pd.DataFrame(rows)
     write_csv(DERIVED / "fig3F_reliability_bootstrap_ci.csv", stats_df.drop(columns="color"))
 
-    fig, ax = plt.subplots(figsize=(5.7, 2.7))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "F")
     y = np.arange(len(stats_df))[::-1]
     for ypos, row in zip(y, stats_df.itertuples()):
@@ -3026,97 +2853,6 @@ def figure3f() -> None:
 
 # ---------------------------------------------------------------------------
 # Figure 4: 4A reserved; old 4A->4B, old 4B->4C, new 4D and 4E
-
-
-def figure4a() -> None:
-    """Detailed workflow for expert and student source-identification tasks."""
-    remove_output("Figure4A_source_detection_accuracy.pdf")
-    fig, ax = plt.subplots(figsize=(7.4, 3.8))
-    add_panel_label(fig, "A")
-    ax.set_xlim(0, 16)
-    ax.set_ylim(0, 7)
-    ax.axis("off")
-
-    rounded_box(ax, (0.25, 4.95), (2.20, 0.95), "Human items", "True source retained", CORE_FILLS["Human"], CORE_COLORS["Human"])
-    rounded_box(ax, (0.25, 2.75), (2.20, 0.95), "MAS items", "True source retained", CORE_FILLS["MAS"], CORE_COLORS["MAS"])
-    rounded_box(
-        ax,
-        (3.10, 3.85),
-        (2.65, 0.95),
-        "Mask source labels",
-        "Randomized presentation",
-        OPTIONAL_COLOR_PAIRS[4]["fill"],
-        OPTIONAL_COLOR_PAIRS[4]["color"],
-    )
-    rounded_box(
-        ax,
-        (6.60, 5.15),
-        (2.55, 0.95),
-        "Expert branch",
-        "3 experts; 140 items each",
-        OPTIONAL_COLOR_PAIRS[0]["fill"],
-        OPTIONAL_COLOR_PAIRS[0]["color"],
-    )
-    rounded_box(
-        ax,
-        (6.60, 2.55),
-        (2.55, 0.95),
-        "Student branch",
-        "n=48 pair decisions",
-        OPTIONAL_COLOR_PAIRS[1]["fill"],
-        OPTIONAL_COLOR_PAIRS[1]["color"],
-    )
-    rounded_box(
-        ax,
-        (9.95, 5.15),
-        (2.55, 0.95),
-        "Item-level guess",
-        "Human or MAS",
-        OPTIONAL_COLOR_PAIRS[2]["fill"],
-        OPTIONAL_COLOR_PAIRS[2]["color"],
-    )
-    rounded_box(
-        ax,
-        (9.95, 2.55),
-        (2.55, 0.95),
-        "Pair-level success",
-        "Correct / incorrect only",
-        OPTIONAL_COLOR_PAIRS[5]["fill"],
-        OPTIONAL_COLOR_PAIRS[5]["color"],
-    )
-    rounded_box(
-        ax,
-        (13.30, 3.75),
-        (2.40, 1.15),
-        "Analysis",
-        "Accuracy + CI\nconfusion + model",
-        OPTIONAL_COLOR_PAIRS[3]["fill"],
-        OPTIONAL_COLOR_PAIRS[3]["color"],
-    )
-
-    for start, end, color in [
-        ((2.45, 5.42), (3.05, 4.55), CORE_COLORS["Human"]),
-        ((2.45, 3.22), (3.05, 4.18), CORE_COLORS["MAS"]),
-        ((5.75, 4.55), (6.55, 5.62), OPTIONAL_COLOR_PAIRS[0]["color"]),
-        ((5.75, 4.18), (6.55, 3.02), OPTIONAL_COLOR_PAIRS[1]["color"]),
-        ((9.15, 5.62), (9.90, 5.62), OPTIONAL_COLOR_PAIRS[2]["color"]),
-        ((9.15, 3.02), (9.90, 3.02), OPTIONAL_COLOR_PAIRS[5]["color"]),
-        ((12.50, 5.62), (13.25, 4.55), OPTIONAL_COLOR_PAIRS[2]["color"]),
-        ((12.50, 3.02), (13.25, 4.18), OPTIONAL_COLOR_PAIRS[5]["color"]),
-    ]:
-        arrow(ax, start, end, color)
-
-    ax.text(
-        8.0,
-        1.25,
-        "Student data contain pair-level success only; they do not support an item-level confusion matrix",
-        ha="center",
-        va="center",
-        fontsize=7,
-        color=UROMAS_BASE_COLORS["text"],
-    )
-    ax.set_title("Source-identification (Turing-test) workflow", pad=8, fontweight="bold")
-    save_pdf(fig, "Figure4A_turing_test_workflow.pdf", tight=False)
 
 
 def accuracy_band_axis(ax: plt.Axes) -> None:
@@ -3156,7 +2892,7 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
         # workbook has a denominator typo in its display string, so use the
         # actual design denominator rather than the formatted text.
         n = 140
-        low, high = proportion_confint(correct, n, alpha=0.05, method="wilson")
+        low, high = proportion_confint(correct, n, alpha=0.10, method="wilson")
         rows.append(
             {
                 "expert": expert,
@@ -3165,13 +2901,13 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
                 "accuracy": correct / n,
                 "ci_low": low,
                 "ci_high": high,
-                "ci_method": "Wilson 95% CI",
+                "ci_method": "Wilson 90% CI",
             }
         )
     stats_df = pd.DataFrame(rows)
     write_csv(DERIVED / "fig4B_expert_source_identification_accuracy.csv", stats_df)
 
-    fig = plt.figure(figsize=(8.5, 3.0))
+    fig = plt.figure(figsize=(9.0, 4.5))
     add_panel_label(fig, "B")
     grid = fig.add_gridspec(1, 2, width_ratios=[1.45, 1.25], wspace=0.08)
     ax = fig.add_subplot(grid[0, 0])
@@ -3202,23 +2938,15 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
         ]
         for row in stats_df.itertuples()
     ]
-    cell_text = [
-        [
-            row.expert,
-            f"{row.correct}/{row.n}",
-            f"{row.accuracy*100:.1f}% ({row.ci_low*100:.1f}–{row.ci_high*100:.1f})",
-        ]
-        for row in stats_df.itertuples()
-    ]
     table = table_ax.table(
         cellText=cell_text,
-        colLabels=["Expert", "Correct/N", "Accuracy, 95% CI"],
+        colLabels=["Expert", "Correct/N", "Accuracy, 90% CI"],
         loc="center",
         cellLoc="center",
         colWidths=[0.25, 0.22, 0.53],
     )
     table.auto_set_font_size(False)
-    table.set_fontsize(6.7)
+    table.set_fontsize(6.5)
     table.scale(1.0, 1.35)
     save_pdf(fig, "Figure4B_expert_source_identification_accuracy.pdf", tight=False)
 
@@ -3234,7 +2962,7 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
     proportions = counts.div(counts.sum(axis=1), axis=0) * 100
     counts.reset_index().to_csv(DERIVED / "fig4C_expert_source_confusion_counts.csv", index=False, encoding="utf-8-sig")
 
-    fig, ax = plt.subplots(figsize=(4.0, 3.0))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "C")
     x = np.arange(2)
     bottom = np.zeros(2)
@@ -3246,7 +2974,7 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
         ax.bar(x, values, bottom=bottom, color=color, width=0.58, label=column)
         for xpos, value, base in zip(x, values, bottom):
             if value >= 7:
-                ax.text(xpos, base + value / 2, f"{value:.1f}%", ha="center", va="center", color="white", fontsize=7)
+                ax.text(xpos, base + value / 2, f"{value:.1f}%", ha="center", va="center", color="white", fontsize=8)
         bottom += values
     ax.set_xticks(x, ["Human-authored items", "MAS-generated items"])
     ax.set_ylabel("Expert judgments (%)")
@@ -3309,7 +3037,7 @@ def figure4d(expert_judgments: pd.DataFrame) -> None:
     write_csv(DERIVED / "fig4D_expert_guessed_mas_model_input.csv", expert_judgments)
     write_csv(DERIVED / "fig4D_expert_guessed_mas_model_forest.csv", forest)
 
-    fig, ax = plt.subplots(figsize=(7.1, 3.9))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "D")
     plot = forest.iloc[::-1].reset_index(drop=True)
     y = np.arange(len(plot))
@@ -3336,7 +3064,7 @@ def figure4e() -> None:
     source = pd.read_csv(DERIVED / "source_detection.csv")
     correct = int(source.source_guess_success.sum())
     n = len(source)
-    low, high = proportion_confint(correct, n, alpha=0.05, method="wilson")
+    low, high = proportion_confint(correct, n, alpha=0.10, method="wilson")
     row = pd.DataFrame(
         [
             {
@@ -3346,13 +3074,13 @@ def figure4e() -> None:
                 "accuracy": correct / n,
                 "ci_low": low,
                 "ci_high": high,
-                "ci_method": "Wilson 95% CI",
+                "ci_method": "Wilson 90% CI",
             }
         ]
     )
     write_csv(DERIVED / "fig4E_student_source_identification_accuracy.csv", row)
 
-    fig = plt.figure(figsize=(7.2, 2.7))
+    fig = plt.figure(figsize=(9.0, 4.5))
     add_panel_label(fig, "E")
     grid = fig.add_gridspec(1, 2, width_ratios=[1.35, 1.15], wspace=0.08)
     ax = fig.add_subplot(grid[0, 0])
@@ -3380,10 +3108,8 @@ def figure4e() -> None:
         cellLoc="center",
         colWidths=[0.28, 0.24, 0.48],
     )
-    table[(0, 2)].get_text().set_text("Accuracy, 95% CI")
-    table[(1, 2)].get_text().set_text(f"{estimate:.1f}% ({low*100:.1f}–{high*100:.1f})")
     table.auto_set_font_size(False)
-    table.set_fontsize(6.7)
+    table.set_fontsize(6.5)
     table.scale(1.0, 1.4)
     save_pdf(fig, "Figure4E_student_source_identification_accuracy.pdf", tight=False)
 
@@ -3399,7 +3125,7 @@ def figure4f() -> None:
         }
     )
     write_csv(DERIVED / "fig4F_mas_timing_sensitivity.csv", scenarios)
-    fig, ax = plt.subplots(figsize=(3.8, 2.7))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "F")
     y = np.arange(len(scenarios))[::-1]
     ax.barh(y, scenarios.minutes_per_item.iloc[::-1], color=OPTIONAL_COLOR_PAIRS[2]["color"])
@@ -3440,6 +3166,16 @@ def parse_sum_expression(value: Any) -> float:
     return float(sum(float(part) for part in parts))
 
 
+def read_docx_text(path: Path) -> str:
+    with ZipFile(path) as archive:
+        root = ET.fromstring(archive.read("word/document.xml"))
+    return "\n".join(
+        "".join(node.text or "" for node in paragraph.iter() if node.tag.endswith("}t"))
+        for paragraph in root.iter()
+        if paragraph.tag.endswith("}p")
+    )
+
+
 def efficiency_time_data() -> tuple[pd.DataFrame, pd.DataFrame]:
     rows = read_sheet_rows(PLOT_RAW_DATA_DIR / "效率分析.xlsx", "Sheet1")
     row_map: dict[str, list[Any]] = {}
@@ -3466,10 +3202,29 @@ def efficiency_time_data() -> tuple[pd.DataFrame, pd.DataFrame]:
                 "item_type": item_type,
                 "final_items": FINAL_ITEM_COUNTS[item_type],
                 "human_selected_seconds": float(row[2]),
-                "human_seconds_per_item": float(row[3]),
+                "human_source_workbook_average_seconds_per_authored_item": float(row[3]),
             }
         )
     human = pd.DataFrame(human_rows)
+    human["human_selected_seconds_per_final_item"] = (
+        human.human_selected_seconds / human.final_items
+    )
+
+    efficiency_docx = PLOT_RAW_DATA_DIR / "人工卷用时及成本.docx"
+    if not efficiency_docx.exists():
+        raise FileNotFoundError(f"Missing efficiency cross-check source: {efficiency_docx}")
+    efficiency_docx_text = read_docx_text(efficiency_docx)
+    expected_selected_seconds = {
+        row.item_type: int(row.human_selected_seconds)
+        for row in human.itertuples()
+    }
+    for item_type, seconds in expected_selected_seconds.items():
+        if str(seconds) not in efficiency_docx_text:
+            raise ValueError(
+                f"Efficiency sources disagree: {item_type} selected time {seconds} s is absent from the DOCX."
+            )
+    if int(human.human_selected_seconds.sum()) != 77538 or "77538" not in efficiency_docx_text:
+        raise ValueError("Efficiency sources disagree on the 50 selected Human items' total time.")
 
     timing = pd.read_csv(DERIVED / "mas_question_generation_time.csv")
     timing["bank_type"] = timing.bank_type.astype(str)
@@ -3527,7 +3282,7 @@ def efficiency_time_data() -> tuple[pd.DataFrame, pd.DataFrame]:
     detail = human.merge(mas, on=["item_type", "final_items"])
     detail["human_minutes"] = detail.human_selected_seconds / 60.0
     detail["mas_minutes"] = detail.mas_total_seconds / 60.0
-    detail["human_minutes_per_item"] = detail.human_seconds_per_item / 60.0
+    detail["human_minutes_per_item"] = detail.human_selected_seconds_per_final_item / 60.0
     detail["mas_minutes_per_item"] = detail.mas_seconds_per_final_item / 60.0
     detail["time_basis"] = (
         "Human: selected-item authoring time from efficiency workbook. "
@@ -3548,6 +3303,8 @@ def efficiency_time_data() -> tuple[pd.DataFrame, pd.DataFrame]:
     )
     cost_match = re.search(r"50道入卷人工题为\s*(\d+(?:\.\d+)?)\s*元", notes)
     human_cost_cny = float(cost_match.group(1)) if cost_match else 9562.0
+    if "9562" not in efficiency_docx_text or human_cost_cny != 9562.0:
+        raise ValueError("Efficiency sources disagree on the Human 50-item workflow cost.")
     summary = pd.DataFrame(
         [
             {
@@ -3776,7 +3533,7 @@ def token_cost_data() -> pd.DataFrame:
 
 def figure5a() -> None:
     detail, summary = efficiency_time_data()
-    fig, ax = plt.subplots(figsize=(6.4, 4.0))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "A")
     bottoms = np.zeros(2)
     for item_type in EFFICIENCY_TYPES:
@@ -3803,7 +3560,7 @@ def figure5a() -> None:
                 f"{values[0]:.0f}",
                 ha="center",
                 va="center",
-                fontsize=7,
+                fontsize=8,
                 color="white",
                 fontweight="bold",
             )
@@ -3829,8 +3586,8 @@ def figure5a() -> None:
         frameon=False,
         loc="upper right",
         title="Item type: Human vs MAS",
-        fontsize=6.7,
-        title_fontsize=7,
+        fontsize=6.5,
+        title_fontsize=8,
     )
     ax.text(
         0.50,
@@ -3839,7 +3596,7 @@ def figure5a() -> None:
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontsize=6.4,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax)
@@ -3853,7 +3610,7 @@ def figure5b() -> None:
         for workflow in ["Human", "MAS"]
     ]
     ratio = values[0] / values[1]
-    fig, ax = plt.subplots(figsize=(4.4, 3.5))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "B")
     bars = ax.bar(
         [0, 1],
@@ -3876,7 +3633,7 @@ def figure5b() -> None:
         f"{ratio:.0f}× less human time",
         ha="center",
         color=CORE_COLORS["MAS"],
-        fontsize=9,
+        fontsize=8,
     )
     ax.set_xticks([0, 1], ["Human\n50/50 usable", "MAS\n50/50 usable"])
     ax.set_ylabel("Workflow time per usable item (min)")
@@ -3900,7 +3657,7 @@ def figure5c() -> None:
     write_csv(DERIVED / "fig5_time_sensitivity.csv", sensitivity)
     worst_ratio = human * 0.8 / (mas * 1.2)
 
-    fig, ax = plt.subplots(figsize=(5.2, 3.6))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "C")
     for position, row in enumerate(sensitivity.itertuples()):
         source = row.workflow
@@ -3953,7 +3710,7 @@ def figure5d() -> None:
     ]
     plot = costs.set_index("stage").loc[stage_order].reset_index()
     y = np.arange(len(plot))
-    fig, ax = plt.subplots(figsize=(6.1, 3.8))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "D")
     input_color = OPTIONAL_COLOR_PAIRS[5]["fill"]
     output_color = OPTIONAL_COLOR_PAIRS[1]["color"]
@@ -4001,7 +3758,7 @@ def figure5d() -> None:
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontsize=6.2,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     ax.set_xlim(0, max(plot.total_cost_usd.max() * 1.55, 0.06))
@@ -4058,7 +3815,7 @@ def figure5e() -> None:
     rows["usd_to_cny_display_rate_for_token_estimate"] = USD_TO_CNY_FOR_FIG5
     write_csv(DERIVED / "fig5E_total_cost_comparison.csv", rows)
 
-    fig, ax = plt.subplots(figsize=(4.6, 3.6))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "E")
     values = [human_cost_cny, ai_total_cny]
     bars = ax.bar(
@@ -4100,7 +3857,7 @@ def figure5e() -> None:
         transform=ax.transAxes,
         ha="center",
         va="top",
-        fontsize=6.2,
+        fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     ax.set_ylim(max(min(values) / 2, 0.1), max(values) * 2.6)
@@ -4157,7 +3914,7 @@ def fatigue_order_data() -> pd.DataFrame:
 def figure6a() -> None:
     data = fatigue_order_data()
     counts = data.form.value_counts().to_dict()
-    fig, ax = plt.subplots(figsize=(3.4, 2.5))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "A")
     ax.set_xlim(0, 4)
     ax.set_ylim(0, 5)
@@ -4190,7 +3947,7 @@ def figure6b() -> None:
             }
         ],
     )
-    fig, ax = plt.subplots(figsize=(4.0, 3.3))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "B")
     for form in ["A", "B"]:
         sub = data[data.form.eq(form)]
@@ -4233,7 +3990,7 @@ def figure6c() -> None:
             }
         )
     write_csv(DERIVED / "fig6C_position_difference_by_sequence.csv", rows)
-    fig, ax = plt.subplots(figsize=(3.8, 3.2))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "C")
     box = ax.boxplot(groups, positions=[0, 1], widths=0.48, patch_artist=True, showfliers=False)
     for patch, form in zip(box["boxes"], ["A", "B"]):
@@ -4316,7 +4073,7 @@ def figure6d() -> None:
     write_csv(DERIVED / "fig6D_adjusted_fatigue_effect.csv", result)
     plot = result.iloc[::-1].reset_index(drop=True)
     y = np.arange(len(plot))
-    fig, ax = plt.subplots(figsize=(5.1, 3.1))
+    fig, ax = plt.subplots(figsize=(9.0, 4.5))
     add_panel_label(fig, "D")
     ax.axvline(0, color=UROMAS_BASE_COLORS["text_dark"], linewidth=0.9)
     ax.errorbar(
@@ -4351,7 +4108,7 @@ def figure6e() -> None:
         for form, values in [("A", a), ("B", b)]
     ]
     write_csv(DERIVED / "fig6E_total_duration_by_sequence.csv", rows)
-    fig, ax = plt.subplots(figsize=(3.8, 3.2))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "E")
     rng = np.random.default_rng(630)
     for position, form, values in [(0, "A", a), (1, "B", b)]:
@@ -4399,29 +4156,25 @@ def cleanup_obsolete_outputs() -> None:
 
 def main() -> None:
     setup_style()
+    remove_manual_workflow_outputs()
     expert_judgments = parse_expert_judgments()
 
-    figure1a()
-    figure1b()
     figure1c()
     figure1d()
     figure1e()
 
-    figure2a()
     figure2b()
     figure2c()
     figure2d()
     figure2e()
     figure2f()
 
-    figure3a()
     figure3b()
     figure3c()
     figure3d()
     figure3e()
     figure3f()
 
-    figure4a()
     figure4b(expert_judgments)
     figure4c(expert_judgments)
     figure4d(expert_judgments)
