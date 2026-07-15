@@ -174,7 +174,7 @@ def save_pdf(fig: plt.Figure, filename: str, *, tight: bool = True) -> None:
     plt.close(fig)
 
 
-def save_pdf_rotated_clockwise(fig: plt.Figure, filename: str) -> None:
+def save_pdf_rotated_counterclockwise(fig: plt.Figure, filename: str) -> None:
     """Save one intact 9 x 4.5 panel, then rotate the vector page to 4.5 x 9."""
     pdflatex = shutil.which("pdflatex")
     if pdflatex is None:
@@ -182,7 +182,6 @@ def save_pdf_rotated_clockwise(fig: plt.Figure, filename: str) -> None:
     with tempfile.TemporaryDirectory(prefix="uromas_rotate_panel_") as temp_name:
         temp_dir = Path(temp_name)
         source = temp_dir / "source_landscape.pdf"
-        fig.tight_layout()
         fig.savefig(source, facecolor="white")
         plt.close(fig)
         source_tex_path = source.as_posix()
@@ -197,7 +196,7 @@ def save_pdf_rotated_clockwise(fig: plt.Figure, filename: str) -> None:
   \AtPageLowerLeft{{
     \setlength{{\unitlength}}{{1in}}
     \begin{{picture}}(0,0)
-      \put(2.25,4.5){{\makebox(0,0){{\includegraphics[width=9in,height=4.5in,angle=-90,origin=c]{{\detokenize{{{source_tex_path}}}}}}}}}
+      \put(2.25,4.5){{\makebox(0,0){{\includegraphics[width=9in,height=4.5in,angle=90,origin=c]{{\detokenize{{{source_tex_path}}}}}}}}}
     \end{{picture}}
   }}
 }}
@@ -772,10 +771,35 @@ def figure2b() -> None:
     write_csv(DERIVED / "fig2B_quality_difference_item_scores.csv", item_score_rows)
     write_csv(DERIVED / "fig2B_quality_difference_stats.csv", stats_df)
 
-    # Draw the original single 9 x 4.5 panel without deleting or rearranging
-    # any element, then rotate the complete vector page for the portrait slot.
+    # Rotate the data display counterclockwise so all non-header text reads
+    # with its letter tops toward the left edge in the portrait slot. The
+    # label and title are counter-rotated here so the final portrait page
+    # keeps them upright at top left and top center, respectively.
     fig, ax = plt.subplots(figsize=(9.0, 4.5))
-    add_panel_label(fig, "B")
+    fig.text(
+        0.988,
+        0.988,
+        "(B)",
+        ha="left",
+        va="top",
+        rotation=-90,
+        rotation_mode="anchor",
+        fontsize=11,
+        fontweight="bold",
+        color=UROMAS_BASE_COLORS["text_dark"],
+    )
+    fig.text(
+        0.988,
+        0.50,
+        "Primary endpoint non-inferiority",
+        ha="center",
+        va="top",
+        rotation=-90,
+        rotation_mode="anchor",
+        fontsize=8,
+        fontweight="bold",
+        color=UROMAS_BASE_COLORS["text_dark"],
+    )
     y = np.array([1.0, 0.0])
     ax.set_xlim(-5.2, 2.25)
     ax.set_ylim(-0.58, 1.58)
@@ -838,14 +862,13 @@ def figure2b() -> None:
             f"NI margin {row.ni_margin:.2f}",
             ha="right",
             va="center",
-            rotation=90,
+            rotation=0,
             color=pair["color"],
             fontsize=8,
         )
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
     ax.set_yticks(y, [f"{row.endpoint}\n(n=70/group)" for row in stats_df.itertuples()])
     ax.set_xlabel("Quality-score difference (MAS − Human)")
-    ax.set_title("Primary endpoint non-inferiority", fontweight="bold", pad=12)
     ax.text(
         -0.05,
         -0.43,
@@ -856,7 +879,8 @@ def figure2b() -> None:
         color=UROMAS_BASE_COLORS["text_dark"],
     )
     style_axes(ax, "x")
-    save_pdf_rotated_clockwise(fig, "Figure2B_quality_difference.pdf")
+    fig.tight_layout(rect=[0.02, 0.02, 0.94, 0.98])
+    save_pdf_rotated_counterclockwise(fig, "Figure2B_quality_difference.pdf")
 
 
 DIMENSIONS = [
@@ -1397,7 +1421,8 @@ def figure2e() -> None:
     # Match Figure 3D's compact arrangement: keep the legend inside the data
     # area and place the model note directly beneath the axis.
     ax.legend(frameon=False, ncol=2, loc="lower left")
-    fig.subplots_adjust(left=0.10, right=0.98, bottom=0.14, top=0.88)
+    # Match Figure 2D's left/right plot bounds and Figure 2F's baseline.
+    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.20, top=0.88)
     fig.text(
         0.985,
         0.025,
@@ -2355,6 +2380,8 @@ def figure3d_adjusted() -> None:
     )
     style_axes(ax)
     fig.tight_layout(rect=[0, 0.08, 1, 0.96])
+    # Align the horizontal axis with adjacent Figure 3C.
+    fig.subplots_adjust(bottom=0.182)
     save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf", tight=False)
 
 
@@ -3013,6 +3040,8 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
     table.auto_set_font_size(False)
     table.set_fontsize(6.5)
     table.scale(1.0, 1.35)
+    # Match the horizontal-axis baseline of adjacent Figure 4C.
+    fig.subplots_adjust(bottom=0.22)
     save_pdf(fig, "Figure4B_expert_source_identification_accuracy.pdf", tight=False)
 
 
@@ -3185,6 +3214,8 @@ def figure4e() -> None:
     table.auto_set_font_size(False)
     table.set_fontsize(6.5)
     table.scale(1.0, 1.4)
+    # Figure 4D-F form one row; keep their horizontal axes collinear.
+    fig.subplots_adjust(bottom=0.20)
     save_pdf(fig, "Figure4E_student_source_identification_accuracy.pdf", tight=False)
 
 
@@ -3207,7 +3238,9 @@ def figure4f() -> None:
     ax.set_xlabel("Minutes per generated item")
     ax.set_title("MAS timing sensitivity", fontweight="bold")
     style_axes(ax, "x")
-    save_pdf(fig, "Figure4F_efficiency_sensitivity.pdf")
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.20)
+    save_pdf(fig, "Figure4F_efficiency_sensitivity.pdf", tight=False)
 
 
 # ---------------------------------------------------------------------------
@@ -3714,7 +3747,10 @@ def figure5b() -> None:
     ax.set_ylim(0, max(values) * 1.18)
     ax.set_title("Time per usable final item", fontweight="bold")
     style_axes(ax)
-    save_pdf(fig, "Figure5B_time_per_usable_item.pdf")
+    fig.tight_layout()
+    # Match the horizontal-axis baseline of adjacent Figure 5A.
+    fig.subplots_adjust(bottom=0.155)
+    save_pdf(fig, "Figure5B_time_per_usable_item.pdf", tight=False)
 
 
 def figure5c() -> None:
@@ -3771,7 +3807,10 @@ def figure5c() -> None:
     )
     ax.set_xlim(-0.15, 1.30)
     style_axes(ax, "")
-    save_pdf(fig, "Figure5C_time_sensitivity.pdf")
+    fig.tight_layout()
+    # Match the horizontal-axis baseline of adjacent Figure 5A-B.
+    fig.subplots_adjust(bottom=0.155)
+    save_pdf(fig, "Figure5C_time_sensitivity.pdf", tight=False)
 
 
 def figure5d() -> None:
@@ -3838,7 +3877,10 @@ def figure5d() -> None:
     )
     ax.set_xlim(0, max(plot.total_cost_usd.max() * 1.55, 0.06))
     style_axes(ax, "x")
-    save_pdf(fig, "Figure5D_api_cost.pdf")
+    fig.tight_layout()
+    # Match the horizontal-axis baseline of adjacent Figure 5E.
+    fig.subplots_adjust(bottom=0.216)
+    save_pdf(fig, "Figure5D_api_cost.pdf", tight=False)
 
 
 def figure5e() -> None:
@@ -4041,7 +4083,10 @@ def figure6b() -> None:
     ax.set_title("Student scores by block position", fontweight="bold")
     ax.legend(frameon=False)
     style_axes(ax)
-    save_pdf(fig, "Figure6B_scores_by_block_position.pdf")
+    fig.tight_layout()
+    # Match the horizontal-axis baseline of adjacent Figure 6C.
+    fig.subplots_adjust(bottom=0.093)
+    save_pdf(fig, "Figure6B_scores_by_block_position.pdf", tight=False)
 
 
 def figure6c() -> None:
@@ -4205,7 +4250,11 @@ def figure6e() -> None:
     ax.set_ylabel("Total examination duration (min)")
     ax.set_title("Total duration by randomized sequence", fontweight="bold")
     style_axes(ax)
-    save_pdf(fig, "Figure6E_total_duration_by_sequence.pdf")
+    fig.tight_layout()
+    # Figure 6C and 6E share a column; align their left axes. The bottom
+    # matches adjacent Figure 6D without moving any annotation off-canvas.
+    fig.subplots_adjust(left=0.135, bottom=0.104)
+    save_pdf(fig, "Figure6E_total_duration_by_sequence.pdf", tight=False)
 
 
 def cleanup_obsolete_outputs() -> None:
