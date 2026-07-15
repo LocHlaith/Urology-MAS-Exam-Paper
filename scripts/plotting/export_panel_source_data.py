@@ -56,22 +56,22 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig2F_expert_inter_rater_icc_stats.csv",
         "fig2F_expert_inter_rater_icc_bootstrap.csv",
     ],
-    "Figure3B": ["fig3B_student_correct_rate_raw.csv", "fig3B_student_correct_rate_stats.csv"],
-    "Figure3C": [
+    "Figure3B": ["fig3F_reliability_bootstrap_ci.csv", "responses.csv", "item_master.csv"],
+    "Figure3C": ["fig3B_student_correct_rate_raw.csv", "fig3B_student_correct_rate_stats.csv"],
+    "Figure3D": [
         "fig3C_student_accuracy_horizontal_stats.csv",
         "fig3C_student_accuracy_student_rates.csv",
     ],
-    "Figure3D": [
+    "Figure3E": [
         "fig3D_adjusted_item_probabilities.csv",
         "fig3D_adjusted_probability_summary.csv",
         "fig3D_source_cognitive_interaction_contrasts.csv",
     ],
-    "Figure3E": [
+    "Figure3F": [
         "fig3E_ctt_scatter_item_data.csv",
         "fig3E_ctt_scatter_summary.csv",
         "fig3E_ctt_linear_fit.csv",
     ],
-    "Figure3F": ["fig3F_reliability_bootstrap_ci.csv", "responses.csv", "item_master.csv"],
     "Figure4B": ["fig4B_expert_source_identification_accuracy.csv"],
     "Figure4C": ["fig4C_expert_source_confusion_counts.csv"],
     "Figure4D": ["fig4D_expert_guessed_mas_model_input.csv", "fig4D_expert_guessed_mas_model_forest.csv"],
@@ -116,8 +116,8 @@ PANEL_NOTES: dict[str, str] = {
         "Raw-workbook inter-rater reliability uses two-way random-effects consistency ICC. "
         "The two plotted rows are QGEval and ULM average-measure ICC(C,k) across three experts."
     ),
-    "Figure3D": (
-        "Figure 3D uses a covariate-standardized item-level program: a binomial "
+    "Figure3E": (
+        "Figure 3E uses a covariate-standardized item-level program: a binomial "
         "GLM estimates item fixed effects while controlling for block position, "
         "training setting/campus, training year, and randomized form. Each item "
         "is standardized over all students and both block positions; boxes show "

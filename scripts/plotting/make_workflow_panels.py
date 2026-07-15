@@ -890,11 +890,11 @@ def figure_3a() -> None:
     arrow(ax, [(67.8, 23.0), (70.1, 23.0)], BASE["dark"], 0.9, 6)
     # Phase 4 endpoints.
     outcomes = [
-        (31.5, "B", "Total score\ncomparison", "ci"),
-        (25.6, "C", "Accuracy by\ncognitive level", "bar"),
-        (19.7, "D", "Adjusted source ×\ncognitive-level\nmodel", "interaction"),
-        (10.2, "E", "Difficulty and\ndiscrimination", "curve"),
-        (4.4, "F", "KR-20 /\nCronbach’s alpha", "dots"),
+        (31.5, "C", "Total score\ncomparison", "ci"),
+        (25.6, "D", "Accuracy by\ncognitive level", "bar"),
+        (19.7, "E", "Adjusted source ×\ncognitive-level\nmodel", "interaction"),
+        (10.2, "F", "Difficulty and\ndiscrimination", "curve"),
+        (4.4, "B", "KR-20 /\nCronbach’s alpha", "dots"),
     ]
     for oy, letter, label, kind in outcomes:
         small_label_box(ax, 71.0, oy, 17.2, 5.0, "", COLOR["purple"], "#FCFBFF")

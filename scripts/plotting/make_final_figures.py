@@ -14,10 +14,7 @@ import json
 import math
 import posixpath
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 import warnings
 from collections import Counter, defaultdict, deque
 from pathlib import Path
@@ -151,6 +148,18 @@ def style_axes(ax: plt.Axes, grid_axis: str = "y") -> None:
         )
 
 
+def angle_y_ticklabels(ax: plt.Axes, rotation: float = 25) -> None:
+    """Angle y tick labels so the plotting area can extend farther left."""
+    plt.setp(
+        ax.get_yticklabels(),
+        rotation=rotation,
+        ha="right",
+        va="center",
+        rotation_mode="anchor",
+    )
+    ax.tick_params(axis="y", pad=1)
+
+
 def add_panel_label(fig: plt.Figure, label: str, x: float = 0.012, y: float = 0.988) -> None:
     fig.text(
         x,
@@ -172,58 +181,6 @@ def save_pdf(fig: plt.Figure, filename: str, *, tight: bool = True) -> None:
     # the reason the nominal 4.5 x 9.0 Figure 2C was not a strict 1:2 panel.
     fig.savefig(OUT / filename, facecolor="white")
     plt.close(fig)
-
-
-def save_pdf_rotated_counterclockwise(fig: plt.Figure, filename: str) -> None:
-    """Save one intact 9 x 4.5 panel, then rotate the vector page to 4.5 x 9."""
-    pdflatex = shutil.which("pdflatex")
-    if pdflatex is None:
-        raise RuntimeError("pdflatex is required to rotate Figure 2B without rasterizing it.")
-    with tempfile.TemporaryDirectory(prefix="uromas_rotate_panel_") as temp_name:
-        temp_dir = Path(temp_name)
-        source = temp_dir / "source_landscape.pdf"
-        fig.savefig(source, facecolor="white")
-        plt.close(fig)
-        source_tex_path = source.as_posix()
-        tex = rf"""\documentclass{{article}}
-\usepackage[paperwidth=4.5in,paperheight=9in,margin=0in]{{geometry}}
-\usepackage{{graphicx}}
-\usepackage{{eso-pic}}
-\pagestyle{{empty}}
-\begin{{document}}
-\thispagestyle{{empty}}
-\AddToShipoutPictureFG*{{
-  \AtPageLowerLeft{{
-    \setlength{{\unitlength}}{{1in}}
-    \begin{{picture}}(0,0)
-      \put(2.25,4.5){{\makebox(0,0){{\includegraphics[width=9in,height=4.5in,angle=90,origin=c]{{\detokenize{{{source_tex_path}}}}}}}}}
-    \end{{picture}}
-  }}
-}}
-\null
-\end{{document}}
-"""
-        tex_path = temp_dir / "rotated.tex"
-        tex_path.write_text(tex, encoding="utf-8")
-        process = subprocess.run(
-            [
-                pdflatex,
-                "-interaction=nonstopmode",
-                "-halt-on-error",
-                f"-output-directory={temp_dir}",
-                str(tex_path),
-            ],
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            check=False,
-        )
-        if process.returncode != 0:
-            tail = "\n".join(process.stdout.splitlines()[-30:])
-            raise RuntimeError(f"Could not rotate {filename}:\n{tail}")
-        shutil.copy2(temp_dir / "rotated.pdf", OUT / filename)
 
 
 def remove_output(filename: str) -> None:
@@ -766,35 +723,11 @@ def figure2b() -> None:
     write_csv(DERIVED / "fig2B_quality_difference_item_scores.csv", item_score_rows)
     write_csv(DERIVED / "fig2B_quality_difference_stats.csv", stats_df)
 
-    # Rotate the data display counterclockwise so all non-header text reads
-    # with its letter tops toward the left edge in the portrait slot. The
-    # label and title are counter-rotated here so the final portrait page
-    # keeps them upright at top left and top center, respectively.
+    # The prior panel was already rotated +90 degrees.  The requested -90
+    # correction therefore returns the complete data display to an upright,
+    # zero-degree landscape orientation.
     fig, ax = plt.subplots(figsize=(9.0, 4.5))
-    fig.text(
-        0.988,
-        0.988,
-        "(B)",
-        ha="left",
-        va="top",
-        rotation=-90,
-        rotation_mode="anchor",
-        fontsize=11,
-        fontweight="bold",
-        color=UROMAS_BASE_COLORS["text_dark"],
-    )
-    fig.text(
-        0.988,
-        0.50,
-        "Primary endpoint non-inferiority",
-        ha="center",
-        va="top",
-        rotation=-90,
-        rotation_mode="anchor",
-        fontsize=8,
-        fontweight="bold",
-        color=UROMAS_BASE_COLORS["text_dark"],
-    )
+    add_panel_label(fig, "B")
     y = np.array([1.0, 0.0])
     ax.set_xlim(-5.2, 2.25)
     ax.set_ylim(-0.58, 1.58)
@@ -873,9 +806,13 @@ def figure2b() -> None:
         fontsize=8,
         color=UROMAS_BASE_COLORS["text_dark"],
     )
+    fig.suptitle("Primary endpoint non-inferiority", y=0.988, fontweight="bold")
     style_axes(ax, "x")
-    fig.tight_layout(rect=[0.02, 0.02, 0.94, 0.98])
-    save_pdf_rotated_counterclockwise(fig, "Figure2B_quality_difference.pdf")
+    fig.tight_layout(rect=[0.02, 0.02, 0.99, 0.94])
+    # Match the left/right bounds of Figure 2D-E and the top/bottom bounds of
+    # Figure 2D so the stacked two-column panels form one visual grid.
+    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.18, top=0.88)
+    save_pdf(fig, "Figure2B_quality_difference.pdf", tight=False)
 
 
 DIMENSIONS = [
@@ -1086,7 +1023,10 @@ def figure2c() -> None:
         color=UROMAS_BASE_COLORS["text"],
     )
     style_axes(ax, "x")
-    fig.subplots_adjust(left=0.40, right=0.96, bottom=0.10, top=0.94)
+    # The longest dimension labels still fit while the plotting area expands
+    # into the former left-side whitespace.
+    ax.tick_params(axis="y", pad=2)
+    fig.subplots_adjust(left=0.30, right=0.98, bottom=0.10, top=0.94)
     save_pdf(fig, "Figure2C_dimension_scores.pdf", tight=False)
 
 
@@ -1817,7 +1757,7 @@ def figure2f() -> None:
         ax.text(
             row.icc_c_k_ci_high + 0.025,
             ypos,
-            f"{row.icc_c_k:.3f} [{row.icc_c_k_ci_low:.3f}, {row.icc_c_k_ci_high:.3f}]",
+            f"{row.icc_c_k:.3f}\n[{row.icc_c_k_ci_low:.3f}, {row.icc_c_k_ci_high:.3f}]",
             ha="left",
             va="center",
             fontsize=8,
@@ -1839,8 +1779,9 @@ def figure2f() -> None:
     )
     style_axes(ax)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    # Match adjacent Figure 2E at both the top and bottom of the data area.
-    fig.subplots_adjust(bottom=0.20, top=0.88)
+    # Match adjacent Figure 2E vertically and use the same right boundary as
+    # Figure 2C above it while retaining the endpoint labels on the left.
+    fig.subplots_adjust(left=0.18, right=0.98, bottom=0.20, top=0.88)
     save_pdf(fig, "Figure2F_expert_inter_rater_reliability.pdf", tight=False)
 
 
@@ -1934,8 +1875,8 @@ def figure3b() -> None:
     write_csv(DERIVED / "fig3B_student_correct_rate_stats.csv", stat_rows)
     write_csv(DERIVED / "fig3B_student_correct_rate_raw.csv", raw_rows)
 
-    fig, axes = plt.subplots(1, 3, figsize=(9.0, 4.5), sharey=True)
-    add_panel_label(fig, "B")
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.5), sharey=True)
+    add_panel_label(fig, "C")
     rng = np.random.default_rng(202606)
     for ax, stat_row in zip(axes, stat_rows):
         sub = pd.DataFrame(raw_rows)
@@ -1989,13 +1930,14 @@ def figure3b() -> None:
             Patch(facecolor=CORE_FILLS["Human"], edgecolor=CORE_COLORS["Human"], label="Human"),
         ],
         frameon=False,
-        loc="upper right",
-        bbox_to_anchor=(0.995, 0.965),
+        ncol=2,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.005),
     )
-    # Figure 3B, 3D, and 3F occupy the same assembled columns; align their
-    # left and right plot bounds while retaining the three internal panels.
-    fig.subplots_adjust(left=0.148, right=0.985, bottom=0.22, top=0.78, wspace=0.34)
-    save_pdf(fig, "Figure3B_student_correct_rate.pdf", tight=False)
+    # New Figure 3C spans the full three-column canvas while retaining all
+    # three internal campus panels.
+    fig.subplots_adjust(left=0.10, right=0.99, bottom=0.22, top=0.90, wspace=0.28)
+    save_pdf(fig, "Figure3C_student_correct_rate.pdf", tight=False)
 
 
 def student_level_rates() -> pd.DataFrame:
@@ -2057,8 +1999,8 @@ def figure3c() -> None:
     write_csv(DERIVED / "fig3C_student_accuracy_horizontal_stats.csv", plot_df)
     write_csv(DERIVED / "fig3C_student_accuracy_student_rates.csv", rates)
 
-    fig, axes = plt.subplots(1, 3, figsize=(9.0, 4.5), sharey=True)
-    add_panel_label(fig, "C")
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.5), sharey=True)
+    add_panel_label(fig, "D")
     y = np.arange(len(LEVELS_4))
     height = 0.34
     for ax, (panel, _) in zip(axes, panels):
@@ -2094,9 +2036,16 @@ def figure3c() -> None:
     fig.legend(handles=handles, frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 0.005))
     fig.suptitle("Student correct rate by cognitive level", y=0.99, fontweight="bold")
     fig.tight_layout(rect=[0, 0.08, 1, 0.93])
-    # Figure 3C and 3E share the same assembled columns.
-    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.182)
-    save_pdf(fig, "Figure3C_student_accuracy_by_cognitive_level.pdf", tight=False)
+    # Match new Figure 3C's three internal columns and reclaim the avoidable
+    # upper gap without crowding the shared title or subplot titles.
+    fig.subplots_adjust(
+        left=0.10,
+        right=0.99,
+        bottom=0.182,
+        top=0.90,
+        wspace=0.28,
+    )
+    save_pdf(fig, "Figure3D_student_accuracy_by_cognitive_level.pdf", tight=False)
 
 
 def permutation_mean_difference_pvalue(
@@ -2300,7 +2249,7 @@ def figure3d_adjusted() -> None:
     write_csv(DERIVED / "fig3D_source_cognitive_interaction_contrasts.csv", contrasts)
 
     fig, ax = plt.subplots(figsize=(9.0, 4.5))
-    add_panel_label(fig, "D")
+    add_panel_label(fig, "E")
     x = np.arange(len(LEVELS_4), dtype=float)
     offsets = {"Human": -0.18, "MAS": 0.18}
     width = 0.30
@@ -2385,9 +2334,9 @@ def figure3d_adjusted() -> None:
     )
     style_axes(ax)
     fig.tight_layout(rect=[0, 0.08, 1, 0.93])
-    # Align with Figure 3C horizontally and with Figure 3B/3F vertically.
-    fig.subplots_adjust(left=0.148, right=0.985, bottom=0.182)
-    save_pdf(fig, "Figure3D_source_cognitive_interaction.pdf", tight=False)
+    # Align the horizontal-axis baseline with adjacent new Figure 3F.
+    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.14, top=0.90)
+    save_pdf(fig, "Figure3E_source_cognitive_interaction.pdf", tight=False)
 
 
 def figure3d_paired_unused() -> None:
@@ -2793,8 +2742,8 @@ def figure3e() -> None:
         ],
     )
 
-    fig, ax = plt.subplots(figsize=(9.0, 4.5))
-    add_panel_label(fig, "E")
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
+    add_panel_label(fig, "F")
     marker_map = {"A1/B": "o", "A2/A3/A4": "s", "X": "^"}
     for source in ["MAS", "Human"]:
         for marker_group, marker in marker_map.items():
@@ -2856,7 +2805,15 @@ def figure3e() -> None:
         label="Group means",
     )
     fit_handle = Line2D([0], [0], color=UROMAS_BASE_COLORS["text_dark"], linewidth=1.3, label="Fit: y = kx + b")
-    ax.legend(handles=source_handles + marker_handles + [mean_handle, fit_handle], frameon=False, loc="lower left")
+    ax.legend(
+        handles=source_handles + marker_handles + [mean_handle, fit_handle],
+        frameon=False,
+        loc="lower left",
+        ncol=2,
+        fontsize=6.5,
+        handletextpad=0.4,
+        columnspacing=0.8,
+    )
     ax.text(
         0.98,
         0.05,
@@ -2869,8 +2826,8 @@ def figure3e() -> None:
     )
     style_axes(ax)
     fig.tight_layout()
-    fig.subplots_adjust(left=0.12, right=0.985)
-    save_pdf(fig, "Figure3E_ctt_by_cognitive_level.pdf", tight=False)
+    fig.subplots_adjust(left=0.18, right=0.97, bottom=0.14, top=0.90)
+    save_pdf(fig, "Figure3F_ctt_by_cognitive_level.pdf", tight=False)
 
 
 def cronbach_alpha(matrix: np.ndarray) -> float:
@@ -2922,8 +2879,8 @@ def figure3f() -> None:
     stats_df = pd.DataFrame(rows)
     write_csv(DERIVED / "fig3F_reliability_bootstrap_ci.csv", stats_df.drop(columns="color"))
 
-    fig, ax = plt.subplots(figsize=(9.0, 4.5))
-    add_panel_label(fig, "F")
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
+    add_panel_label(fig, "B")
     y = np.arange(len(stats_df))[::-1]
     for ypos, row in zip(y, stats_df.itertuples()):
         ax.errorbar(
@@ -2948,8 +2905,8 @@ def figure3f() -> None:
     ax.set_title("Internal consistency reliability", fontweight="bold")
     style_axes(ax, "x")
     fig.tight_layout()
-    fig.subplots_adjust(left=0.148, right=0.985)
-    save_pdf(fig, "Figure3F_reliability.pdf", tight=False)
+    fig.subplots_adjust(left=0.32, right=0.97, bottom=0.20, top=0.88)
+    save_pdf(fig, "Figure3B_reliability.pdf", tight=False)
 
 
 # ---------------------------------------------------------------------------
@@ -3008,11 +2965,8 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
     stats_df = pd.DataFrame(rows)
     write_csv(DERIVED / "fig4B_expert_source_identification_accuracy.csv", stats_df)
 
-    fig = plt.figure(figsize=(9.0, 4.5))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "B")
-    grid = fig.add_gridspec(1, 2, width_ratios=[1.45, 1.25], wspace=0.08)
-    ax = fig.add_subplot(grid[0, 0])
-    table_ax = fig.add_subplot(grid[0, 1])
     colors = [OPTIONAL_COLOR_PAIRS[index]["color"] for index in [0, 1, 3]]
     y = np.arange(len(stats_df))[::-1]
     accuracy_band_axis(ax)
@@ -3028,29 +2982,36 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
             capsize=3,
             markersize=5,
         )
+        ax.text(
+            estimate,
+            ypos + 0.30,
+            (
+                f"{row.correct}/{row.n}  ·  {estimate:.1f}% "
+                f"({row.ci_low*100:.1f}–{row.ci_high*100:.1f})"
+            ),
+            ha="center",
+            va="bottom",
+            fontsize=6.5,
+            color=color,
+        )
     ax.set_yticks(y, stats_df.expert)
-    ax.set_title("Expert source-identification accuracy", fontweight="bold")
-    table_ax.axis("off")
-    cell_text = [
-        [
-            row.expert,
-            f"{row.correct}/{row.n}",
-            f"{row.accuracy*100:.1f}% ({row.ci_low*100:.1f}–{row.ci_high*100:.1f})",
-        ]
-        for row in stats_df.itertuples()
-    ]
-    table = table_ax.table(
-        cellText=cell_text,
-        colLabels=["Expert", "Correct/N", "Accuracy, 90% CI"],
-        loc="center",
-        cellLoc="center",
-        colWidths=[0.25, 0.22, 0.53],
+    angle_y_ticklabels(ax)
+    ax.set_ylabel("Expert")
+    ax.yaxis.labelpad = 0
+    ax.set_ylim(-0.55, len(stats_df) - 0.15)
+    ax.text(
+        0.50,
+        0.985,
+        "Correct/N  ·  Accuracy, 90% CI",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=6.5,
+        color=UROMAS_BASE_COLORS["text"],
     )
-    table.auto_set_font_size(False)
-    table.set_fontsize(6.5)
-    table.scale(1.0, 1.35)
+    ax.set_title("Expert source-identification accuracy", fontweight="bold")
     # Match the horizontal-axis baseline of adjacent Figure 4C.
-    fig.subplots_adjust(bottom=0.22, top=0.93)
+    fig.subplots_adjust(left=0.16, right=0.97, bottom=0.10, top=0.93)
     save_pdf(fig, "Figure4B_expert_source_identification_accuracy.pdf", tight=False)
 
 
@@ -3083,11 +3044,19 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
     ax.set_ylabel("Expert judgments (%)")
     ax.set_ylim(0, 100)
     ax.set_title("Expert source-judgment confusion matrix", fontweight="bold")
-    ax.legend(frameon=False, ncol=2, loc="upper center", bbox_to_anchor=(0.5, -0.18))
+    ax.legend(
+        frameon=True,
+        framealpha=0.92,
+        facecolor="white",
+        edgecolor="none",
+        ncol=2,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.99),
+    )
     style_axes(ax)
     fig.tight_layout()
     # Figure 4C and 4F share a column; reserve the same left/right bounds.
-    fig.subplots_adjust(left=0.227, right=0.973, bottom=0.22, top=0.93)
+    fig.subplots_adjust(left=0.227, right=0.973, bottom=0.10, top=0.93)
     save_pdf(fig, "Figure4C_expert_source_confusion_matrix.pdf", tight=False)
 
 
@@ -3195,11 +3164,8 @@ def figure4e() -> None:
     )
     write_csv(DERIVED / "fig4E_student_source_identification_accuracy.csv", row)
 
-    fig = plt.figure(figsize=(9.0, 4.5))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "E")
-    grid = fig.add_gridspec(1, 2, width_ratios=[1.35, 1.15], wspace=0.08)
-    ax = fig.add_subplot(grid[0, 0])
-    table_ax = fig.add_subplot(grid[0, 1])
     accuracy_band_axis(ax)
     estimate = correct / n * 100
     ax.errorbar(
@@ -3213,21 +3179,30 @@ def figure4e() -> None:
         markersize=5,
     )
     ax.set_yticks([0], ["48 students"])
+    angle_y_ticklabels(ax)
     ax.set_ylim(-0.7, 0.7)
-    ax.set_title("Student source-identification accuracy", fontweight="bold")
-    table_ax.axis("off")
-    table = table_ax.table(
-        cellText=[["Students", f"{correct}/{n}", f"{estimate:.1f}% ({low*100:.1f}–{high*100:.1f})"]],
-        colLabels=["Group", "Correct/N", "Accuracy, 90% CI"],
-        loc="center",
-        cellLoc="center",
-        colWidths=[0.28, 0.24, 0.48],
+    ax.text(
+        estimate,
+        0.28,
+        f"Students  ·  {correct}/{n}  ·  {estimate:.1f}% ({low*100:.1f}–{high*100:.1f})",
+        ha="center",
+        va="bottom",
+        fontsize=6.5,
+        color=OPTIONAL_COLOR_PAIRS[5]["color"],
     )
-    table.auto_set_font_size(False)
-    table.set_fontsize(6.5)
-    table.scale(1.0, 1.4)
+    ax.text(
+        0.50,
+        0.93,
+        "Group  ·  Correct/N  ·  Accuracy, 90% CI",
+        transform=ax.transAxes,
+        ha="center",
+        va="top",
+        fontsize=6.5,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    ax.set_title("Student source-identification accuracy", fontweight="bold")
     # Figure 4D-F form one row; keep their horizontal axes collinear.
-    fig.subplots_adjust(bottom=0.20, top=0.88)
+    fig.subplots_adjust(left=0.17, right=0.97, bottom=0.20, top=0.88)
     save_pdf(fig, "Figure4E_student_source_identification_accuracy.pdf", tight=False)
 
 
@@ -3247,11 +3222,12 @@ def figure4f() -> None:
     y = np.arange(len(scenarios))[::-1]
     ax.barh(y, scenarios.minutes_per_item.iloc[::-1], color=OPTIONAL_COLOR_PAIRS[2]["color"])
     ax.set_yticks(y, scenarios.scenario.iloc[::-1])
+    angle_y_ticklabels(ax)
     ax.set_xlabel("Minutes per generated item")
     ax.set_title("MAS timing sensitivity", fontweight="bold")
     style_axes(ax, "x")
     fig.tight_layout()
-    fig.subplots_adjust(left=0.227, right=0.973, bottom=0.20, top=0.88)
+    fig.subplots_adjust(left=0.18, right=0.973, bottom=0.20, top=0.88)
     save_pdf(fig, "Figure4F_efficiency_sensitivity.pdf", tight=False)
 
 
@@ -3651,7 +3627,7 @@ def token_cost_data() -> pd.DataFrame:
 
 def figure5a() -> None:
     detail, summary = efficiency_time_data()
-    fig, ax = plt.subplots(figsize=(9.0, 4.5))
+    fig, ax = plt.subplots(figsize=(4.5, 4.5))
     add_panel_label(fig, "A")
     bottoms = np.zeros(2)
     for item_type in EFFICIENCY_TYPES:
@@ -3720,8 +3696,7 @@ def figure5a() -> None:
     )
     style_axes(ax)
     fig.tight_layout()
-    # Figure 5A and 5D share the same assembled columns.
-    fig.subplots_adjust(left=0.155, right=0.985, bottom=0.155)
+    fig.subplots_adjust(left=0.19, right=0.97, bottom=0.155, top=0.93)
     save_pdf(fig, "Figure5A_total_workflow_time.pdf", tight=False)
 
 
@@ -3764,7 +3739,7 @@ def figure5b() -> None:
     style_axes(ax)
     fig.tight_layout()
     # Match the horizontal-axis baseline of adjacent Figure 5A.
-    fig.subplots_adjust(bottom=0.155)
+    fig.subplots_adjust(bottom=0.155, top=0.93)
     save_pdf(fig, "Figure5B_time_per_usable_item.pdf", tight=False)
 
 
@@ -3824,7 +3799,7 @@ def figure5c() -> None:
     style_axes(ax, "")
     fig.tight_layout()
     # Match the horizontal-axis baseline of adjacent Figure 5A-B.
-    fig.subplots_adjust(bottom=0.155)
+    fig.subplots_adjust(bottom=0.155, top=0.93)
     save_pdf(fig, "Figure5C_time_sensitivity.pdf", tight=False)
 
 
@@ -4051,8 +4026,8 @@ def figure6a() -> None:
     ax.set_xlim(0, 4)
     ax.set_ylim(0, 5)
     ax.axis("off")
-    rounded_box(ax, (0.25, 3.15), (3.5, 1.0), "Form A", f"Human → MAS  (n={counts.get('A', 0)})", FORM_COLORS["A"]["fill"], FORM_COLORS["A"]["color"])
-    rounded_box(ax, (0.25, 1.20), (3.5, 1.0), "Form B", f"MAS → Human  (n={counts.get('B', 0)})", FORM_COLORS["B"]["fill"], FORM_COLORS["B"]["color"])
+    rounded_box(ax, (0.08, 3.00), (3.84, 1.35), "Form A", f"Human → MAS  (n={counts.get('A', 0)})", FORM_COLORS["A"]["fill"], FORM_COLORS["A"]["color"])
+    rounded_box(ax, (0.08, 0.65), (3.84, 1.35), "Form B", f"MAS → Human  (n={counts.get('B', 0)})", FORM_COLORS["B"]["fill"], FORM_COLORS["B"]["color"])
     fig.suptitle("Randomized examination order", y=0.99, fontweight="bold")
     save_pdf(fig, "Figure6A_order_schema.pdf", tight=False)
 
@@ -4284,6 +4259,11 @@ def cleanup_obsolete_outputs() -> None:
         "Figure2D_defect_workflow.pdf",
         "Figure2E_run_consistency.pdf",
         "Figure3B_defect_risk_by_cognitive_level.pdf",
+        "Figure3B_student_correct_rate.pdf",
+        "Figure3C_student_accuracy_by_cognitive_level.pdf",
+        "Figure3D_source_cognitive_interaction.pdf",
+        "Figure3E_ctt_by_cognitive_level.pdf",
+        "Figure3F_reliability.pdf",
         "Figure4B_source_judgment_confusion_matrix.pdf",
         "Figure4C_source_task_ratings.pdf",
         "Figure4D_workflow_total_time.pdf",
