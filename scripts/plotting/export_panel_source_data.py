@@ -39,14 +39,8 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "mas_question_generation_time.csv",
         "table1_item_blueprint_textual_characteristics.csv",
     ],
-    "Figure1B": [
-        "machine_safety_screening_source_summary.csv",
-        "machine_safety_screening_by_run.csv",
-        "machine_safety_screening_crosswalk.csv",
-    ],
-    "Figure1C": ["exam_form_assignment.csv"],
-    "Figure1D": ["exam_form_assignment.csv", "table2_examinee_baseline_randomization_balance.csv"],
-    "Figure1E": ["table3_primary_key_secondary_endpoints.csv"],
+    "Figure1B": [],
+    "Figure2A": [],
     "Figure2B": ["fig2B_quality_difference_item_scores.csv", "fig2B_quality_difference_stats.csv"],
     "Figure2C": [
         "fig2C_dimension_scores_item_scores.csv",
@@ -73,6 +67,7 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
         "fig2F_subdimension_inter_rater_icc_bootstrap.csv",
     ],
     "Figure3B": ["fig3B_student_correct_rate_raw.csv", "fig3B_student_correct_rate_stats.csv"],
+    "Figure3A": ["exam_form_assignment.csv"],
     "Figure3C": [
         "fig3C_student_accuracy_horizontal_stats.csv",
         "fig3C_student_accuracy_student_rates.csv",
@@ -89,6 +84,7 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
     ],
     "Figure3F": ["fig3F_reliability_bootstrap_ci.csv", "responses.csv", "item_master.csv"],
     "Figure4B": ["fig4B_expert_source_identification_accuracy.csv"],
+    "Figure4A": [],
     "Figure4C": ["fig4C_expert_source_confusion_counts.csv"],
     "Figure4D": ["fig4D_expert_guessed_mas_model_input.csv", "fig4D_expert_guessed_mas_model_forest.csv"],
     "Figure4E": ["fig4E_student_source_identification_accuracy.csv", "source_detection.csv"],
@@ -112,6 +108,22 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
 
 
 PANEL_NOTES: dict[str, str] = {
+    "Figure1B": (
+        "Workflow-only panel based on Codex必读.md and the seven-domain critical-defect "
+        "rubric in prompts/evaluation/major_defects.md; it contains no plotted numeric result."
+    ),
+    "Figure2A": (
+        "Workflow-only panel based on the raw expert-rating workbook structure and the "
+        "QGEval, ULM, source-identification, and critical-defect evaluation protocol."
+    ),
+    "Figure3A": (
+        "Workflow panel for the two-sequence student examination; participant allocation "
+        "comes from exam_form_assignment.csv."
+    ),
+    "Figure4A": (
+        "Workflow-only panel. Expert judgments are item level, whereas the student workbook "
+        "records pair-level source-identification success only."
+    ),
     "Figure2E": (
         "Mixed model: quality_score_5 ~ source*cognitive_level + char_count + "
         "has_vignette + (1|rater_id) + (1|item_id). Figure panel presents "

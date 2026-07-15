@@ -680,104 +680,113 @@ def figure1a() -> None:
 
 
 def figure1b() -> None:
-    safety = pd.read_csv(DERIVED / "machine_safety_screening_summary.csv")
-    domains = [
-        ("guideline_consistency_pass_rate", "Guideline consistency"),
-        ("single_best_answer_pass_rate", "Single best answer"),
-        ("answer_key_validation_pass_rate", "Answer-key validation"),
-        ("distractor_effectiveness_pass_rate", "Distractor effectiveness"),
-        ("stem_ambiguity_control_pass_rate", "Stem ambiguity control"),
-    ]
-    fig, ax = plt.subplots(figsize=(4.7, 3.0))
+    fig, ax = plt.subplots(figsize=(7.4, 3.8))
     add_panel_label(fig, "B")
-    y = np.arange(len(domains))[::-1]
-    for source, offset in [("Human", 0.12), ("MAS", -0.12)]:
-        means = [
-            safety.loc[safety.source_true.eq(source), column].astype(float).mean() * 100
-            for column, _ in domains
-        ]
-        ax.scatter(
-            means,
-            y + offset,
-            color=CORE_COLORS[source],
-            facecolor=CORE_FILLS[source],
-            edgecolor=CORE_COLORS[source],
-            label=source,
-            zorder=3,
-        )
-    ax.set_yticks(y, [label for _, label in domains])
-    ax.set_xlim(0, 103)
-    ax.set_xlabel("Items passing machine safety screen (%)")
-    ax.set_title("Machine safety-screening domains", fontweight="bold")
-    ax.legend(frameon=False, loc="lower right")
-    style_axes(ax, "x")
-    save_pdf(fig, "Figure1B_safety_gate.pdf")
-
-
-def figure1c() -> None:
-    assign = pd.read_csv(DERIVED / "exam_form_assignment.csv")
-    counts = assign.form.value_counts().to_dict()
-    fig, ax = plt.subplots(figsize=(4.8, 2.4))
-    add_panel_label(fig, "C")
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 5)
+    ax.set_xlim(0, 15)
+    ax.set_ylim(0, 7)
     ax.axis("off")
-    for y, form, first, second in [
-        (3.1, "A", "Human block", "MAS block"),
-        (1.3, "B", "MAS block", "Human block"),
-    ]:
-        pair = FORM_COLORS[form]
-        rounded_box(ax, (0.35, y), (1.7, 0.75), f"Form {form}", f"n={counts.get(form, 0)}", pair["fill"], pair["color"])
-        first_source = "Human" if first.startswith("Human") else "MAS"
-        second_source = "Human" if second.startswith("Human") else "MAS"
-        rounded_box(ax, (2.8, y), (2.3, 0.75), first, "First", CORE_FILLS[first_source], CORE_COLORS[first_source])
-        rounded_box(ax, (6.1, y), (2.3, 0.75), second, "Second", CORE_FILLS[second_source], CORE_COLORS[second_source])
-        arrow(ax, (2.1, y + 0.38), (2.72, y + 0.38), pair["color"])
-        arrow(ax, (5.15, y + 0.38), (6.02, y + 0.38))
-    ax.set_title("Randomized two-sequence examination", fontweight="bold")
-    save_pdf(fig, "Figure1C_two_sequence_order.pdf", tight=False)
 
-
-def figure1d() -> None:
-    assign = pd.read_csv(DERIVED / "exam_form_assignment.csv")
-    counts = assign.training_setting.value_counts()
-    labels = ["Main campus", "Non-main campus"]
-    values = [counts.get("main", 0), counts.get("non_main", 0)]
-    colors = [OPTIONAL_COLOR_PAIRS[3], OPTIONAL_COLOR_PAIRS[4]]
-    fig, ax = plt.subplots(figsize=(2.8, 2.4))
-    add_panel_label(fig, "D")
-    bars = ax.bar(
-        labels,
-        values,
-        color=[pair["fill"] for pair in colors],
-        edgecolor=[pair["color"] for pair in colors],
-        linewidth=1,
-    )
-    ax.bar_label(bars, padding=2)
-    ax.set_ylabel("Students")
-    ax.set_ylim(0, max(values) + 7)
-    ax.tick_params(axis="x", rotation=18)
-    ax.set_title("Training setting", fontweight="bold")
-    style_axes(ax)
-    save_pdf(fig, "Figure1D_training_setting.pdf")
-
-
-def figure1e() -> None:
-    fig, ax = plt.subplots(figsize=(3.0, 2.6))
-    add_panel_label(fig, "E")
-    ax.set_xlim(0, 4)
-    ax.set_ylim(0, 5)
-    ax.axis("off")
     rounded_box(
         ax,
-        (0.25, 0.55),
-        (3.5, 3.8),
-        "Endpoint domains",
-        "Expert quality\nMajor/critical defects\nCognitive-level performance\nSource detectability\nStudent performance",
+        (0.25, 4.90),
+        (2.35, 0.95),
+        "Human candidates",
+        "First-round sample",
+        CORE_FILLS["Human"],
+        CORE_COLORS["Human"],
+    )
+    rounded_box(
+        ax,
+        (0.25, 2.95),
+        (2.35, 0.95),
+        "MAS candidates",
+        "First-round sample",
+        CORE_FILLS["MAS"],
+        CORE_COLORS["MAS"],
+    )
+    rounded_box(
+        ax,
+        (3.35, 3.92),
+        (2.30, 0.95),
+        "Blinded review set",
+        "Source labels withheld",
         OPTIONAL_COLOR_PAIRS[4]["fill"],
         OPTIONAL_COLOR_PAIRS[4]["color"],
     )
-    save_pdf(fig, "Figure1E_endpoint_domains.pdf", tight=False)
+    rounded_box(
+        ax,
+        (6.35, 5.18),
+        (2.85, 0.95),
+        "Model rubric review",
+        "Seven critical-defect domains",
+        OPTIONAL_COLOR_PAIRS[0]["fill"],
+        OPTIONAL_COLOR_PAIRS[0]["color"],
+    )
+    rounded_box(
+        ax,
+        (6.35, 2.67),
+        (2.85, 0.95),
+        "Human expert review",
+        "Independent defect judgments",
+        OPTIONAL_COLOR_PAIRS[1]["fill"],
+        OPTIONAL_COLOR_PAIRS[1]["color"],
+    )
+    rounded_box(
+        ax,
+        (10.00, 3.92),
+        (2.55, 0.95),
+        "Reconciliation",
+        "Discordance review",
+        OPTIONAL_COLOR_PAIRS[3]["fill"],
+        OPTIONAL_COLOR_PAIRS[3]["color"],
+    )
+    rounded_box(
+        ax,
+        (13.20, 3.82),
+        (1.55, 1.15),
+        "Decision",
+        "Retain /\nrevise / reject",
+        "white",
+        UROMAS_BASE_COLORS["border"],
+    )
+
+    for start, end, color in [
+        ((2.60, 5.37), (3.30, 4.55), CORE_COLORS["Human"]),
+        ((2.60, 3.42), (3.30, 4.22), CORE_COLORS["MAS"]),
+        ((5.65, 4.52), (6.30, 5.55), OPTIONAL_COLOR_PAIRS[0]["color"]),
+        ((5.65, 4.27), (6.30, 3.14), OPTIONAL_COLOR_PAIRS[1]["color"]),
+        ((9.20, 5.55), (9.95, 4.55), OPTIONAL_COLOR_PAIRS[0]["color"]),
+        ((9.20, 3.14), (9.95, 4.22), OPTIONAL_COLOR_PAIRS[1]["color"]),
+        ((12.55, 4.39), (13.15, 4.39), UROMAS_BASE_COLORS["tick"]),
+    ]:
+        arrow(ax, start, end, color)
+
+    ax.text(
+        7.70,
+        1.45,
+        "Defect domains: stem, options, format, scoring, fairness, clinical currency, and linked-item structure",
+        ha="center",
+        va="center",
+        fontsize=7,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    ax.set_title("Safety-review workflow", pad=8, fontweight="bold")
+    save_pdf(fig, "Figure1B_safety_gate.pdf", tight=False)
+
+
+def figure1c() -> None:
+    """Remove the invalid panel pending complete expert defect data."""
+    remove_output("Figure1C_two_sequence_order.pdf")
+
+
+def figure1d() -> None:
+    """Remove the invalid panel pending complete expert defect data."""
+    remove_output("Figure1D_training_setting.pdf")
+
+
+def figure1e() -> None:
+    """Remove the invalid panel pending complete expert defect data."""
+    remove_output("Figure1E_endpoint_domains.pdf")
 
 
 # ---------------------------------------------------------------------------
@@ -785,8 +794,66 @@ def figure1e() -> None:
 
 
 def figure2a() -> None:
-    """Reserved empty panel after renumbering."""
+    """Detailed workflow for blinded human-expert quality evaluation."""
     remove_output("Figure2A_quality_difference.pdf")
+    fig, ax = plt.subplots(figsize=(7.4, 3.8))
+    add_panel_label(fig, "A")
+    ax.set_xlim(0, 16)
+    ax.set_ylim(0, 7)
+    ax.axis("off")
+
+    rounded_box(ax, (0.25, 4.95), (2.25, 0.95), "Human items", "n=70", CORE_FILLS["Human"], CORE_COLORS["Human"])
+    rounded_box(ax, (0.25, 2.75), (2.25, 0.95), "MAS items", "n=70", CORE_FILLS["MAS"], CORE_COLORS["MAS"])
+    rounded_box(
+        ax,
+        (3.15, 3.85),
+        (2.65, 0.95),
+        "Blind randomization",
+        "Common expert workbook",
+        OPTIONAL_COLOR_PAIRS[4]["fill"],
+        OPTIONAL_COLOR_PAIRS[4]["color"],
+    )
+    rounded_box(
+        ax,
+        (6.60, 3.85),
+        (2.30, 0.95),
+        "Three experts",
+        "Independent ratings",
+        OPTIONAL_COLOR_PAIRS[3]["fill"],
+        OPTIONAL_COLOR_PAIRS[3]["color"],
+    )
+
+    branch_specs = [
+        ((9.75, 5.35), "QGEval", "7 domains / 35 points", OPTIONAL_COLOR_PAIRS[0]),
+        ((13.00, 5.35), "ULM", "16 domains / 76 points", OPTIONAL_COLOR_PAIRS[1]),
+        ((9.75, 2.35), "Source guess", "Human vs MAS", OPTIONAL_COLOR_PAIRS[2]),
+        ((13.00, 2.35), "Critical defects", "Seven-domain rubric", OPTIONAL_COLOR_PAIRS[4]),
+    ]
+    for (x, y), title, body, pair in branch_specs:
+        rounded_box(ax, (x, y), (2.55, 0.95), title, body, pair["fill"], pair["color"])
+
+    for start, end, color in [
+        ((2.50, 5.42), (3.10, 4.55), CORE_COLORS["Human"]),
+        ((2.50, 3.22), (3.10, 4.18), CORE_COLORS["MAS"]),
+        ((5.80, 4.32), (6.55, 4.32), UROMAS_BASE_COLORS["tick"]),
+        ((8.90, 4.50), (9.70, 5.82), OPTIONAL_COLOR_PAIRS[0]["color"]),
+        ((8.90, 4.47), (12.95, 5.82), OPTIONAL_COLOR_PAIRS[1]["color"]),
+        ((8.90, 4.18), (9.70, 2.82), OPTIONAL_COLOR_PAIRS[2]["color"]),
+        ((8.90, 4.15), (12.95, 2.82), OPTIONAL_COLOR_PAIRS[4]["color"]),
+    ]:
+        arrow(ax, start, end, color)
+
+    ax.text(
+        11.40,
+        1.35,
+        "Planned outputs: non-inferiority, cognitive-level contrasts, inter-rater reliability, and source detectability",
+        ha="center",
+        va="center",
+        fontsize=7,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    ax.set_title("Expert comprehensive quality-evaluation workflow", pad=8, fontweight="bold")
+    save_pdf(fig, "Figure2A_expert_quality_evaluation_workflow.pdf", tight=False)
 
 
 def parse_primary_quality_records() -> list[dict[str, Any]]:
@@ -1818,8 +1885,84 @@ def figure2f() -> None:
 
 
 def figure3a() -> None:
-    """Reserved empty panel after Figure 3A moved to Figure 2D."""
+    """Detailed workflow for the randomized two-sequence student test."""
     remove_output("Figure3A_quality_by_cognitive_level.pdf")
+    fig, ax = plt.subplots(figsize=(7.4, 3.8))
+    add_panel_label(fig, "A")
+    ax.set_xlim(0, 16)
+    ax.set_ylim(0, 7)
+    ax.axis("off")
+
+    rounded_box(
+        ax,
+        (0.25, 3.90),
+        (2.40, 0.95),
+        "Eligible trainees",
+        "n=50",
+        OPTIONAL_COLOR_PAIRS[4]["fill"],
+        OPTIONAL_COLOR_PAIRS[4]["color"],
+    )
+    rounded_box(
+        ax,
+        (3.35, 3.90),
+        (2.75, 0.95),
+        "Counterbalanced order",
+        "Form A or Form B",
+        OPTIONAL_COLOR_PAIRS[3]["fill"],
+        OPTIONAL_COLOR_PAIRS[3]["color"],
+    )
+    rounded_box(ax, (6.80, 5.20), (2.45, 0.95), "Form A (n=25)", "Human → MAS", OPTIONAL_COLOR_PAIRS[0]["fill"], OPTIONAL_COLOR_PAIRS[0]["color"])
+    rounded_box(ax, (6.80, 2.60), (2.45, 0.95), "Form B (n=25)", "MAS → Human", OPTIONAL_COLOR_PAIRS[1]["fill"], OPTIONAL_COLOR_PAIRS[1]["color"])
+    rounded_box(
+        ax,
+        (9.95, 3.90),
+        (2.50, 0.95),
+        "Response capture",
+        "Item scores, order, and time",
+        OPTIONAL_COLOR_PAIRS[4]["fill"],
+        OPTIONAL_COLOR_PAIRS[4]["color"],
+    )
+    rounded_box(
+        ax,
+        (13.15, 4.90),
+        (2.55, 0.95),
+        "Performance",
+        "Overall / campus / cognition",
+        OPTIONAL_COLOR_PAIRS[2]["fill"],
+        OPTIONAL_COLOR_PAIRS[2]["color"],
+    )
+    rounded_box(
+        ax,
+        (13.15, 2.90),
+        (2.55, 0.95),
+        "Psychometrics",
+        "CTT, reliability, fatigue",
+        OPTIONAL_COLOR_PAIRS[5]["fill"],
+        OPTIONAL_COLOR_PAIRS[5]["color"],
+    )
+
+    for start, end, color in [
+        ((2.65, 4.37), (3.30, 4.37), UROMAS_BASE_COLORS["tick"]),
+        ((6.10, 4.55), (6.75, 5.68), OPTIONAL_COLOR_PAIRS[0]["color"]),
+        ((6.10, 4.18), (6.75, 3.08), OPTIONAL_COLOR_PAIRS[1]["color"]),
+        ((9.25, 5.68), (9.90, 4.55), OPTIONAL_COLOR_PAIRS[0]["color"]),
+        ((9.25, 3.08), (9.90, 4.18), OPTIONAL_COLOR_PAIRS[1]["color"]),
+        ((12.45, 4.55), (13.10, 5.37), OPTIONAL_COLOR_PAIRS[2]["color"]),
+        ((12.45, 4.18), (13.10, 3.37), OPTIONAL_COLOR_PAIRS[5]["color"]),
+    ]:
+        arrow(ax, start, end, color)
+
+    ax.text(
+        8.0,
+        1.35,
+        "A separate pair-level source-identification task was completed by 48 students",
+        ha="center",
+        va="center",
+        fontsize=7,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    ax.set_title("Student testing workflow", pad=8, fontweight="bold")
+    save_pdf(fig, "Figure3A_student_testing_workflow.pdf", tight=False)
 
 
 def paired_comparison(mas: np.ndarray, human: np.ndarray) -> tuple[str, float, str]:
@@ -2886,8 +3029,94 @@ def figure3f() -> None:
 
 
 def figure4a() -> None:
-    """Reserved empty panel after renumbering."""
+    """Detailed workflow for expert and student source-identification tasks."""
     remove_output("Figure4A_source_detection_accuracy.pdf")
+    fig, ax = plt.subplots(figsize=(7.4, 3.8))
+    add_panel_label(fig, "A")
+    ax.set_xlim(0, 16)
+    ax.set_ylim(0, 7)
+    ax.axis("off")
+
+    rounded_box(ax, (0.25, 4.95), (2.20, 0.95), "Human items", "True source retained", CORE_FILLS["Human"], CORE_COLORS["Human"])
+    rounded_box(ax, (0.25, 2.75), (2.20, 0.95), "MAS items", "True source retained", CORE_FILLS["MAS"], CORE_COLORS["MAS"])
+    rounded_box(
+        ax,
+        (3.10, 3.85),
+        (2.65, 0.95),
+        "Mask source labels",
+        "Randomized presentation",
+        OPTIONAL_COLOR_PAIRS[4]["fill"],
+        OPTIONAL_COLOR_PAIRS[4]["color"],
+    )
+    rounded_box(
+        ax,
+        (6.60, 5.15),
+        (2.55, 0.95),
+        "Expert branch",
+        "3 experts; 140 items each",
+        OPTIONAL_COLOR_PAIRS[0]["fill"],
+        OPTIONAL_COLOR_PAIRS[0]["color"],
+    )
+    rounded_box(
+        ax,
+        (6.60, 2.55),
+        (2.55, 0.95),
+        "Student branch",
+        "n=48 pair decisions",
+        OPTIONAL_COLOR_PAIRS[1]["fill"],
+        OPTIONAL_COLOR_PAIRS[1]["color"],
+    )
+    rounded_box(
+        ax,
+        (9.95, 5.15),
+        (2.55, 0.95),
+        "Item-level guess",
+        "Human or MAS",
+        OPTIONAL_COLOR_PAIRS[2]["fill"],
+        OPTIONAL_COLOR_PAIRS[2]["color"],
+    )
+    rounded_box(
+        ax,
+        (9.95, 2.55),
+        (2.55, 0.95),
+        "Pair-level success",
+        "Correct / incorrect only",
+        OPTIONAL_COLOR_PAIRS[5]["fill"],
+        OPTIONAL_COLOR_PAIRS[5]["color"],
+    )
+    rounded_box(
+        ax,
+        (13.30, 3.75),
+        (2.40, 1.15),
+        "Analysis",
+        "Accuracy + CI\nconfusion + model",
+        OPTIONAL_COLOR_PAIRS[3]["fill"],
+        OPTIONAL_COLOR_PAIRS[3]["color"],
+    )
+
+    for start, end, color in [
+        ((2.45, 5.42), (3.05, 4.55), CORE_COLORS["Human"]),
+        ((2.45, 3.22), (3.05, 4.18), CORE_COLORS["MAS"]),
+        ((5.75, 4.55), (6.55, 5.62), OPTIONAL_COLOR_PAIRS[0]["color"]),
+        ((5.75, 4.18), (6.55, 3.02), OPTIONAL_COLOR_PAIRS[1]["color"]),
+        ((9.15, 5.62), (9.90, 5.62), OPTIONAL_COLOR_PAIRS[2]["color"]),
+        ((9.15, 3.02), (9.90, 3.02), OPTIONAL_COLOR_PAIRS[5]["color"]),
+        ((12.50, 5.62), (13.25, 4.55), OPTIONAL_COLOR_PAIRS[2]["color"]),
+        ((12.50, 3.02), (13.25, 4.18), OPTIONAL_COLOR_PAIRS[5]["color"]),
+    ]:
+        arrow(ax, start, end, color)
+
+    ax.text(
+        8.0,
+        1.25,
+        "Student data contain pair-level success only; they do not support an item-level confusion matrix",
+        ha="center",
+        va="center",
+        fontsize=7,
+        color=UROMAS_BASE_COLORS["text"],
+    )
+    ax.set_title("Source-identification (Turing-test) workflow", pad=8, fontweight="bold")
+    save_pdf(fig, "Figure4A_turing_test_workflow.pdf", tight=False)
 
 
 def accuracy_band_axis(ax: plt.Axes) -> None:
