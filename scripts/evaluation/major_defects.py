@@ -60,7 +60,7 @@ STRIP_KEYS_FOR_MODEL = {
     "3gram_jaccard_max",
     "textstat_flesch_reading_ease",
     "QGEval",
-    "LLM",
+    "ULM",
     "MajorDefects",
     "critical_defects",
 }

@@ -204,7 +204,7 @@ def main():
         "plot_data": summ2a,
         "bootstrap_replicates": boot2a,
     }, ["derived_data/expert_ratings_updated.csv"], ["figures/panels/Figure2A_quality_difference.pdf"], ["update expert ratings are used for the formal source-data file."])
-    dim_cols=[c for c in expert.columns if c.startswith("qg_") or c.startswith("llm_")]
+    dim_cols=[c for c in expert.columns if c.startswith("qg_") or c.startswith("ulm_")]
     dim_rows=[]
     for c in dim_cols:
         for src, sub in expert.groupby("source_true"):
@@ -232,7 +232,7 @@ def main():
         "critical_defect_taxonomy": crit_tax,
     }, ["derived_data/defect_adjudication_proxy.csv","derived_data/critical_defect_taxonomy_updated.csv"], ["figures/panels/Figure2D_defect_workflow.pdf"])
     add("source_data_fig_2_e.xlsx","Figure 2E","Expert rating consistency intermediate summaries.",{
-        "raw_expert_ratings": expert[["rater_id","item_id","source_true","quality_score_5","qgeval_score_5","llm_score_5"]],
+        "raw_expert_ratings": expert[["rater_id","item_id","source_true","quality_score_5","qgeval_score_5","ulm_score_5"]],
         "rater_summary": expert.groupby(["rater_id","source_true"]).agg(n_ratings=("item_id","count"), mean_quality=("quality_score_5","mean"), sd_quality=("quality_score_5","std")).reset_index(),
         "item_rating_summary": expert.groupby(["item_id","source_true"]).agg(n_raters=("rater_id","nunique"), mean_quality=("quality_score_5","mean"), sd_quality=("quality_score_5","std")).reset_index(),
     }, ["derived_data/expert_ratings_updated.csv"], ["figures/panels/Figure2E_run_consistency.pdf"])

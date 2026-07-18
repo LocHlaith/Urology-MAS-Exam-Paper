@@ -478,9 +478,9 @@ def figure_1a() -> None:
     arrow(ax, [(8.7, 29.5), (10.4, 29.5)], COLOR["human"], 0.9, 6)
     arrow(ax, [(20.3, 29.5), (22.0, 29.5)], COLOR["human"], 0.9, 6)
 
-    # MAS construction lane.
+    # UroEMAS construction lane.
     rounded(ax, 0.8, 3.7, 29.7, 17.3, edge=COLOR["mas"], fill="#FDF8F7", lw=0.8, radius=0.8)
-    txt(ax, 15.6, 19.7, "UroEMAS (MAS-assisted; human-reviewed)", size=8, color=COLOR["mas"], weight="bold")
+    txt(ax, 15.6, 19.7, "UroEMAS (multi-agent; human-reviewed)", size=8, color=COLOR["mas"], weight="bold")
     small_label_box(ax, 1.3, 7.3, 6.3, 10.3, "", COLOR["mas"], FILL["mas"])
     database_icon(ax, 2.1, 13.2, 2.2, 2.5, COLOR["mas"])
     clipboard_icon(ax, 4.7, 12.6, 1.7, 2.9, COLOR["mas"])
@@ -515,7 +515,7 @@ def figure_1a() -> None:
     path_txt(ax, 39.5, 34.0, "Machine annotation", size=8, color=BASE["dark"], weight="bold", xscale=0.80)
     chips = [
         (34.6, 29.0, 4.4, 3.5, "Readability", 0.94),
-        (39.4, 29.0, 4.9, 3.5, "Human–MAS\nsimilarity\n(MAS items only)", 0.38),
+        (39.4, 29.0, 4.9, 3.5, "Human–UroEMAS\nsimilarity\n(UroEMAS items only)", 0.32),
         (34.6, 24.7, 4.4, 3.5, "QGEval", 0.94),
         (39.4, 24.7, 4.9, 3.5, "ULM", 0.94),
     ]

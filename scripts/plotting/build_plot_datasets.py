@@ -97,18 +97,18 @@ MACHINE_PROXY_DOMAIN_COMPONENTS = {
             ("qgeval", "流畅性", 5),
             ("qgeval", "清晰度", 5),
             ("qgeval", "简洁性", 5),
-            ("llm", "流畅性", 5),
-            ("llm", "排他性", 5),
-            ("llm", "明确性", 4),
+            ("ulm", "流畅性", 5),
+            ("ulm", "排他性", 5),
+            ("ulm", "明确性", 4),
         ],
     },
     "blueprint_relevance": {
         "label": "Blueprint relevance",
         "components": [
             ("qgeval", "相关性", 5),
-            ("llm", "目标性", 5),
-            ("llm", "侧重性", 5),
-            ("llm", "公平性", 3),
+            ("ulm", "目标性", 5),
+            ("ulm", "侧重性", 5),
+            ("ulm", "公平性", 3),
         ],
     },
     "answer_validity": {
@@ -117,26 +117,26 @@ MACHINE_PROXY_DOMAIN_COMPONENTS = {
             ("qgeval", "一致性", 5),
             ("qgeval", "可回答性", 5),
             ("qgeval", "答案一致性", 5),
-            ("llm", "正确性", 5),
-            ("llm", "可解性", 5),
-            ("llm", "绝对性", 5),
+            ("ulm", "正确性", 5),
+            ("ulm", "可解性", 5),
+            ("ulm", "绝对性", 5),
         ],
     },
     "item_design": {
         "label": "Item-writing design",
         "components": [
-            ("llm", "防猜性", 5),
-            ("llm", "迷惑性", 5),
-            ("llm", "完整性", 5),
+            ("ulm", "防猜性", 5),
+            ("ulm", "迷惑性", 5),
+            ("ulm", "完整性", 5),
         ],
     },
     "cognitive_feedback": {
         "label": "Cognitive and feedback value",
         "components": [
-            ("llm", "综合性", 5),
-            ("llm", "思维性", 4),
-            ("llm", "反馈性", 5),
-            ("llm", "答案解析专门评分", 5),
+            ("ulm", "综合性", 5),
+            ("ulm", "思维性", 4),
+            ("ulm", "反馈性", 5),
+            ("ulm", "答案解析专门评分", 5),
         ],
     },
 }
@@ -149,9 +149,9 @@ MACHINE_SAFETY_SCREEN_COMPONENTS = {
         "components": [
             ("qgeval", "相关性", 5, 0.25),
             ("qgeval", "一致性", 5, 0.15),
-            ("llm", "目标性", 5, 0.25),
-            ("llm", "侧重性", 5, 0.15),
-            ("llm", "正确性", 5, 0.20),
+            ("ulm", "目标性", 5, 0.25),
+            ("ulm", "侧重性", 5, 0.15),
+            ("ulm", "正确性", 5, 0.20),
         ],
     },
     "single_best_answer": {
@@ -159,28 +159,28 @@ MACHINE_SAFETY_SCREEN_COMPONENTS = {
         "components": [
             ("qgeval", "可回答性", 5, 0.25),
             ("qgeval", "答案一致性", 5, 0.25),
-            ("llm", "可解性", 5, 0.20),
-            ("llm", "绝对性", 5, 0.20),
-            ("llm", "排他性", 5, 0.10),
+            ("ulm", "可解性", 5, 0.20),
+            ("ulm", "绝对性", 5, 0.20),
+            ("ulm", "排他性", 5, 0.10),
         ],
     },
     "answer_key_validation": {
         "label": "Answer-key validation",
         "components": [
             ("qgeval", "答案一致性", 5, 0.25),
-            ("llm", "正确性", 5, 0.25),
-            ("llm", "可解性", 5, 0.25),
-            ("llm", "绝对性", 5, 0.15),
-            ("llm", "答案解析专门评分", 5, 0.10),
+            ("ulm", "正确性", 5, 0.25),
+            ("ulm", "可解性", 5, 0.25),
+            ("ulm", "绝对性", 5, 0.15),
+            ("ulm", "答案解析专门评分", 5, 0.10),
         ],
     },
     "distractor_effectiveness": {
         "label": "Distractor effectiveness",
         "components": [
-            ("llm", "迷惑性", 5, 0.35),
-            ("llm", "防猜性", 5, 0.25),
-            ("llm", "完整性", 5, 0.15),
-            ("llm", "排他性", 5, 0.15),
+            ("ulm", "迷惑性", 5, 0.35),
+            ("ulm", "防猜性", 5, 0.25),
+            ("ulm", "完整性", 5, 0.15),
+            ("ulm", "排他性", 5, 0.15),
             ("qgeval", "答案一致性", 5, 0.10),
         ],
     },
@@ -190,8 +190,8 @@ MACHINE_SAFETY_SCREEN_COMPONENTS = {
             ("qgeval", "清晰度", 5, 0.30),
             ("qgeval", "流畅性", 5, 0.15),
             ("qgeval", "一致性", 5, 0.10),
-            ("llm", "排他性", 5, 0.25),
-            ("llm", "明确性", 4, 0.20),
+            ("ulm", "排他性", 5, 0.25),
+            ("ulm", "明确性", 4, 0.20),
         ],
     },
 }
@@ -205,12 +205,12 @@ SAFETY_CRITICAL_COMPONENTS = [
     ("qgeval", "一致性", 5, "internal_inconsistency"),
     ("qgeval", "可回答性", 5, "not_answerable"),
     ("qgeval", "答案一致性", 5, "answer_inconsistent"),
-    ("llm", "排他性", 5, "nonexclusive_or_ambiguous"),
-    ("llm", "目标性", 5, "off_blueprint"),
-    ("llm", "侧重性", 5, "outdated_or_peripheral"),
-    ("llm", "正确性", 5, "factual_error"),
-    ("llm", "可解性", 5, "answer_key_error"),
-    ("llm", "绝对性", 5, "multiple_plausible_answers"),
+    ("ulm", "排他性", 5, "nonexclusive_or_ambiguous"),
+    ("ulm", "目标性", 5, "off_blueprint"),
+    ("ulm", "侧重性", 5, "outdated_or_peripheral"),
+    ("ulm", "正确性", 5, "factual_error"),
+    ("ulm", "可解性", 5, "answer_key_error"),
+    ("ulm", "绝对性", 5, "multiple_plausible_answers"),
 ]
 
 
@@ -270,7 +270,7 @@ def normalize_rubric_score(value: Any, max_score: float, min_score: float = 1.0)
 
 
 def machine_proxy_scores(row: Dict[str, Any]) -> Dict[str, Optional[float]]:
-    """Derive the manuscript-facing machine proxy domains from QGEval and LLM sub-scores."""
+    """Derive the manuscript-facing machine proxy domains from QGEval and ULM sub-scores."""
     output: Dict[str, Optional[float]] = {}
     domain_values: List[float] = []
     for domain, spec in MACHINE_PROXY_DOMAIN_COMPONENTS.items():
@@ -633,8 +633,8 @@ def extract_between(text: str, start_pattern: str, end_pattern: str) -> str:
     return text[start.end() : end.start()].strip()
 
 
-def content_after_llm(block: str) -> str:
-    match = re.search(r"LLM：[^\n]*\n", block)
+def content_after_ulm(block: str) -> str:
+    match = re.search(r"ULM：[^\n]*\n", block)
     if match:
         return block[match.end() :].strip()
     match = re.search(r"QGEval：[^\n]*\n", block)
@@ -644,7 +644,7 @@ def content_after_llm(block: str) -> str:
 
 
 def split_question_subblocks(block: str) -> List[str]:
-    content = content_after_llm(block)
+    content = content_after_ulm(block)
     markers = list(re.finditer(r"(?m)^\((\d+)\)\s*", content))
     if not markers:
         return [content]
@@ -699,9 +699,9 @@ def parse_report_draft(path: Path, paper: str, run_id: int, answer_map: Dict[str
             next_item_no += item_count
 
         qgeval_line = re.search(r"QGEval：([^\n]+)", block)
-        llm_line = re.search(r"LLM：([^\n]+)", block)
+        ulm_line = re.search(r"ULM：([^\n]+)", block)
         qgeval_total, qgeval_dims = parse_score_dimensions(qgeval_line.group(1)) if qgeval_line else (None, {})
-        llm_total, llm_dims = parse_score_dimensions(llm_line.group(1)) if llm_line else (None, {})
+        ulm_total, ulm_dims = parse_score_dimensions(ulm_line.group(1)) if ulm_line else (None, {})
 
         flesch = None
         flesch_match = re.search(r"Flesch Reading Ease：\s*([-+]?\d+(?:\.\d+)?)", block)
@@ -740,13 +740,13 @@ def parse_report_draft(path: Path, paper: str, run_id: int, answer_map: Dict[str
                 "rater_phase": "machine_annotation",
                 "qgeval_total": qgeval_total,
                 "qgeval_score_5": qgeval_total / 7 if qgeval_total is not None else None,
-                "llm_total": llm_total,
-                "llm_score_5": llm_total / 16 if llm_total is not None else None,
+                "ulm_total": ulm_total,
+                "ulm_score_5": ulm_total / 16 if ulm_total is not None else None,
             }
             for name, value in qgeval_dims.items():
                 rating_row[f"qgeval_{name}"] = value
-            for name, value in llm_dims.items():
-                rating_row[f"llm_{name}"] = value
+            for name, value in ulm_dims.items():
+                rating_row[f"ulm_{name}"] = value
             rating_row.update(machine_proxy_scores(rating_row))
             rating_rows.append(rating_row)
 
@@ -817,7 +817,7 @@ def aggregate_machine_ratings(machine_ratings: Sequence[Dict[str, Any]]) -> Tupl
             for row in machine_ratings
             for key in row
             if (
-                (key.startswith("llm_") and key not in {"llm_total", "llm_score_5"})
+                (key.startswith("ulm_") and key not in {"ulm_total", "ulm_score_5"})
                 or (key.startswith("qgeval_") and key not in {"qgeval_total", "qgeval_score_5"})
             )
         }
@@ -825,15 +825,15 @@ def aggregate_machine_ratings(machine_ratings: Sequence[Dict[str, Any]]) -> Tupl
 
     for iid, rows in grouped.items():
         source = rows[0]["source_true"]
-        llm_values = [float(r["llm_score_5"]) for r in rows if r.get("llm_score_5") not in {"", None}]
+        ulm_values = [float(r["ulm_score_5"]) for r in rows if r.get("ulm_score_5") not in {"", None}]
         qgeval_values = [float(r["qgeval_score_5"]) for r in rows if r.get("qgeval_score_5") not in {"", None}]
         proxy_values = [float(r["machine_proxy_quality_score"]) for r in rows if r.get("machine_proxy_quality_score") not in {"", None}]
         row: Dict[str, Any] = {
             "item_id": iid,
             "source_true": source,
             "n_machine_runs": len(rows),
-            "llm_score_5_mean": statistics.fmean(llm_values) if llm_values else None,
-            "llm_score_5_sd": statistics.stdev(llm_values) if len(llm_values) > 1 else 0,
+            "ulm_score_5_mean": statistics.fmean(ulm_values) if ulm_values else None,
+            "ulm_score_5_sd": statistics.stdev(ulm_values) if len(ulm_values) > 1 else 0,
             "qgeval_score_5_mean": statistics.fmean(qgeval_values) if qgeval_values else None,
             "qgeval_score_5_sd": statistics.stdev(qgeval_values) if len(qgeval_values) > 1 else 0,
             "machine_proxy_quality_score_mean": statistics.fmean(proxy_values) if proxy_values else None,
@@ -845,9 +845,9 @@ def aggregate_machine_ratings(machine_ratings: Sequence[Dict[str, Any]]) -> Tupl
             critical_components = [
                 normalize_rubric_score(run.get("qgeval_可回答性"), 5),
                 normalize_rubric_score(run.get("qgeval_答案一致性"), 5),
-                normalize_rubric_score(run.get("llm_正确性"), 5),
-                normalize_rubric_score(run.get("llm_可解性"), 5),
-                normalize_rubric_score(run.get("llm_绝对性"), 5),
+                normalize_rubric_score(run.get("ulm_正确性"), 5),
+                normalize_rubric_score(run.get("ulm_可解性"), 5),
+                normalize_rubric_score(run.get("ulm_绝对性"), 5),
             ]
             critical = any(v is not None and v <= 2 for v in critical_components)
             major_domains = [
@@ -1150,7 +1150,7 @@ def summarize_main_tables(
                 "n_items": len(rows),
                 "mean_char_count": round(statistics.fmean([float(r["char_count"]) for r in rows if r.get("char_count") not in {"", None}]), 2),
                 "mean_machine_proxy_quality_score": round(statistics.fmean([float(r["machine_proxy_quality_score_mean"]) for r in rows if r.get("machine_proxy_quality_score_mean") not in {"", None}]), 3),
-                "mean_raw_llm_score_5": round(statistics.fmean([float(r["llm_score_5_mean"]) for r in rows if r.get("llm_score_5_mean") not in {"", None}]), 3),
+                "mean_raw_ulm_score_5": round(statistics.fmean([float(r["ulm_score_5_mean"]) for r in rows if r.get("ulm_score_5_mean") not in {"", None}]), 3),
                 "mean_raw_qgeval_score_5": round(statistics.fmean([float(r["qgeval_score_5_mean"]) for r in rows if r.get("qgeval_score_5_mean") not in {"", None}]), 3),
                 "topic_counts": json.dumps(Counter(r.get("topic") for r in rows), ensure_ascii=False),
                 "cognitive_level_counts": json.dumps(Counter(r.get("cognitive_level") for r in rows), ensure_ascii=False),
@@ -1570,8 +1570,8 @@ def main() -> None:
         "paper_source": "P卷 is encoded as Human; M卷 is encoded as MAS.",
         "training_setting": "原始院区 A/B 保留为 training_setting_code；绘图口径映射为 A=main, B=non_main。",
         "cognitive_level": "A1=recall, B=comprehension, A2=application, A3/A4/X=analysis; 论文三层映射为 recall/comprehension->knowledge, application->application, analysis->reasoning。",
-        "score_phase": "解析标注版中的四轮 QGEval/LLM 写入 rater_phase=machine_annotation；原始细则经 machine_rating_domain_crosswalk.csv 归一化并映射为 machine_proxy_* 字段，仅作QC/探索性代理。",
-        "ai_safety_screening": "machine_safety_screening_by_run.csv 将23项 QGEval/LLM 评分归一化到1-5分，并加权转换为指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义控制和 critical defect flag；machine_safety_screening_crosswalk.csv 记录函数关系。",
+        "score_phase": "解析标注版中的四轮 QGEval/ULM 写入 rater_phase=machine_annotation；原始细则经 machine_rating_domain_crosswalk.csv 归一化并映射为 machine_proxy_* 字段，仅作QC/探索性代理。",
+        "ai_safety_screening": "machine_safety_screening_by_run.csv 将23项 QGEval/ULM 评分归一化到1-5分，并加权转换为指南一致性、单一最佳答案、答案键校验、干扰项有效性、题干歧义控制和 critical defect flag；machine_safety_screening_crosswalk.csv 记录函数关系。",
         "source_detection": "原始工作簿的‘评价系统与图灵测试’工作表只记录成对来源判断是否成功；source_detection_confusion_matrix.csv 按 forced-pair 成功/失败反推，不能替代逐题 source_guess 原始表。",
         "workflow_efficiency": "Figure 5 的人工时间和成本直接来自 plot/data/raw/效率分析.xlsx，并与 plot/data/raw/人工卷用时及成本.docx 交叉核对。考生考试时长仅用于 Figure 6，不作为工作流人力时间。",
         "expert_scores": "Figure 2B–2F 与 Figure 4B–4D 的盲法专家评分直接来自 plot/data/raw/expert_rating_workbooks；expert_ratings_updated.csv 仅作历史复核。machine_proxy_quality_score 仅作 QC/探索性代理，不进入专家评分主终点。",

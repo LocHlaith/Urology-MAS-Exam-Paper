@@ -7,7 +7,7 @@
 统一颜色语义如下，任何一张图都不得改变：
 
 - Human：深蓝 `#313E96`，浅填充 `#D9DCF1`。
-- MAS / UroEMAS：陶土红 `#B86758`，浅填充 `#F2DFDB`。
+- UroEMAS：陶土红 `#B86758`，浅填充 `#F2DFDB`。
 - 评价或统计分析模块：紫色 `#7C5CFF`，浅填充 `#E9E2FF`。
 - 安全审核模块：赭黄色 `#B8954B`，浅填充 `#F1E6C8`。
 - 盲法、随机化、数据整理等中性过程：青绿色 `#2F8F83`，浅填充 `#DCEFEB`，或中性灰 `#6F6F6F` / `#E8E8E8`。
@@ -28,7 +28,7 @@ CANVAS AND REFERENCE STYLE
 
 COLOR SEMANTICS — DO NOT DEVIATE
 - Human source: dark blue #313E96 with pale blue fill #D9DCF1.
-- UroEMAS / MAS source: terracotta #B86758 with pale terracotta fill #F2DFDB.
+- UroEMAS source: terracotta #B86758 with pale terracotta fill #F2DFDB.
 - Evaluation and statistical analysis: purple #7C5CFF with pale purple fill #E9E2FF.
 - Safety review: ochre #B8954B with pale ochre fill #F1E6C8.
 - Neutral processing, blinding, sampling, and data management: teal #2F8F83 with pale teal fill #DCEFEB, or neutral gray #6F6F6F with fill #E8E8E8.
@@ -57,7 +57,7 @@ ZONE L2 — “SCREENING AND EXPERT EVALUATION”
 Merge the two source lanes into a neutral processing pipeline while retaining small source-color tabs at the entry.
 1. Box: “Machine annotation” with four compact chips beneath it:
    - “Readability”;
-   - “Human–MAS similarity” with a note “MAS items only”;
+   - “Human–UroEMAS similarity” with a note “UroEMAS items only”;
    - “QGEval”;
    - “ULM”.
 2. Arrow to a funnel icon and box: “First-round stratified sample  n=70/source”.
@@ -218,7 +218,7 @@ ZONE L3 — “LOCKED ANALYSIS”
 COMPOSITION RULES
 - The central expert-rating zone should be the largest visual block.
 - Preserve the conceptual distinction between QGEval (7 dimensions) and ULM (16 dimensions).
-- Do not write “LLM” anywhere; use “ULM”.
+- Do not write “ULM” anywhere; use “ULM”.
 - Do not invent effect estimates, P values, or ICC values.
 - Avoid crossed connectors; align modules on a clear grid; fill the frame with little unused whitespace.
 ```

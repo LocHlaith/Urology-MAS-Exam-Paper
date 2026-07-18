@@ -70,7 +70,7 @@ def diff_by_level(rows: List[Dict[str, str]], key: str) -> List[Tuple[str, Optio
 
 def panel_1a(inventory: Dict[str, Any]) -> None:
     fig, ax = new_panel((6.6, 3.55))
-    mf.panel_label(ax, "A", "Inputs and MAS generation")
+    mf.panel_label(ax, "A", "Inputs and UroEMAS generation")
     ax.set_xlim(0, 13.2)
     ax.set_ylim(0, 6.4)
     ax.axis("off")
@@ -132,7 +132,7 @@ def panel_1b(safety_summary: List[Dict[str, str]]) -> None:
                 capsize=2.5,
                 markersize=4.2,
                 linewidth=0.9,
-                label=source if idx == 0 else None,
+                label=("UroEMAS" if source == "MAS" else source) if idx == 0 else None,
             )
     ax.set_yticks(y_positions, [label for _, label in panel_domains])
     ax.set_xlabel("Item-level pass / no-flag fraction (%)")
@@ -154,12 +154,12 @@ def panel_1c(assignments: List[Dict[str, str]]) -> None:
     ax.axis("off")
     mf.rounded_box(ax, (0.45, 3.25), (1.75, 0.72), f"Form A\nn={counts.get('A', 0)}", "", mf.PALETTE_FILL["Human"], mf.PALETTE["Human"], icon="A", radius=0.16, title_size=6.8)
     mf.rounded_box(ax, (3.0, 3.25), (2.2, 0.72), "Human block", "first", mf.PALETTE_FILL["Human"], mf.PALETTE["Human"], icon="H", radius=0.16, title_size=6.6, body_size=5.1)
-    mf.rounded_box(ax, (6.1, 3.25), (2.2, 0.72), "MAS block", "second", mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"], icon="M", radius=0.16, title_size=6.6, body_size=5.1)
+    mf.rounded_box(ax, (6.1, 3.25), (2.2, 0.72), "UroEMAS block", "second", mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"], icon="M", radius=0.16, title_size=6.6, body_size=5.1)
     mf.arrow(ax, (2.25, 3.61), (2.93, 3.61), color=mf.PALETTE["Human"])
     mf.arrow(ax, (5.25, 3.61), (6.02, 3.61), color=mf.UROMAS_COLORS["text_dark"])
 
     mf.rounded_box(ax, (0.45, 1.55), (1.75, 0.72), f"Form B\nn={counts.get('B', 0)}", "", mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"], icon="B", radius=0.16, title_size=6.8)
-    mf.rounded_box(ax, (3.0, 1.55), (2.2, 0.72), "MAS block", "first", mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"], icon="M", radius=0.16, title_size=6.6, body_size=5.1)
+    mf.rounded_box(ax, (3.0, 1.55), (2.2, 0.72), "UroEMAS block", "first", mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"], icon="M", radius=0.16, title_size=6.6, body_size=5.1)
     mf.rounded_box(ax, (6.1, 1.55), (2.2, 0.72), "Human block", "second", mf.PALETTE_FILL["Human"], mf.PALETTE["Human"], icon="H", radius=0.16, title_size=6.6, body_size=5.1)
     mf.arrow(ax, (2.25, 1.91), (2.93, 1.91), color=mf.PALETTE["MAS"])
     mf.arrow(ax, (5.25, 1.91), (6.02, 1.91), color=mf.UROMAS_COLORS["text_dark"])
@@ -206,7 +206,7 @@ def panel_2a(item_level: List[Dict[str, str]]) -> None:
     ax.axvline(0, color=mf.UROMAS_COLORS["spine"], linewidth=0.8)
     ax.axvline(-0.30, color=mf.PALETTE["Reasoning"], linestyle="--", linewidth=0.8)
     ax.set_yticks(y_positions, [m[0] for m in metrics])
-    ax.set_xlabel("MAS - Human (5-point scale)")
+    ax.set_xlabel("UroEMAS - Human (5-point scale)")
     ax.set_xlim(-0.8, 0.8)
     mf.style_axes(ax)
     save_panel(fig, "Figure2A_quality_difference.pdf")
@@ -227,7 +227,7 @@ def panel_2b(item_level: List[Dict[str, str]]) -> None:
     width = 0.36
     for offset, source in [(-width / 2, "Human"), (width / 2, "MAS")]:
         values = [mf.mean(mf.numeric(source_rows(item_level, source), dim)) or 0 for dim in dims]
-        ax.bar(x + offset, values, width=width, color=mf.PALETTE_FILL[source], edgecolor=mf.PALETTE[source], linewidth=0.9, label=source)
+        ax.bar(x + offset, values, width=width, color=mf.PALETTE_FILL[source], edgecolor=mf.PALETTE[source], linewidth=0.9, label="UroEMAS" if source == "MAS" else source)
     ax.set_xticks(x, labels, rotation=35, ha="right")
     ax.set_ylabel("Dimension score")
     ax.set_ylim(0, 5.4)
@@ -244,7 +244,7 @@ def panel_2c(item_level: List[Dict[str, str]]) -> None:
         human = mf.numeric(source_rows(item_level, "Human"), key)
         mas = mf.numeric(source_rows(item_level, "MAS"), key)
         ax.bar(idx - 0.18, (mf.mean(human) or 0) * 100, width=0.34, color=mf.PALETTE_FILL["Human"], edgecolor=mf.PALETTE["Human"], label="Human" if idx == 0 else None)
-        ax.bar(idx + 0.18, (mf.mean(mas) or 0) * 100, width=0.34, color=mf.PALETTE_FILL["MAS"], edgecolor=mf.PALETTE["MAS"], label="MAS" if idx == 0 else None)
+        ax.bar(idx + 0.18, (mf.mean(mas) or 0) * 100, width=0.34, color=mf.PALETTE_FILL["MAS"], edgecolor=mf.PALETTE["MAS"], label="UroEMAS" if idx == 0 else None)
     ax.set_xticks(range(len(labels)), labels)
     ax.set_ylabel("Items (%)")
     ax.set_ylim(0, 100)
@@ -278,7 +278,7 @@ def panel_2e(machine_summary: List[Dict[str, str]]) -> None:
         point, lo, hi = mf.bootstrap_mean_ci(sds)
         if point is not None:
             ax.errorbar(xpos, point, yerr=[[point - lo], [hi - point]], fmt="D", color="#2A251F", capsize=3, markersize=4)
-    ax.set_xticks([0, 1], ["Human", "MAS"])
+    ax.set_xticks([0, 1], ["Human", "UroEMAS"])
     ax.set_ylabel("Run-to-run SD")
     mf.style_axes(ax)
     save_panel(fig, "Figure2E_run_consistency.pdf")
@@ -357,7 +357,7 @@ def panel_3e(item_level: List[Dict[str, str]]) -> None:
         values = []
         for level in mf.COGNITIVE_ORDER:
             values.append(mf.mean(mf.numeric([r for r in item_level if r["source_true"] == source and r["cognitive_level"] == level], "discrimination")) or 0)
-        ax.bar(x + offset, values, width=width, color=mf.PALETTE_FILL[source], edgecolor=mf.PALETTE[source], linewidth=0.9, label=source)
+        ax.bar(x + offset, values, width=width, color=mf.PALETTE_FILL[source], edgecolor=mf.PALETTE[source], linewidth=0.9, label="UroEMAS" if source == "MAS" else source)
     ax.axhline(0, color=mf.UROMAS_COLORS["spine"], linewidth=0.8)
     ax.set_xticks(x, mf.COGNITIVE_ORDER)
     ax.set_ylabel("Item-rest discrimination")
@@ -396,8 +396,8 @@ def panel_4b(confusion_rows: List[Dict[str, str]]) -> None:
     fig, ax = new_panel((2.6, 2.45))
     mf.panel_label(ax, "B")
     im = ax.imshow(matrix, cmap="Blues")
-    ax.set_xticks([0, 1], labels)
-    ax.set_yticks([0, 1], labels)
+    ax.set_xticks([0, 1], ["Human", "UroEMAS"])
+    ax.set_yticks([0, 1], ["Human", "UroEMAS"])
     ax.set_xlabel("Guessed source")
     ax.set_ylabel("True source")
     for i in range(2):
@@ -446,8 +446,8 @@ def panel_5a() -> None:
     ax.set_xlim(0, 4)
     ax.set_ylim(0, 5)
     ax.axis("off")
-    mf.draw_box(ax, (0.25, 3.25), (3.5, 1.0), "Form A", "Human -> MAS", mf.PALETTE_FILL["Human"], mf.PALETTE["Human"])
-    mf.draw_box(ax, (0.25, 1.25), (3.5, 1.0), "Form B", "MAS -> Human", mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"])
+    mf.draw_box(ax, (0.25, 3.25), (3.5, 1.0), "Form A", "Human -> UroEMAS", mf.PALETTE_FILL["Human"], mf.PALETTE["Human"])
+    mf.draw_box(ax, (0.25, 1.25), (3.5, 1.0), "Form B", "UroEMAS -> Human", mf.PALETTE_FILL["MAS"], mf.PALETTE["MAS"])
     save_panel(fig, "Figure5A_order_schema.pdf")
 
 
@@ -461,7 +461,7 @@ def panel_5b(paired_scores: List[Dict[str, str]]) -> None:
             continue
         ax.plot([0, 1], y, color=color, alpha=0.35, linewidth=0.8)
         ax.scatter([0, 1], y, color=color, s=8, alpha=0.6)
-    ax.set_xticks([0, 1], ["Human", "MAS"])
+    ax.set_xticks([0, 1], ["Human", "UroEMAS"])
     ax.set_ylabel("Block score")
     ax.set_ylim(0, 100)
     mf.style_axes(ax)
@@ -480,7 +480,7 @@ def panel_5c(paired_scores: List[Dict[str, str]]) -> None:
             ax.errorbar(xpos, point, yerr=[[point - lo], [hi - point]], fmt="D", color="#2A251F", capsize=3, markersize=4)
     ax.axhline(0, color=mf.UROMAS_COLORS["spine"], linewidth=0.8)
     ax.set_xticks([0, 1], ["Form A", "Form B"])
-    ax.set_ylabel("MAS - Human score")
+    ax.set_ylabel("UroEMAS - Human score")
     mf.style_axes(ax)
     save_panel(fig, "Figure5C_individual_differences.pdf")
 
@@ -515,7 +515,7 @@ def panel_5e(paired_scores: List[Dict[str, str]]) -> None:
             ax.errorbar(xpos, point, yerr=[[point - lo], [hi - point]], fmt="D", color=mf.PALETTE["MAS"], capsize=3, markersize=4)
     ax.axhline(0, color=mf.UROMAS_COLORS["spine"], linewidth=0.8)
     ax.set_xticks([0, 1], ["main", "non_main"])
-    ax.set_ylabel("MAS - Human score")
+    ax.set_ylabel("UroEMAS - Human score")
     mf.style_axes(ax)
     save_panel(fig, "Figure5E_training_setting_exploration.pdf")
 

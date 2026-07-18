@@ -68,6 +68,7 @@ UROMAS_BASE_COLORS = {
 }
 CORE_COLORS = {"MAS": "#B86758", "Human": "#313E96"}
 CORE_FILLS = {"MAS": "#F2DFDB", "Human": "#D9DCF1"}
+SOURCE_DISPLAY_LABELS = {"MAS": "UroEMAS", "Human": "Human"}
 OPTIONAL_COLOR_PAIRS = [
     {"color": "#7C5CFF", "fill": "#E9E2FF"},
     {"color": "#B8954B", "fill": "#F1E6C8"},
@@ -226,6 +227,18 @@ def significance_stars(p_value: float) -> str:
     if p_value < 0.01:
         return "**"
     return "*"
+
+
+def source_display_label(source: str) -> str:
+    """Return the manuscript-facing name for an internal source code."""
+    return SOURCE_DISPLAY_LABELS.get(source, source)
+
+
+def adverse_source_stars(estimate_uromas_minus_human: float, p_value_two_sided: float) -> str:
+    """Mark only statistically significant adverse UroEMAS differences."""
+    if not np.isfinite(estimate_uromas_minus_human) or estimate_uromas_minus_human >= 0:
+        return "n.s."
+    return significance_stars(p_value_two_sided)
 
 
 def rounded_box(
@@ -775,7 +788,7 @@ def figure2b() -> None:
             -0.10,
             y[index] + 0.35,
             (
-                f"{row['endpoint']}: MAS {row['mas_mean']:.2f} ± {row['mas_sd']:.2f}"
+                f"{row['endpoint']}: UroEMAS {row['mas_mean']:.2f} ± {row['mas_sd']:.2f}"
                 f"  vs  Human {row['human_mean']:.2f} ± {row['human_sd']:.2f}"
                 f"  ({int(row['scale_points'])}-point)"
             ),
@@ -796,7 +809,7 @@ def figure2b() -> None:
         )
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=1)
     ax.set_yticks(y, [f"{row.endpoint}\n(n=70/group)" for row in stats_df.itertuples()])
-    ax.set_xlabel("Quality-score difference (MAS − Human)")
+    ax.set_xlabel("Quality-score difference (UroEMAS − Human)")
     ax.text(
         -0.05,
         -0.43,
@@ -811,7 +824,7 @@ def figure2b() -> None:
     fig.tight_layout(rect=[0.02, 0.02, 0.99, 0.94])
     # Match the left/right bounds of Figure 2D-E and the top/bottom bounds of
     # Figure 2D so the stacked two-column panels form one visual grid.
-    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.18, top=0.88)
+    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.14, top=0.88)
     save_pdf(fig, "Figure2B_quality_difference.pdf", tight=False)
 
 
@@ -849,22 +862,22 @@ DIMENSION_SCORE_COLUMNS = [
     ("QGval", "Consistency", 5, "qg_consistency"),
     ("QGval", "Answerability", 5, "qg_answerability"),
     ("QGval", "Answer consistency", 5, "qg_answer_consistency"),
-    ("ULM", "Fluency", 5, "llm_fluency"),
-    ("ULM", "Exclusiveness", 5, "llm_exclusiveness"),
-    ("ULM", "Explicitness", 4, "llm_explicitness"),
-    ("ULM", "Goal alignment", 5, "llm_goal_alignment"),
-    ("ULM", "Comprehensiveness", 5, "llm_comprehensiveness"),
-    ("ULM", "Focus", 5, "llm_focus"),
-    ("ULM", "Guess resistance", 5, "llm_guess_resistance"),
-    ("ULM", "Completeness", 5, "llm_completeness"),
-    ("ULM", "Correctness", 5, "llm_correctness"),
-    ("ULM", "Solvability", 5, "llm_solvability"),
-    ("ULM", "Absoluteness", 5, "llm_absoluteness"),
-    ("ULM", "Plausibility", 5, "llm_plausibility"),
-    ("ULM", "Reasoning", 4, "llm_reasoning"),
-    ("ULM", "Feedback", 5, "llm_feedback"),
-    ("ULM", "Fairness", 3, "llm_fairness"),
-    ("ULM", "Explanation score", 5, "llm_explanation_score"),
+    ("ULM", "Fluency", 5, "ulm_fluency"),
+    ("ULM", "Exclusiveness", 5, "ulm_exclusiveness"),
+    ("ULM", "Explicitness", 4, "ulm_explicitness"),
+    ("ULM", "Goal alignment", 5, "ulm_goal_alignment"),
+    ("ULM", "Comprehensiveness", 5, "ulm_comprehensiveness"),
+    ("ULM", "Focus", 5, "ulm_focus"),
+    ("ULM", "Guess resistance", 5, "ulm_guess_resistance"),
+    ("ULM", "Completeness", 5, "ulm_completeness"),
+    ("ULM", "Correctness", 5, "ulm_correctness"),
+    ("ULM", "Solvability", 5, "ulm_solvability"),
+    ("ULM", "Absoluteness", 5, "ulm_absoluteness"),
+    ("ULM", "Plausibility", 5, "ulm_plausibility"),
+    ("ULM", "Reasoning", 4, "ulm_reasoning"),
+    ("ULM", "Feedback", 5, "ulm_feedback"),
+    ("ULM", "Fairness", 3, "ulm_fairness"),
+    ("ULM", "Explanation score", 5, "ulm_explanation_score"),
 ]
 
 
@@ -956,7 +969,7 @@ def figure2c() -> None:
             means,
             height=height,
             color=CORE_COLORS[source],
-            label=source,
+            label=source_display_label(source),
             alpha=0.9,
         )
         ax.errorbar(means, y + offset, xerr=sds, fmt="none", ecolor=UROMAS_BASE_COLORS["text_dark"], capsize=2, linewidth=0.8)
@@ -976,7 +989,7 @@ def figure2c() -> None:
         difference = float(np.mean(mas) - np.mean(human))
         adverse_margin = margin_by_scale[max_score]
         materially_worse = difference <= -adverse_margin
-        label = significance_stars(p_value) if materially_worse else "n.s."
+        label = adverse_source_stars(difference, p_value) if materially_worse else "n.s."
         significance_rows.append(
             {
                 "family": family,
@@ -990,7 +1003,7 @@ def figure2c() -> None:
                 "p_value_two_sided": p_value,
                 "materially_worse_than_human": materially_worse,
                 "annotation_rule": (
-                    "Welch two-sample t-test stars are displayed only when MAS is "
+                    "Welch two-sample t-test stars are displayed only when UroEMAS is "
                     "lower than Human by at least the prespecified scale-specific margin"
                 ),
                 "annotation": label,
@@ -1014,7 +1027,7 @@ def figure2c() -> None:
     ax.text(
         0.50,
         -0.058,
-        "Stars: adverse MAS differences significant at P < .05\n"
+        "Stars: adverse UroEMAS differences significant at P < .05\n"
         "and beyond the prespecified scale-specific margin.",
         transform=ax.transAxes,
         ha="center",
@@ -1026,7 +1039,10 @@ def figure2c() -> None:
     # The longest dimension labels still fit while the plotting area expands
     # into the former left-side whitespace.
     ax.tick_params(axis="y", pad=2)
-    fig.subplots_adjust(left=0.30, right=0.98, bottom=0.10, top=0.94)
+    # This panel spans two assembled rows.  A 0.09 bottom fraction places its
+    # x-axis exactly on Figure 2D's baseline: 0.09 * 9 in = 0.18 * 4.5 in.
+    # Its top remains collinear with Figure 2B.
+    fig.subplots_adjust(left=0.30, right=0.98, bottom=0.09, top=0.94)
     save_pdf(fig, "Figure2C_dimension_scores.pdf", tight=False)
 
 
@@ -1133,7 +1149,7 @@ def figure2d() -> None:
     ax.set_yticks(y, [label for _, label in level_map])
     ax.invert_yaxis()
     ax.set_xlim(-0.43, 0.60)
-    ax.set_xlabel("Mean quality-score difference (MAS − Human)")
+    ax.set_xlabel("Mean quality-score difference (UroEMAS − Human)")
     fig.suptitle("Expert quality gap by cognitive level", y=0.99, fontweight="bold")
     ax.legend(
         frameon=False,
@@ -1155,7 +1171,7 @@ EXPERT_QUALITY_SCORE_FORMULA = (
     "own maximum score: 7 QGval components plus 16 ULM components. ULM "
     "Explicitness and Reasoning have 4-point maxima, and ULM Fairness has a "
     "3-point maximum; all other components have 5-point maxima. "
-    "qgeval_score_5 and llm_score_5 are the corresponding family-level means "
+    "qgeval_score_5 and ulm_score_5 are the corresponding family-level means "
     "of standardized component scores."
 )
 
@@ -1248,6 +1264,14 @@ def expert_quality_interaction_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
                 "z_noninferiority": z_noninferiority,
                 "p_value_noninferiority": p_value_noninferiority,
                 "p_value_two_sided": p_value_two_sided,
+                "adverse_significance_annotation": adverse_source_stars(
+                    estimate, p_value_two_sided
+                ),
+                "annotation_rule": (
+                    "Stars only when the adjusted UroEMAS minus Human contrast is "
+                    "negative and its two-sided P value is below 0.05; favorable "
+                    "or non-significant UroEMAS contrasts are labelled n.s."
+                ),
                 "model_formula": formula,
                 "covariates": "rating order within source and rater (standardized)",
                 "random_effects": "(1|rater_id) + (1|item_key)",
@@ -1327,7 +1351,7 @@ def figure2e() -> None:
             marker="o",
             markersize=4,
             linewidth=1.2,
-            label=f"{source} item mean",
+            label=f"{source_display_label(source)} item mean",
             zorder=4,
         )
     y_min = float(plot_data.quality_score.min())
@@ -1346,7 +1370,7 @@ def figure2e() -> None:
         ax.text(
             x[index],
             y_pos + 0.012,
-            significance_stars(row.p_value_two_sided),
+            row.adverse_significance_annotation,
             ha="center",
             va="bottom",
             fontsize=8,
@@ -1364,7 +1388,7 @@ def figure2e() -> None:
     fig.text(
         0.985,
         0.045,
-        "Mixed model: source × cognitive level + rating order, with crossed random rater and item intercepts; stars show adjusted source contrasts.",
+        "Mixed model: source × cognitive level + rating order, with crossed random rater and item intercepts; stars mark only adjusted adverse UroEMAS contrasts.",
         ha="right",
         va="bottom",
         fontsize=6.5,
@@ -1764,7 +1788,8 @@ def figure2f() -> None:
         )
     ax.axvline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=0.8)
     ax.set_yticks(y, stats_df.endpoint)
-    ax.set_xlim(-0.05, 1.05)
+    # Keep the right-side confidence-interval labels safely inside the canvas.
+    ax.set_xlim(-0.05, 1.12)
     ax.set_xlabel("Average-measure consistency ICC(C,k), 95% CI")
     fig.suptitle("Expert inter-rater reliability", y=0.99, fontweight="bold")
     ax.text(
@@ -1779,9 +1804,8 @@ def figure2f() -> None:
     )
     style_axes(ax)
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    # Match adjacent Figure 2E vertically and use the same right boundary as
-    # Figure 2C above it while retaining the endpoint labels on the left.
-    fig.subplots_adjust(left=0.18, right=0.98, bottom=0.20, top=0.88)
+    # Align the plotting area's vertical axis with Figure 2C directly above.
+    fig.subplots_adjust(left=0.30, right=0.98, bottom=0.20, top=0.88)
     save_pdf(fig, "Figure2F_expert_inter_rater_reliability.pdf", tight=False)
 
 
@@ -1849,9 +1873,12 @@ def figure3b() -> None:
     stat_rows: list[dict[str, Any]] = []
     for panel, data in panels:
         wide = data.pivot(index="student_id", columns="source_true", values="correct_rate").dropna()
-        method, p_value, label, mas_ks_p, human_ks_p = independent_comparison(
+        method, p_value, _, mas_ks_p, human_ks_p = independent_comparison(
             wide["MAS"].to_numpy(),
             wide["Human"].to_numpy(),
+        )
+        label = adverse_source_stars(
+            float(wide["MAS"].mean() - wide["Human"].mean()), p_value
         )
         stat_rows.append(
             {
@@ -1917,7 +1944,7 @@ def figure3b() -> None:
             fontsize=6.5,
         )
         ax.set_title(stat_row["panel"])
-        ax.set_xticks([1, 2], ["MAS", "Human"])
+        ax.set_xticks([1, 2], ["UroEMAS", "Human"])
         ax.tick_params(axis="x", rotation=35)
         ax.set_xlabel("MCQ source", fontweight="bold")
         ax.set_ylim(0.25, 1.08)
@@ -1926,7 +1953,7 @@ def figure3b() -> None:
     fig.suptitle("Student overall correct rate by source", y=0.985)
     fig.legend(
         handles=[
-            Patch(facecolor=CORE_FILLS["MAS"], edgecolor=CORE_COLORS["MAS"], label="MAS"),
+            Patch(facecolor=CORE_FILLS["MAS"], edgecolor=CORE_COLORS["MAS"], label="UroEMAS"),
             Patch(facecolor=CORE_FILLS["Human"], edgecolor=CORE_COLORS["Human"], label="Human"),
         ],
         frameon=False,
@@ -1970,9 +1997,12 @@ def figure3c() -> None:
                 .pivot(index="student_id", columns="source_true", values="correct_rate")
                 .dropna()
             )
-            method, p_value, label, mas_ks_p, human_ks_p = independent_comparison(
+            method, p_value, _, mas_ks_p, human_ks_p = independent_comparison(
                 wide["MAS"].to_numpy(),
                 wide["Human"].to_numpy(),
+            )
+            label = adverse_source_stars(
+                float(wide["MAS"].mean() - wide["Human"].mean()), p_value
             )
             for source_index, source in enumerate(["Human", "MAS"]):
                 mean, low, high = bootstrap_mean_ci(
@@ -2010,7 +2040,13 @@ def figure3c() -> None:
             means = source_rows.mean_correct_rate.to_numpy() * 100
             low = source_rows.ci_low.to_numpy() * 100
             high = source_rows.ci_high.to_numpy() * 100
-            ax.barh(y + offset, means, height=height, color=CORE_COLORS[source], label=source)
+            ax.barh(
+                y + offset,
+                means,
+                height=height,
+                color=CORE_COLORS[source],
+                label=source_display_label(source),
+            )
             ax.errorbar(
                 means,
                 y + offset,
@@ -2031,7 +2067,7 @@ def figure3c() -> None:
     axes[0].invert_yaxis()
     handles = [
         mpl.patches.Patch(color=CORE_COLORS["Human"], label="Human"),
-        mpl.patches.Patch(color=CORE_COLORS["MAS"], label="MAS"),
+        mpl.patches.Patch(color=CORE_COLORS["MAS"], label="UroEMAS"),
     ]
     fig.legend(handles=handles, frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 0.005))
     fig.suptitle("Student correct rate by cognitive level", y=0.99, fontweight="bold")
@@ -2297,7 +2333,7 @@ def figure3d_adjusted() -> None:
             marker="o",
             linewidth=1.5,
             markersize=4,
-            label=source,
+            label=source_display_label(source),
             zorder=4,
         )
     y_min = max(
@@ -2335,7 +2371,11 @@ def figure3d_adjusted() -> None:
     style_axes(ax)
     fig.tight_layout(rect=[0, 0.08, 1, 0.93])
     # Align the horizontal-axis baseline with adjacent new Figure 3F.
-    fig.subplots_adjust(left=0.12, right=0.985, bottom=0.14, top=0.90)
+    # The 9-inch panel starts at the page edge.  left=0.15 therefore puts its
+    # y-axis at 1.35 in, exactly under the first axis in Figure 3C-D
+    # (0.10 * 13.5 in).  The expanded right bound reclaims the unused sliver at
+    # the two-column panel edge while keeping the note inside the canvas.
+    fig.subplots_adjust(left=0.15, right=0.995, bottom=0.14, top=0.90)
     save_pdf(fig, "Figure3E_source_cognitive_interaction.pdf", tight=False)
 
 
@@ -2444,7 +2484,7 @@ def figure3d_paired_unused() -> None:
             marker="o",
             linewidth=1.5,
             markersize=4,
-            label=source,
+            label=source_display_label(source),
             zorder=4,
         )
     for index, row in comparisons.iterrows():
@@ -2537,7 +2577,15 @@ def grouped_boxplot_with_means(
             patch.set_facecolor(CORE_FILLS[source])
             patch.set_edgecolor(CORE_COLORS[source])
         means = [np.mean(group) for group in groups]
-        ax.plot(positions, means, color=CORE_COLORS[source], marker="o", linewidth=1.3, markersize=3.5, label=source)
+        ax.plot(
+            positions,
+            means,
+            color=CORE_COLORS[source],
+            marker="o",
+            linewidth=1.3,
+            markersize=3.5,
+            label=source_display_label(source),
+        )
     ax.set_xticks(x, [LEVEL_LABELS_4[level] for level in LEVELS_4], rotation=18, ha="right")
     ax.set_ylabel(ylabel)
     style_axes(ax)
@@ -2660,7 +2708,7 @@ def figure3e_upper_lower_unused() -> None:
     ax.set_ylabel("Discrimination (upper 27% − lower 27%)")
     ax.set_title("Exploratory CTT (objective items)", fontweight="bold")
     source_handles = [
-        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["MAS"], markeredgecolor="white", markersize=6, label="MAS"),
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["MAS"], markeredgecolor="white", markersize=6, label="UroEMAS"),
         Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["Human"], markeredgecolor="white", markersize=6, label="Human"),
     ]
     marker_handles = [
@@ -2787,7 +2835,7 @@ def figure3e() -> None:
     ax.set_ylabel("Discrimination (item-rest $r$)")
     ax.set_title("Exploratory CTT (objective items)", fontweight="bold")
     source_handles = [
-        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["MAS"], markeredgecolor="white", markersize=6.5, label="MAS"),
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["MAS"], markeredgecolor="white", markersize=6.5, label="UroEMAS"),
         Line2D([0], [0], marker="o", color="none", markerfacecolor=CORE_COLORS["Human"], markeredgecolor="white", markersize=6.5, label="Human"),
     ]
     marker_handles = [
@@ -2826,7 +2874,10 @@ def figure3e() -> None:
     )
     style_axes(ax)
     fig.tight_layout()
-    fig.subplots_adjust(left=0.18, right=0.97, bottom=0.14, top=0.90)
+    # Figure 3C-D use left=0.10, right=0.99 and wspace=0.28 over 13.5 inches;
+    # their third axis consequently occupies 0.22..0.97 of the final 4.5-inch
+    # column.  Reuse those exact bounds here.
+    fig.subplots_adjust(left=0.22, right=0.97, bottom=0.14, top=0.90)
     save_pdf(fig, "Figure3F_ctt_by_cognitive_level.pdf", tight=False)
 
 
@@ -2904,8 +2955,11 @@ def figure3f() -> None:
     ax.set_xlabel("KR-20 / Cronbach's alpha (95% bootstrap CI)")
     ax.set_title("Internal consistency reliability", fontweight="bold")
     style_axes(ax, "x")
+    # Angling the long scale names retains every label while allowing this
+    # square panel's y-axis to align with the third axes of Figure 3C-D.
+    angle_y_ticklabels(ax, rotation=40)
     fig.tight_layout()
-    fig.subplots_adjust(left=0.32, right=0.97, bottom=0.20, top=0.88)
+    fig.subplots_adjust(left=0.22, right=0.97, bottom=0.15, top=0.88)
     save_pdf(fig, "Figure3B_reliability.pdf", tight=False)
 
 
@@ -2946,7 +3000,7 @@ def figure4b(expert_judgments: pd.DataFrame) -> None:
         if summary_row is None:
             raise ValueError(f"{path.name}/图灵测试 lacks a total-accuracy row.")
         correct = int(summary_row[1])
-        # The 图灵测试 sheet contains 70 Human and 70 MAS judgments. One
+        # The 图灵测试 sheet contains 70 Human and 70 UroEMAS judgments. One
         # workbook has a denominator typo in its display string, so use the
         # actual design denominator rather than the formatted text.
         n = 140
@@ -3022,7 +3076,7 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
         .unstack(fill_value=0)
         .reindex(index=["Human", "MAS"], columns=[0, 1], fill_value=0)
     )
-    counts.columns = ["Guessed Human", "Guessed MAS"]
+    counts.columns = ["Guessed Human", "Guessed UroEMAS"]
     proportions = counts.div(counts.sum(axis=1), axis=0) * 100
     counts.reset_index().to_csv(DERIVED / "fig4C_expert_source_confusion_counts.csv", index=False, encoding="utf-8-sig")
 
@@ -3032,7 +3086,7 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
     bottom = np.zeros(2)
     for column, color in [
         ("Guessed Human", CORE_COLORS["Human"]),
-        ("Guessed MAS", CORE_COLORS["MAS"]),
+        ("Guessed UroEMAS", CORE_COLORS["MAS"]),
     ]:
         values = proportions[column].to_numpy()
         ax.bar(x, values, bottom=bottom, color=color, width=0.58, label=column)
@@ -3040,7 +3094,7 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
             if value >= 7:
                 ax.text(xpos, base + value / 2, f"{value:.1f}%", ha="center", va="center", color="white", fontsize=8)
         bottom += values
-    ax.set_xticks(x, ["Human-authored items", "MAS-generated items"])
+    ax.set_xticks(x, ["Human-authored items", "UroEMAS-generated items"])
     ax.set_ylabel("Expert judgments (%)")
     ax.set_ylim(0, 100)
     ax.set_title("Expert source-judgment confusion matrix", fontweight="bold")
@@ -3055,8 +3109,8 @@ def figure4c(expert_judgments: pd.DataFrame) -> None:
     )
     style_axes(ax)
     fig.tight_layout()
-    # Figure 4C and 4F share a column; reserve the same left/right bounds.
-    fig.subplots_adjust(left=0.227, right=0.973, bottom=0.10, top=0.93)
+    # Figure 4C and 4F share a column; use identical left/right bounds.
+    fig.subplots_adjust(left=0.30, right=0.973, bottom=0.10, top=0.93)
     save_pdf(fig, "Figure4C_expert_source_confusion_matrix.pdf", tight=False)
 
 
@@ -3080,13 +3134,13 @@ def figure4d(expert_judgments: pd.DataFrame) -> None:
             continue
         if ":" in term:
             if "comprehension" in term:
-                label = "MAS × Comprehension interaction"
+                label = "UroEMAS × Comprehension interaction"
             elif "application" in term:
-                label = "MAS × Application interaction"
+                label = "UroEMAS × Application interaction"
             else:
-                label = "MAS × Analysis interaction"
+                label = "UroEMAS × Analysis interaction"
         elif "source_true" in term:
-            label = "MAS vs Human (at Knowledge)"
+            label = "UroEMAS vs Human (at Knowledge)"
         elif "comprehension" in term:
             label = "Comprehension vs Knowledge"
         elif "application" in term:
@@ -3131,17 +3185,17 @@ def figure4d(expert_judgments: pd.DataFrame) -> None:
     ax.set_yticks(y, plot.label)
     plt.setp(
         ax.get_yticklabels(),
-        rotation=25,
+        rotation=30,
         ha="right",
         va="center",
         rotation_mode="anchor",
         fontsize=6.5,
     )
-    ax.set_xlabel("Odds ratio for being guessed as MAS\n(95% credible interval)")
-    ax.set_title("Expert guessed-MAS mixed model", fontweight="bold")
+    ax.set_xlabel("Odds ratio for being guessed as UroEMAS\n(95% credible interval)")
+    ax.set_title("Expert guessed-UroEMAS\nmixed model", fontweight="bold")
     style_axes(ax, "x")
-    fig.subplots_adjust(left=0.42, right=0.96, bottom=0.20, top=0.88)
-    save_pdf(fig, "Figure4D_expert_guessed_MAS_model_forest.pdf", tight=False)
+    fig.subplots_adjust(left=0.40, right=0.973, bottom=0.15, top=0.88)
+    save_pdf(fig, "Figure4D_expert_guessed_UroEMAS_model_forest.pdf", tight=False)
 
 
 def figure4e() -> None:
@@ -3202,7 +3256,7 @@ def figure4e() -> None:
     )
     ax.set_title("Student source-identification accuracy", fontweight="bold")
     # Figure 4D-F form one row; keep their horizontal axes collinear.
-    fig.subplots_adjust(left=0.17, right=0.97, bottom=0.20, top=0.88)
+    fig.subplots_adjust(left=0.16, right=0.97, bottom=0.15, top=0.88)
     save_pdf(fig, "Figure4E_student_source_identification_accuracy.pdf", tight=False)
 
 
@@ -3212,7 +3266,7 @@ def figure4f() -> None:
     observed = float(values.mean())
     scenarios = pd.DataFrame(
         {
-            "scenario": ["MAS −20%", "Observed MAS", "MAS +20%"],
+            "scenario": ["UroEMAS −20%", "Observed UroEMAS", "UroEMAS +20%"],
             "minutes_per_item": [observed * 0.8, observed, observed * 1.2],
         }
     )
@@ -3224,10 +3278,10 @@ def figure4f() -> None:
     ax.set_yticks(y, scenarios.scenario.iloc[::-1])
     angle_y_ticklabels(ax)
     ax.set_xlabel("Minutes per generated item")
-    ax.set_title("MAS timing sensitivity", fontweight="bold")
+    ax.set_title("UroEMAS timing sensitivity", fontweight="bold")
     style_axes(ax, "x")
     fig.tight_layout()
-    fig.subplots_adjust(left=0.18, right=0.973, bottom=0.20, top=0.88)
+    fig.subplots_adjust(left=0.30, right=0.973, bottom=0.15, top=0.88)
     save_pdf(fig, "Figure4F_efficiency_sensitivity.pdf", tight=False)
 
 
@@ -3380,7 +3434,7 @@ def efficiency_time_data() -> tuple[pd.DataFrame, pd.DataFrame]:
     detail["mas_minutes_per_item"] = detail.mas_seconds_per_final_item / 60.0
     detail["time_basis"] = (
         "Human: selected-item authoring time from efficiency workbook. "
-        "MAS: observed generation/explanation/test-point time + 4 QGval and "
+        "UroEMAS: observed generation/explanation/test-point time + 4 QGval and "
         "4 ULM calls per item-type bank + 60 s local checks/audit for 50 items."
     )
     write_csv(DERIVED / "fig5_workflow_time_by_item_type.csv", detail)
@@ -3453,7 +3507,7 @@ def token_cost_data() -> pd.DataFrame:
         "3gram_jaccard_max",
         "textstat_flesch_reading_ease",
         "QGEval",
-        "LLM",
+        "ULM",
     }
 
     def dumped_tokens(value: Any) -> float:
@@ -3527,7 +3581,7 @@ def token_cost_data() -> pd.DataFrame:
             REPO_ROOT / "prompts" / "evaluation" / "prompt_for_qgeval.txt"
         ).read_text(encoding="utf-8")
         ulm_prompt = (
-            REPO_ROOT / "prompts" / "evaluation" / "prompt_for_llm.txt"
+            REPO_ROOT / "prompts" / "evaluation" / "prompt_for_ulm.txt"
         ).read_text(encoding="utf-8")
 
         estimates = [
@@ -3671,7 +3725,7 @@ def figure5a() -> None:
         fontweight="bold",
     )
     ax.text(1, mas_total + 35, f"{mas_total:.1f} min", ha="center", color=CORE_COLORS["MAS"], fontweight="bold")
-    ax.set_xticks([0, 1], ["Human", "MAS"])
+    ax.set_xticks([0, 1], ["Human", "UroEMAS"])
     ax.get_xticklabels()[0].set_color(CORE_COLORS["Human"])
     ax.get_xticklabels()[1].set_color(CORE_COLORS["MAS"])
     ax.set_ylabel("Total time for the 50-item exam (min)")
@@ -3680,7 +3734,7 @@ def figure5a() -> None:
     ax.legend(
         frameon=False,
         loc="upper right",
-        title="Item type: Human vs MAS",
+        title="Item type: Human vs UroEMAS",
         fontsize=6.5,
         title_fontsize=8,
     )
@@ -3732,14 +3786,15 @@ def figure5b() -> None:
         color=CORE_COLORS["MAS"],
         fontsize=8,
     )
-    ax.set_xticks([0, 1], ["Human\n50/50 usable", "MAS\n50/50 usable"])
+    ax.set_xticks([0, 1], ["Human\n50/50 usable", "UroEMAS\n50/50 usable"])
     ax.set_ylabel("Workflow time per usable item (min)")
     ax.set_ylim(0, max(values) * 1.18)
     ax.set_title("Time per usable final item", fontweight="bold")
     style_axes(ax)
     fig.tight_layout()
-    # Match the horizontal-axis baseline of adjacent Figure 5A.
-    fig.subplots_adjust(bottom=0.155, top=0.93)
+    # Figure 5A-C are equal square slots; identical plot rectangles align both
+    # their baselines and vertical axes.
+    fig.subplots_adjust(left=0.19, right=0.97, bottom=0.155, top=0.93)
     save_pdf(fig, "Figure5B_time_per_usable_item.pdf", tight=False)
 
 
@@ -3780,14 +3835,14 @@ def figure5c() -> None:
             va="center",
         )
     ax.set_yscale("log")
-    ax.set_xticks([0, 1], ["Human", "MAS"])
+    ax.set_xticks([0, 1], ["Human", "UroEMAS"])
     ax.set_ylabel("Total workflow time per exam (min, log)")
     ax.set_title("Sensitivity: workflow time ±20%", fontweight="bold")
     ax.text(
         0.50,
         0.50,
         (
-            "Worst case: Human −20% vs MAS +20%\n"
+            "Worst case: Human −20% vs UroEMAS +20%\n"
             f"{human*0.8:.0f} vs {mas*1.2:.0f} min ≈ {worst_ratio:.0f}×"
         ),
         transform=ax.transAxes,
@@ -3798,8 +3853,9 @@ def figure5c() -> None:
     ax.set_xlim(-0.15, 1.30)
     style_axes(ax, "")
     fig.tight_layout()
-    # Match the horizontal-axis baseline of adjacent Figure 5A-B.
-    fig.subplots_adjust(bottom=0.155, top=0.93)
+    # Figure 5A-C are equal square slots; identical plot rectangles align both
+    # their baselines and vertical axes.
+    fig.subplots_adjust(left=0.19, right=0.97, bottom=0.155, top=0.93)
     save_pdf(fig, "Figure5C_time_sensitivity.pdf", tight=False)
 
 
@@ -3837,7 +3893,7 @@ def figure5d() -> None:
     ]
     ax.set_yticks(y, labels)
     ax.set_xlabel("API cost per 50-item exam (USD)")
-    ax.set_title("MAS API cost (compute component)", fontweight="bold")
+    ax.set_title("UroEMAS API cost (compute component)", fontweight="bold")
     ax.legend(frameon=False, loc="lower right")
     ax.text(
         0.98,
@@ -3855,13 +3911,12 @@ def figure5d() -> None:
             "alpha": 0.94,
         },
     )
-    ax.text(
+    fig.text(
         0.50,
-        -0.22,
+        0.055,
         "DeepSeek V4 cache-miss prices checked 2026-06-22",
-        transform=ax.transAxes,
         ha="center",
-        va="top",
+        va="center",
         fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
@@ -3869,7 +3924,7 @@ def figure5d() -> None:
     style_axes(ax, "x")
     fig.tight_layout()
     # Match the horizontal-axis baseline of adjacent Figure 5E.
-    fig.subplots_adjust(left=0.155, right=0.985, bottom=0.216)
+    fig.subplots_adjust(left=0.155, right=0.985, bottom=0.216, top=0.93)
     save_pdf(fig, "Figure5D_api_cost.pdf", tight=False)
 
 
@@ -3956,20 +4011,21 @@ def figure5e() -> None:
         color=CORE_COLORS["MAS"],
         fontweight="bold",
     )
-    ax.text(
+    fig.text(
         0.50,
-        -0.22,
+        0.055,
         f"AI bar uses user-provided API total (¥{ai_total_cny:.2f}); token estimate: "
         f"${token_estimated_usd:.3f} ≈ ¥{token_estimated_cny:.2f}.",
-        transform=ax.transAxes,
         ha="center",
-        va="top",
+        va="center",
         fontsize=6.5,
         color=UROMAS_BASE_COLORS["text"],
     )
     ax.set_ylim(max(min(values) / 2, 0.1), max(values) * 2.6)
     style_axes(ax)
-    save_pdf(fig, "Figure5E_total_cost_comparison.pdf")
+    # Match Figure 5C directly above and Figure 5D's baseline/title bounds.
+    fig.subplots_adjust(left=0.19, right=0.97, bottom=0.216, top=0.93)
+    save_pdf(fig, "Figure5E_total_cost_comparison.pdf", tight=False)
 
 
 # ---------------------------------------------------------------------------
@@ -4026,9 +4082,13 @@ def figure6a() -> None:
     ax.set_xlim(0, 4)
     ax.set_ylim(0, 5)
     ax.axis("off")
-    rounded_box(ax, (0.08, 3.00), (3.84, 1.35), "Form A", f"Human → MAS  (n={counts.get('A', 0)})", FORM_COLORS["A"]["fill"], FORM_COLORS["A"]["color"])
-    rounded_box(ax, (0.08, 0.65), (3.84, 1.35), "Form B", f"MAS → Human  (n={counts.get('B', 0)})", FORM_COLORS["B"]["fill"], FORM_COLORS["B"]["color"])
+    rounded_box(ax, (0.08, 2.55), (3.84, 1.95), "Form A", f"Human → UroEMAS  (n={counts.get('A', 0)})", FORM_COLORS["A"]["fill"], FORM_COLORS["A"]["color"])
+    rounded_box(ax, (0.08, 0.08), (3.84, 1.95), "Form B", f"UroEMAS → Human  (n={counts.get('B', 0)})", FORM_COLORS["B"]["fill"], FORM_COLORS["B"]["color"])
     fig.suptitle("Randomized examination order", y=0.99, fontweight="bold")
+    # The axes are decorative here, so use nearly the full square canvas.  The
+    # small top reserve protects the title and the other three sides now match
+    # the compact margins used by the workflow panels.
+    fig.subplots_adjust(left=0.035, right=0.985, bottom=0.035, top=0.94)
     save_pdf(fig, "Figure6A_order_schema.pdf", tight=False)
 
 
@@ -4080,7 +4140,7 @@ def figure6b() -> None:
     style_axes(ax)
     fig.tight_layout()
     # Match the horizontal-axis baseline of adjacent Figure 6C.
-    fig.subplots_adjust(left=0.133, right=0.973, bottom=0.093)
+    fig.subplots_adjust(left=0.133, right=0.973, bottom=0.093, top=0.93)
     save_pdf(fig, "Figure6B_scores_by_block_position.pdf", tight=False)
 
 
@@ -4096,7 +4156,7 @@ def figure6c() -> None:
         rows.append(
             {
                 "form": form,
-                "sequence": "Human → MAS" if form == "A" else "MAS → Human",
+                "sequence": "Human → UroEMAS" if form == "A" else "UroEMAS → Human",
                 "n_students": len(groups[index]),
                 "mean_second_minus_first": mean,
                 "ci_low": low,
@@ -4115,11 +4175,15 @@ def figure6c() -> None:
     for position, form, values in zip([0, 1], ["A", "B"], groups):
         ax.scatter(rng.normal(position, 0.04, len(values)), values, s=11, color=FORM_COLORS[form]["color"], alpha=0.55, linewidths=0)
     ax.axhline(0, color=UROMAS_BASE_COLORS["spine"], linewidth=0.9)
-    ax.set_xticks([0, 1], ["Form A\nHuman → MAS", "Form B\nMAS → Human"])
+    ax.set_xticks([0, 1], ["Form A\nHuman → UroEMAS", "Form B\nUroEMAS → Human"])
     ax.set_ylabel("Second − first block score (points)")
     ax.set_title("Within-student position differences", fontweight="bold")
     style_axes(ax)
-    save_pdf(fig, "Figure6C_position_difference_by_sequence.pdf")
+    fig.tight_layout()
+    # Identical bounds keep Figure 6B-C collinear across the top row and also
+    # align this panel vertically with Figure 6E below.
+    fig.subplots_adjust(left=0.133, right=0.973, bottom=0.093, top=0.93)
+    save_pdf(fig, "Figure6C_position_difference_by_sequence.pdf", tight=False)
 
 
 def figure6d() -> None:
@@ -4165,7 +4229,7 @@ def figure6d() -> None:
             "method": formula + "; cluster-robust SE by student",
         },
         {
-            "contrast": "Adjusted MAS − Human",
+            "contrast": "Adjusted UroEMAS − Human",
             "estimate": fit.params["is_mas"],
             "ci_low": fit.conf_int().loc["is_mas", 0],
             "ci_high": fit.conf_int().loc["is_mas", 1],
@@ -4204,7 +4268,11 @@ def figure6d() -> None:
     ax.set_xlabel("Score difference (percentage points)")
     ax.set_title("Adjusted fatigue and source effects", fontweight="bold")
     style_axes(ax, "x")
-    save_pdf(fig, "Figure6D_adjusted_fatigue_effect.pdf")
+    fig.tight_layout()
+    # The right edge equals Figure 6B's global right edge:
+    # 0.9865 * 9 in = 4.5 in + 0.973 * 4.5 in.
+    fig.subplots_adjust(left=0.218, right=0.9865, bottom=0.104, top=0.93)
+    save_pdf(fig, "Figure6D_adjusted_fatigue_effect.pdf", tight=False)
 
 
 def figure6e() -> None:
@@ -4241,14 +4309,14 @@ def figure6e() -> None:
     significance = "***" if test.pvalue < 0.001 else "**" if test.pvalue < 0.01 else "*" if test.pvalue < 0.05 else "n.s."
     ax.text(0.5, ymax + 1, significance, ha="center", fontweight="bold")
     ax.text(0.5, min(a.min(), b.min()) - 2, f"Welch t-test  P={test.pvalue:.3f}", ha="center", va="top", fontsize=6.5)
-    ax.set_xticks([0, 1], ["Form A\nHuman → MAS", "Form B\nMAS → Human"])
+    ax.set_xticks([0, 1], ["Form A\nHuman → UroEMAS", "Form B\nUroEMAS → Human"])
     ax.set_ylabel("Total examination duration (min)")
     ax.set_title("Total duration by randomized sequence", fontweight="bold")
     style_axes(ax)
     fig.tight_layout()
     # Figure 6C and 6E share a column; align their left axes. The bottom
     # matches adjacent Figure 6D without moving any annotation off-canvas.
-    fig.subplots_adjust(left=0.133, right=0.973, bottom=0.104)
+    fig.subplots_adjust(left=0.133, right=0.973, bottom=0.104, top=0.93)
     save_pdf(fig, "Figure6E_total_duration_by_sequence.pdf", tight=False)
 
 
@@ -4266,6 +4334,7 @@ def cleanup_obsolete_outputs() -> None:
         "Figure3F_reliability.pdf",
         "Figure4B_source_judgment_confusion_matrix.pdf",
         "Figure4C_source_task_ratings.pdf",
+        "Figure4D_expert_guessed_MAS_model_forest.pdf",
         "Figure4D_workflow_total_time.pdf",
         "Figure4E_quality_adjusted_time.pdf",
         "Figure5A_order_schema.pdf",

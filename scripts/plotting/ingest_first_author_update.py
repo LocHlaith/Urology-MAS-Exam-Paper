@@ -36,32 +36,32 @@ DERIVED = PLOT_DERIVED_DATA_DIR
 ITEM_MASTER = DERIVED / "item_master.csv"
 
 QG_COMPONENTS = ["qg_fluency", "qg_clarity", "qg_conciseness", "qg_relevance", "qg_consistency", "qg_answerability", "qg_answer_consistency"]
-LLM_COMPONENTS = [
-    "llm_fluency", "llm_exclusiveness", "llm_explicitness", "llm_goal_alignment",
-    "llm_comprehensiveness", "llm_focus", "llm_guess_resistance", "llm_completeness",
-    "llm_correctness", "llm_solvability", "llm_absoluteness", "llm_plausibility",
-    "llm_reasoning", "llm_feedback", "llm_fairness", "llm_explanation_score",
+ULM_COMPONENTS = [
+    "ulm_fluency", "ulm_exclusiveness", "ulm_explicitness", "ulm_goal_alignment",
+    "ulm_comprehensiveness", "ulm_focus", "ulm_guess_resistance", "ulm_completeness",
+    "ulm_correctness", "ulm_solvability", "ulm_absoluteness", "ulm_plausibility",
+    "ulm_reasoning", "ulm_feedback", "ulm_fairness", "ulm_explanation_score",
 ]
 QG_COMPONENT_MAX_SCORES = {name: 5 for name in QG_COMPONENTS}
-LLM_COMPONENT_MAX_SCORES = {
-    "llm_fluency": 5,
-    "llm_exclusiveness": 5,
-    "llm_explicitness": 4,
-    "llm_goal_alignment": 5,
-    "llm_comprehensiveness": 5,
-    "llm_focus": 5,
-    "llm_guess_resistance": 5,
-    "llm_completeness": 5,
-    "llm_correctness": 5,
-    "llm_solvability": 5,
-    "llm_absoluteness": 5,
-    "llm_plausibility": 5,
-    "llm_reasoning": 4,
-    "llm_feedback": 5,
-    "llm_fairness": 3,
-    "llm_explanation_score": 5,
+ULM_COMPONENT_MAX_SCORES = {
+    "ulm_fluency": 5,
+    "ulm_exclusiveness": 5,
+    "ulm_explicitness": 4,
+    "ulm_goal_alignment": 5,
+    "ulm_comprehensiveness": 5,
+    "ulm_focus": 5,
+    "ulm_guess_resistance": 5,
+    "ulm_completeness": 5,
+    "ulm_correctness": 5,
+    "ulm_solvability": 5,
+    "ulm_absoluteness": 5,
+    "ulm_plausibility": 5,
+    "ulm_reasoning": 4,
+    "ulm_feedback": 5,
+    "ulm_fairness": 3,
+    "ulm_explanation_score": 5,
 }
-COMPONENT_MAX_SCORES = {**QG_COMPONENT_MAX_SCORES, **LLM_COMPONENT_MAX_SCORES}
+COMPONENT_MAX_SCORES = {**QG_COMPONENT_MAX_SCORES, **ULM_COMPONENT_MAX_SCORES}
 
 KNOWN_CELL_CORRECTIONS = [
     {
@@ -69,7 +69,7 @@ KNOWN_CELL_CORRECTIONS = [
         "sheet": "P",
         "excel_row": 48,
         "source_true": "Human",
-        "field": "llm_explanation_score",
+        "field": "ulm_explanation_score",
         "value": 5,
         "reason": "The original review worksheet has 5 in the ULM explanation-score cell; 70 is the adjacent ULM total.",
     },
@@ -78,7 +78,7 @@ KNOWN_CELL_CORRECTIONS = [
         "sheet": "P",
         "excel_row": 48,
         "source_true": "Human",
-        "field": "llm_fairness",
+        "field": "ulm_fairness",
         "value": 3,
         "reason": "ULM fairness is scored on a 1-3 rubric; this cell exceeded the rubric maximum.",
     }
@@ -159,12 +159,12 @@ def ingest_workbooks() -> pd.DataFrame:
                 item_id, paper_item_no, match_score = best_item_match(qtext, candidates)
                 values = list(row)
                 qg_vals = values[3:10]
-                llm_vals = values[11:27]
+                ulm_vals = values[11:27]
                 qg_total = values[10]
-                llm_total = values[27]
+                ulm_total = values[27]
                 qg_scores_5 = standardized_component_scores(QG_COMPONENTS, qg_vals)
-                llm_scores_5 = standardized_component_scores(LLM_COMPONENTS, llm_vals)
-                comp_scores_5 = qg_scores_5 + llm_scores_5
+                ulm_scores_5 = standardized_component_scores(ULM_COMPONENTS, ulm_vals)
+                comp_scores_5 = qg_scores_5 + ulm_scores_5
                 out = {
                     "rater_id": rater_id,
                     "source_file": xlsx.name,
@@ -179,14 +179,14 @@ def ingest_workbooks() -> pd.DataFrame:
                     "question_text_from_sheet": qtext,
                     "qgeval_total": qg_total,
                     "qgeval_score_5": sum(qg_scores_5) / len(qg_scores_5) if qg_scores_5 else None,
-                    "llm_total": llm_total,
-                    "llm_score_5": sum(llm_scores_5) / len(llm_scores_5) if llm_scores_5 else None,
+                    "ulm_total": ulm_total,
+                    "ulm_score_5": sum(ulm_scores_5) / len(ulm_scores_5) if ulm_scores_5 else None,
                     "quality_score_5": sum(comp_scores_5) / len(comp_scores_5) if comp_scores_5 else None,
                     "source_guess": parse_yes_no_guess(values[28] if len(values) > 28 else None),
                 }
                 for name, val in zip(QG_COMPONENTS, qg_vals):
                     out[name] = val
-                for name, val in zip(LLM_COMPONENTS, llm_vals):
+                for name, val in zip(ULM_COMPONENTS, ulm_vals):
                     out[name] = val
                 rows.append(out)
     df = pd.DataFrame(rows)
@@ -196,16 +196,16 @@ def ingest_workbooks() -> pd.DataFrame:
 
 def recompute_score_fields(df: pd.DataFrame, mask: pd.Series) -> None:
     qg = df.loc[mask, QG_COMPONENTS].apply(pd.to_numeric, errors="coerce")
-    llm = df.loc[mask, LLM_COMPONENTS].apply(pd.to_numeric, errors="coerce")
+    ulm = df.loc[mask, ULM_COMPONENTS].apply(pd.to_numeric, errors="coerce")
     qg_max = pd.Series(QG_COMPONENT_MAX_SCORES)
-    llm_max = pd.Series(LLM_COMPONENT_MAX_SCORES)
+    ulm_max = pd.Series(ULM_COMPONENT_MAX_SCORES)
     qg_scores_5 = qg.clip(upper=qg_max, axis=1).divide(qg_max, axis=1) * 5.0
-    llm_scores_5 = llm.clip(upper=llm_max, axis=1).divide(llm_max, axis=1) * 5.0
+    ulm_scores_5 = ulm.clip(upper=ulm_max, axis=1).divide(ulm_max, axis=1) * 5.0
     df.loc[mask, "qgeval_total"] = qg.sum(axis=1, min_count=1)
     df.loc[mask, "qgeval_score_5"] = qg_scores_5.mean(axis=1)
-    df.loc[mask, "llm_total"] = llm.sum(axis=1, min_count=1)
-    df.loc[mask, "llm_score_5"] = llm_scores_5.mean(axis=1)
-    df.loc[mask, "quality_score_5"] = pd.concat([qg_scores_5, llm_scores_5], axis=1).mean(axis=1)
+    df.loc[mask, "ulm_total"] = ulm.sum(axis=1, min_count=1)
+    df.loc[mask, "ulm_score_5"] = ulm_scores_5.mean(axis=1)
+    df.loc[mask, "quality_score_5"] = pd.concat([qg_scores_5, ulm_scores_5], axis=1).mean(axis=1)
 
 def apply_known_cell_corrections(df: pd.DataFrame) -> None:
     for correction in KNOWN_CELL_CORRECTIONS:
@@ -267,7 +267,7 @@ def main() -> None:
         expert_quality_score_5_mean=("quality_score_5", "mean"),
         expert_quality_score_5_sd=("quality_score_5", "std"),
         expert_qgeval_score_5_mean=("qgeval_score_5", "mean"),
-        expert_llm_score_5_mean=("llm_score_5", "mean"),
+        expert_ulm_score_5_mean=("ulm_score_5", "mean"),
         mean_match_score=("match_score", "mean"),
     )
     item_summary.to_csv(DERIVED / "expert_rating_item_summary_updated.csv", index=False)

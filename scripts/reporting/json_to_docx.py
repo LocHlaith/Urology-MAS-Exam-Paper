@@ -73,8 +73,8 @@ def parse_qgeval(s):
         return f"总分{total.strip()}分，流畅性{scores[0]}分，清晰度{scores[1]}分，简洁性{scores[2]}分，相关性{scores[3]}分，一致性{scores[4]}分，可回答性{scores[5]}分，答案一致性{scores[6]}分。"
     return s
 
-def parse_llm(s):
-    """解析 LLM 评分"""
+def parse_ulm(s):
+    """解析 ULM 评分"""
     if not s or ':' not in s: return s
     total, scores_str = s.split(':')
     scores = [x.strip() for x in scores_str.split(',')]
@@ -105,7 +105,7 @@ def json_to_docx(json_path, docx_path):
         doc.add_paragraph(f"3-gram Jaccard Index：最接近人类题库{format_reference(item.get('3gram_doubt', ''))}，值为{item.get('3gram_jaccard_max', '')}。")
         doc.add_paragraph(f"Flesch Reading Ease：{item.get('textstat_flesch_reading_ease', '')}。")
         doc.add_paragraph(f"QGEval：{parse_qgeval(item.get('QGEval', ''))}")
-        doc.add_paragraph(f"LLM：{parse_llm(item.get('LLM', ''))}")
+        doc.add_paragraph(f"ULM：{parse_ulm(item.get('ULM', ''))}")
         doc.add_paragraph("")
         
         # 考点还原字段可能包含一个或多个编号。

@@ -46,7 +46,7 @@ STRIP_KEYS = {
     "3gram_doubt",
     "3gram_jaccard_max",
     "textstat_flesch_reading_ease",
-    "LLM",
+    "ULM",
 }
 
 
@@ -302,21 +302,21 @@ def set_qgeval_with_order(item: Dict[str, Any], qgeval_text: str) -> Dict[str, A
     """
     写入 QGEval，并满足顺序要求：
     - 默认：QGEval 在最后
-    - 若存在 LLM：QGEval 插在 LLM 前面
+    - 若存在 ULM：QGEval 插在 ULM 前面
     注意：返回（可能是）新 dict；调用者需要把它放回原 list 的位置。
     """
     if "QGEval" in item:
         return item
 
-    if "LLM" not in item:
+    if "ULM" not in item:
         item["QGEval"] = qgeval_text
         return item
 
-    # 存在 LLM：重建 dict，把 QGEval 插到 LLM 前
+    # 存在 ULM：重建 dict，把 QGEval 插到 ULM 前
     new_item: Dict[str, Any] = {}
     inserted = False
     for k, v in item.items():
-        if k == "LLM" and not inserted:
+        if k == "ULM" and not inserted:
             new_item["QGEval"] = qgeval_text
             inserted = True
         new_item[k] = v

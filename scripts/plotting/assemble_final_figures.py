@@ -81,7 +81,7 @@ LAYOUTS = {
             Slot("A", "Figure4A_turing_test_workflow.pdf", 0, 0, 1, 1, True),
             Slot("B", "Figure4B_expert_source_identification_accuracy.pdf", 1, 0, 1, 1),
             Slot("C", "Figure4C_expert_source_confusion_matrix.pdf", 2, 0, 1, 1),
-            Slot("D", "Figure4D_expert_guessed_MAS_model_forest.pdf", 0, 1, 1, 1),
+            Slot("D", "Figure4D_expert_guessed_UroEMAS_model_forest.pdf", 0, 1, 1, 1),
             Slot("E", "Figure4E_student_source_identification_accuracy.pdf", 1, 1, 1, 1),
             Slot("F", "Figure4F_efficiency_sensitivity.pdf", 2, 1, 1, 1),
         ),

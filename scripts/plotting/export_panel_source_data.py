@@ -98,7 +98,7 @@ PANEL_SOURCE_MAP: dict[str, list[str]] = {
 PANEL_NOTES: dict[str, str] = {
     "Figure2C": (
         "All dimensions remain on their native 5-, 4-, or 3-point scales. Labels are "
-        "computed from Welch two-sample t-tests and flag only adverse MAS differences "
+        "computed from Welch two-sample t-tests and flag only adverse UroEMAS differences "
         "that also exceed the prespecified scale-specific margin."
     ),
     "Figure2E": (
@@ -126,7 +126,7 @@ PANEL_NOTES: dict[str, str] = {
     ),
     "Figure4B": "Wilson 90% confidence intervals; every expert denominator is 140 item judgments.",
     "Figure4E": "Wilson 90% confidence interval for 48 student pair-level judgments.",
-    "Figure5B": "All MAS items are treated as usable: denominator is 50/50.",
+    "Figure5B": "All UroEMAS items are treated as usable: denominator is 50/50.",
     "Figure5E": (
         "Primary AI cost uses the user-provided API total (CNY 28.83); token "
         "estimate is retained as a secondary source-data row."

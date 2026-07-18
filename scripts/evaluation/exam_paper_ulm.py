@@ -1,9 +1,9 @@
-﻿"""为用户明确提供的试卷 JSON 写入 LLM rubric 机器评分。
+﻿"""为用户明确提供的试卷 JSON 写入 ULM rubric 机器评分。
 
 脚本用途：调用模型按医学教育/题目质量 rubric 为组卷后试卷题目打分。
 流程阶段：试卷机器评价。
-主要输入：用户通过 `--target-file` 明确指定的试卷 JSON，以及 `prompts/evaluation/prompt_for_llm.txt`。
-主要输出：原地更新的试卷 JSON，写入 `LLM` 字段。
+主要输入：用户通过 `--target-file` 明确指定的试卷 JSON，以及 `prompts/evaluation/prompt_for_ulm.txt`。
+主要输出：原地更新的试卷 JSON，写入 `ULM` 字段。
 重要边界：不得从历史路径或文件名推断试卷文件；机器评分不替代专家评分。
 """
 
@@ -34,13 +34,13 @@ from project_paths import (
 
 ROOT = str(PROJECT_ROOT)
 
-PROMPT_LLM_PATH = str(EVALUATION_PROMPT_DIR / "prompt_for_llm.txt")
+PROMPT_ULM_PATH = str(EVALUATION_PROMPT_DIR / "prompt_for_ulm.txt")
 
 BATCH_SIZE = 100
 
-# LLM 评分项数量，不含 id。
-LLM_SCORE_COUNT = 16
-LLM_TOTAL_COLS = 1 + LLM_SCORE_COUNT  # id 与 16 项评分。
+# ULM 评分项数量，不含 id。
+ULM_SCORE_COUNT = 16
+ULM_TOTAL_COLS = 1 + ULM_SCORE_COUNT  # id 与 16 项评分。
 
 # 发送给模型前移除已生成的评价字段，避免机器评分之间互相泄漏或偏置。
 NEW_BANK_STRIP_KEYS = {
@@ -53,7 +53,7 @@ NEW_BANK_STRIP_KEYS = {
     "3gram_jaccard_max",
     "textstat_flesch_reading_ease",
     "QGEval",
-    "LLM",
+    "ULM",
 }
 
 
@@ -64,7 +64,7 @@ os.makedirs(LOG_DIR, exist_ok=True)
 
 MAIN_LOG_PATH = os.path.join(
     LOG_DIR,
-    f"exam_paper_llm_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    f"exam_paper_ulm_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 )
 
 def _write_line(path: str, msg: str) -> None:
@@ -88,7 +88,7 @@ def log_block(path: str, title: str, content: str) -> None:
 
 def make_batch_log_path(batch_index: int) -> str:
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return os.path.join(LOG_DIR, f"exam_paper_llm_batch_{batch_index:04d}_{ts}.log")
+    return os.path.join(LOG_DIR, f"exam_paper_ulm_batch_{batch_index:04d}_{ts}.log")
 
 
 # ===== 文件读写 =====
@@ -205,7 +205,7 @@ def extract_first_json_array_robust(text: str) -> Any:
 
     raise ValueError("未能从返回中截取完整 JSON 数组（疑似截断/括号不匹配）")
 
-def parse_llm_rows(obj: Any) -> List[Tuple[int, List[int]]]:
+def parse_ulm_rows(obj: Any) -> List[Tuple[int, List[int]]]:
     """
     期望输入形如：
     [
@@ -215,15 +215,15 @@ def parse_llm_rows(obj: Any) -> List[Tuple[int, List[int]]]:
     每行 17 列（id + 16评分）。
     """
     if not isinstance(obj, list):
-        raise ValueError("LLM 返回不是 list")
+        raise ValueError("ULM 返回不是 list")
 
     rows: List[Tuple[int, List[int]]] = []
     for i, row in enumerate(obj):
         if not isinstance(row, list):
             raise ValueError(f"第 {i} 行不是 list：{row!r}")
-        if len(row) != LLM_TOTAL_COLS:
+        if len(row) != ULM_TOTAL_COLS:
             raise ValueError(
-                f"第 {i} 行长度不是 {LLM_TOTAL_COLS}（id+{LLM_SCORE_COUNT}项）："
+                f"第 {i} 行长度不是 {ULM_TOTAL_COLS}（id+{ULM_SCORE_COUNT}项）："
                 f"len={len(row)} row={row!r}"
             )
 
@@ -284,40 +284,40 @@ def sanitize_questions_for_deepseek(
 def make_user_prompt_json(questions: List[Dict[str, Any]]) -> str:
     return json.dumps(questions, ensure_ascii=False, indent=4)
 
-def format_llm(scores: List[int]) -> str:
+def format_ulm(scores: List[int]) -> str:
     total = sum(scores)
     return f"{total}: {','.join(str(x) for x in scores)}"
 
 
 # ===== 字段写回顺序 =====
 
-def set_llm_with_order(item: Dict[str, Any], llm_text: str) -> Dict[str, Any]:
+def set_ulm_with_order(item: Dict[str, Any], ulm_text: str) -> Dict[str, Any]:
     """
-    写入 LLM，并满足顺序要求：
-    - 默认：LLM 在最后
-    - 若存在 QGEval：LLM 插在 QGEval 后面（紧跟 QGEval）
-    - 不覆盖：若已存在 LLM，则直接返回原 item
+    写入 ULM，并满足顺序要求：
+    - 默认：ULM 在最后
+    - 若存在 QGEval：ULM 插在 QGEval 后面（紧跟 QGEval）
+    - 不覆盖：若已存在 ULM，则直接返回原 item
     注意：可能返回新 dict；调用者需要写回 list 的对应位置。
     """
-    if "LLM" in item:
+    if "ULM" in item:
         return item
 
     if "QGEval" not in item:
-        item["LLM"] = llm_text
+        item["ULM"] = ulm_text
         return item
 
-    # 存在 QGEval：重建 dict，把 LLM 插到 QGEval 后
+    # 存在 QGEval：重建 dict，把 ULM 插到 QGEval 后
     new_item: Dict[str, Any] = {}
     inserted = False
     for k, v in item.items():
         new_item[k] = v
         if k == "QGEval" and not inserted:
-            new_item["LLM"] = llm_text
+            new_item["ULM"] = ulm_text
             inserted = True
 
     if not inserted:
         # 极端兜底：追加到末尾
-        new_item["LLM"] = llm_text
+        new_item["ULM"] = ulm_text
 
     return new_item
 
@@ -339,8 +339,8 @@ def eval_exam_paper(
 
     data = read_json_list(path)
 
-    # 只处理未写入 LLM 的题（不影响已有 QGEval）
-    pending: List[Dict[str, Any]] = [q for q in data if isinstance(q, dict) and ("LLM" not in q)]
+    # 只处理未写入 ULM 的题（不影响已有 QGEval）
+    pending: List[Dict[str, Any]] = [q for q in data if isinstance(q, dict) and ("ULM" not in q)]
     log_line(f"==> 目标文件: {path}, 总题数={len(data)}, 待评分={len(pending)}, batch_size={BATCH_SIZE}, start_batch={start_batch}")
 
     if not pending:
@@ -394,7 +394,7 @@ def eval_exam_paper(
             log_block(batch_log_path, "DEEPSEEK RAW RESPONSE", text)
 
             obj = extract_first_json_array_robust(text)
-            rows = parse_llm_rows(obj)
+            rows = parse_ulm_rows(obj)
 
             updated = 0
             missed = 0
@@ -409,11 +409,11 @@ def eval_exam_paper(
                 if not isinstance(item, dict):
                     missed += 1
                     continue
-                if "LLM" in item:
+                if "ULM" in item:
                     continue  # 不覆盖
 
-                llm_text = format_llm(scores)
-                new_item = set_llm_with_order(item, llm_text)
+                ulm_text = format_ulm(scores)
+                new_item = set_ulm_with_order(item, ulm_text)
 
                 if new_item is not item:
                     data[pos] = new_item
@@ -432,7 +432,7 @@ def eval_exam_paper(
                     f"bank_total={len(data)}\n"
                 )
             )
-            log_line(f"[OK] 第 {bi} 批：写入 LLM={updated}，返回行={len(rows)}，未命中id={missed}")
+            log_line(f"[OK] 第 {bi} 批：写入 ULM={updated}，返回行={len(rows)}，未命中id={missed}")
 
             time.sleep(sleep_seconds)
 
@@ -445,14 +445,14 @@ def eval_exam_paper(
             continue
 
     final_data = read_json_list(path)
-    done = sum(1 for q in final_data if isinstance(q, dict) and ("LLM" in q))
+    done = sum(1 for q in final_data if isinstance(q, dict) and ("ULM" in q))
     log_line(f"==> 完成。已评分={done}/{len(final_data)}，输出文件={path}")
 
 
 # ===== 命令行入口 =====
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="为指定试卷 JSON 写入 LLM rubric 机器评分。")
+    p = argparse.ArgumentParser(description="为指定试卷 JSON 写入 ULM rubric 机器评分。")
     p.add_argument(
         "--target-file",
         "--target_file",
@@ -499,7 +499,7 @@ def main() -> None:
         log_line("[ERROR] 加载 .env 失败（将继续尝试系统环境变量）")
         log_block(MAIN_LOG_PATH, "EXCEPTION loading .env", traceback.format_exc())
 
-    # 读取 LLM rubric 评分专用 API key。
+    # 读取 ULM rubric 评分专用 API key。
     api_key = (os.getenv("DEEPSEEK_API_KEY_003") or "").strip()
     model = (os.getenv("DEEPSEEK_MODEL") or "deepseek-reasoner").strip()
     base_url = (os.getenv("DEEPSEEK_BASE_URL") or "https://api.deepseek.com").strip()
@@ -508,13 +508,13 @@ def main() -> None:
         log_line("[FATAL] 未读取到 DEEPSEEK_API_KEY_003。请检查 .env 或系统环境变量。")
         return
 
-    # 读取 LLM rubric 评分提示词。
+    # 读取 ULM rubric 评分提示词。
     try:
-        system_prompt = read_text(PROMPT_LLM_PATH)
-        log_line(f"[OK] 已读取 prompt：{PROMPT_LLM_PATH}")
+        system_prompt = read_text(PROMPT_ULM_PATH)
+        log_line(f"[OK] 已读取 prompt：{PROMPT_ULM_PATH}")
     except Exception:
-        log_line(f"[FATAL] 读取 prompt_for_llm.txt 失败：{PROMPT_LLM_PATH}")
-        log_block(MAIN_LOG_PATH, "EXCEPTION reading prompt_for_llm.txt", traceback.format_exc())
+        log_line(f"[FATAL] 读取 prompt_for_ulm.txt 失败：{PROMPT_ULM_PATH}")
+        log_block(MAIN_LOG_PATH, "EXCEPTION reading prompt_for_ulm.txt", traceback.format_exc())
         return
 
     if args.start_batch < 1:
