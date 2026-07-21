@@ -1,4 +1,4 @@
-# Codex必读
+# AGENTS.md
 
 本仓库服务于比较“Human出题质量”和“UroEMAS（泌尿外科试卷多智能体系统）出题质量”的论文。我是第二作者，负责编程、统计、绘图。
 
@@ -48,3 +48,17 @@
 
 8. 处理数据并绘图。
 机器评分方法在仓库与绘图中统一称为ULM。
+
+## 你的临时工作
+
+对于critical defects安全门槛.xlsx的每一道题，请全网搜索相关医学依据，并根据prompts\evaluation\major_defects.md，标注Major Defect。
+
+注意：
+
+1. 是由你搜索、判断、标注，而不是调用Deepseek API。但这一点无需在critical defects安全门槛.xlsx中注明。
+
+2. 格式可参考critical defects安全门槛_已弃用版（有错误）.xlsx，但严禁盲目照抄critical defects安全门槛_已弃用版（有错误）.xlsx的任何内容。
+
+3. 对于含有多个小问的题目（如A3/A4、B、X型题），不能对于所有小问给出一组笼统的Major Defect，而应对于每个小问，逐一给出一组Major Defect。对于每个含有多个小问的题目，不妨将其对应的Major Defect划成多行。这是critical defects安全门槛_已弃用版（有错误）.xlsx的错误之一。
+
+4. 调用Deepseek API评价Major Defect的代码逻辑中相应修改，但无需真实运行。
