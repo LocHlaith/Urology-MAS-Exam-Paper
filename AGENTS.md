@@ -51,7 +51,7 @@
 
 ## 你的临时工作
 
-对于critical defects安全门槛.xlsx的每一道题，请全网搜索相关医学依据，并根据prompts\evaluation\major_defects.md，标注Major Defect。
+对于critical defects安全门槛.xlsx的每一道题，请全网搜索相关医学依据，并根据prompts\evaluation\major_defects.md，标注Major Defect及其理由。
 
 注意：
 

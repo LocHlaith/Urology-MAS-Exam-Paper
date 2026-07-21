@@ -155,13 +155,63 @@ def question_to_text(item: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def compact_for_model(item: Dict[str, Any], row: int) -> Dict[str, Any]:
-    stripped = {k: v for k, v in item.items() if k not in STRIP_KEYS_FOR_MODEL}
+def question_units(item: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Return independently scorable units.
+
+    A3/A4 and B questions must never be submitted to the rater as one aggregate
+    item: a defect in one subquestion must not automatically mark its siblings.
+    Each returned unit contains the shared case/options only when they are needed
+    to answer that particular subquestion.
+    """
+    qtype = str(item.get("type", "")).upper()
+    common = [f"题型：{qtype}", f"原始id：{item.get('id', '')}"]
+    if item.get("test_point") is not None:
+        common.append(f"考点还原：{test_point_text(item)}")
+
+    if qtype in {"A3", "A4"}:
+        if item.get("case"):
+            common.append(f"病例摘要：{item.get('case')}")
+        units: List[Dict[str, Any]] = []
+        for i in range(1, 6):
+            stem_key = f"stem{i}"
+            option_key = f"options{i}"
+            if stem_key not in item:
+                continue
+            lines = [*common, f"小问：{i}", str(item.get(stem_key))]
+            lines.extend(sorted_options(item.get(option_key)))
+            append_answer_block(lines, item, i)
+            units.append({"subquestion": i, "question_text": "\n".join(lines)})
+        return units
+
+    if qtype == "B":
+        shared_options = sorted_options(item.get("options"))
+        units = []
+        for i in range(1, 6):
+            stem_key = f"stem{i}"
+            if stem_key not in item:
+                continue
+            lines = [*common, f"小问：{i}", *shared_options, str(item.get(stem_key))]
+            append_answer_block(lines, item, i)
+            units.append({"subquestion": i, "question_text": "\n".join(lines)})
+        return units
+
+    return [{"subquestion": None, "question_text": question_to_text(item)}]
+
+
+def compact_for_model(
+    item: Dict[str, Any],
+    row: int,
+    parent_row: int,
+    subquestion: Optional[int],
+    question_text: str,
+) -> Dict[str, Any]:
     return {
         "row": row,
+        "parent_row": parent_row,
+        "subquestion": subquestion,
         "id": str(item.get("id", "")),
         "type": str(item.get("type", "")),
-        "question_text": question_to_text(stripped),
+        "question_text": question_text,
     }
 
 
@@ -343,18 +393,30 @@ def write_annotations_to_xlsx(
         ws.cell(1, i + 10).value = f"{i}理由"
 
     for ann in annotations:
-        row = start_row + int(ann["row"]) - 1
+        # ``parent_row`` is retained for model outputs expanded from one A3/A4/B
+        # source item.  An expanded review workbook may instead supply an explicit
+        # ``excel_row`` for each subquestion.  In either case, retain the subquestion
+        # prefix in the reason so that independent judgments are not collapsed into
+        # a generic statement.
+        source_row = int(ann.get("excel_row", ann.get("parent_row", ann["row"])))
+        row = start_row + source_row - 1
         defects = ann["defects"]
         reasons = ann.get("reasons", {})
+        subquestion = ann.get("subquestion")
         for defect_idx, bit in enumerate(defects, start=1):
             cell = ws.cell(row=row, column=3 + defect_idx)
             reason_cell = ws.cell(row=row, column=10 + defect_idx)
-            cell.value = bit
+            # Do not erase a positive flag written for an earlier sibling unit.
+            cell.value = int(bool(cell.value) or bool(bit))
             if bit:
                 reason = reasons.get(str(defect_idx), "")
                 label = DEFECT_NAMES[defect_idx]
-                reason_text = f"{defect_idx} {label}: {reason}".strip()
-                reason_cell.value = reason_text
+                prefix = "" if subquestion is None else f"第{subquestion}小问："
+                reason_text = f"{defect_idx} {label}: {prefix}{reason}".strip()
+                # More than one expanded unit may target one source row. Preserve
+                # each individual rationale rather than overwriting a sibling's.
+                old_reason = str(reason_cell.value or "").strip()
+                reason_cell.value = "\n".join(x for x in [old_reason, reason_text] if x)
                 cell.comment = Comment(reason_text, "DeepSeek")
             else:
                 reason_cell.value = None
@@ -400,7 +462,17 @@ def cmd_annotate(args: argparse.Namespace) -> None:
     sample_items = read_json_list(Path(args.sample_json))
     prompt_template = read_text(Path(args.prompt))
     rubric = read_text(Path(args.rubric))
-    model_items = [compact_for_model(item, row=i) for i, item in enumerate(sample_items, start=1)]
+    model_items: List[Dict[str, Any]] = []
+    for parent_row, item in enumerate(sample_items, start=1):
+        stripped = {k: v for k, v in item.items() if k not in STRIP_KEYS_FOR_MODEL}
+        for unit in question_units(stripped):
+            model_items.append(compact_for_model(
+                item,
+                row=len(model_items) + 1,
+                parent_row=parent_row,
+                subquestion=unit["subquestion"],
+                question_text=unit["question_text"],
+            ))
     batches = [model_items[i:i + args.batch_size] for i in range(0, len(model_items), args.batch_size)]
 
     if not args.run_api:
@@ -422,6 +494,7 @@ def cmd_annotate(args: argparse.Namespace) -> None:
 
     all_rows: List[Dict[str, Any]] = []
     system_prompt = "你是严谨的医学考试题库审题人，只输出符合要求的 JSON。"
+    metadata_by_row = {entry["row"]: entry for entry in model_items}
     for batch_index, batch in enumerate(batches, start=1):
         prompt = make_prompt(prompt_template, rubric, batch)
         log_path = LOG_DIR / f"major_defects_batch_{batch_index:04d}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
@@ -429,6 +502,12 @@ def cmd_annotate(args: argparse.Namespace) -> None:
             response = client.chat(system_prompt=system_prompt, user_prompt=prompt, temperature=0.1)
             log_path.write_text(response, encoding="utf-8")
             rows = validate_annotation_rows(extract_first_json_array(response))
+            for ann in rows:
+                metadata = metadata_by_row.get(ann["row"])
+                if metadata is None:
+                    raise ValueError(f"模型返回了不存在的 row: {ann['row']}")
+                ann["parent_row"] = metadata["parent_row"]
+                ann["subquestion"] = metadata["subquestion"]
             all_rows.extend(rows)
             print(f"[OK] batch {batch_index}/{len(batches)} rows={len(rows)}")
             time.sleep(args.sleep)
